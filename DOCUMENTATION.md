@@ -1246,3 +1246,168 @@ Render all examples at once:
 ```bash
 node examples/generate-all.js
 ```
+
+---
+
+## Plugins
+
+Plugins extend the operation set with custom operation types. The engine dispatches any unrecognized `type` to the registered plugin for that type.
+
+### Registering a plugin
+
+```js
+const { registerPlugin, plugins } = require("./index");
+
+registerPlugin("chart", plugins.chart);
+```
+
+After registration, any source operation with `{ "type": "chart", ... }` is routed to `plugins.chart`.
+
+### Plugin contract
+
+A plugin is an object with:
+
+```js
+{
+  // Called during rendering. Must be synchronous.
+  render(ctx) {
+    const { core, operation, bounds, theme, index } = ctx;
+    // core     — PDFCore instance (cursor, drawImage, drawText, etc.)
+    // operation — the raw operation object from the source
+    // bounds   — { left, right } content area in mm
+    // theme    — resolved runtime theme
+    // index    — operation index string (for error messages)
+  },
+
+  // Optional. Returns estimated height in mm for keepWithNext/page break math.
+  estimateHeight(ctx) {
+    return 80;
+  },
+
+  // Optional. Called before rendering to validate the operation. Throw to reject.
+  validate(operation) {
+    if (!operation.requiredField) throw new Error("...");
+  },
+}
+```
+
+`render` must be synchronous. For plugins that need async work (e.g., network fetches, canvas rendering), pre-render before calling `renderDocument` — see the Chart plugin section below.
+
+---
+
+## Chart plugin
+
+The built-in chart plugin renders Chart.js charts server-side via `chartjs-node-canvas` and embeds the result as a PNG image.
+
+### Peer dependencies
+
+```bash
+npm install chart.js chartjs-node-canvas
+```
+
+These are peer dependencies — not installed automatically with the engine.
+
+### Registration
+
+```js
+const { renderDocument, registerPlugin, plugins } = require("./index");
+
+registerPlugin("chart", plugins.chart);
+```
+
+### Pre-rendering
+
+The chart plugin is synchronous during `renderDocument`, but Chart.js rendering is async. You must call `plugins.chart.preRender(operation)` before `renderDocument`. This renders the chart to a PNG buffer and caches it on the operation object.
+
+```js
+const chartOp = {
+  type: "chart",
+  chartType: "bar",
+  widthMm: 160,
+  heightMm: 90,
+  canvasWidth: 1600,
+  canvasHeight: 900,
+  data: {
+    labels: ["Q1", "Q2", "Q3", "Q4"],
+    datasets: [{ label: "Revenue", data: [120000, 145000, 138000, 172000] }]
+  },
+  options: {
+    scales: { y: { beginAtZero: true } },
+    layout: { padding: { bottom: 10 } }
+  }
+};
+
+async function main() {
+  await plugins.chart.preRender(chartOp);
+
+  renderDocument({
+    source: { sections: [{ type: "section", content: [chartOp] }] },
+    theme,
+    outputPath: "output/chart.pdf",
+  });
+}
+
+main();
+```
+
+`preRender` mutates the operation in place, attaching `operation._buf` (a PNG Buffer). The sync `render` step reads that buffer and calls `core.drawImage`.
+
+### Operation fields
+
+| Field | Required | Type | Description |
+|---|---|---|---|
+| `chartType` | yes | string | Chart.js type: `"bar"`, `"line"`, `"doughnut"`, etc. |
+| `data` | yes | object | Chart.js `data` config (`labels` + `datasets`) |
+| `widthMm` | no | number | Width in the PDF in mm (default: content area width) |
+| `heightMm` | no | number | Height in the PDF in mm (default: 80) |
+| `canvasWidth` | no | number | Canvas render width in pixels (default: 1600) |
+| `canvasHeight` | no | number | Canvas render height in pixels (default: 800) |
+| `options` | no | object | Chart.js `options` object. `responsive: false` and `animation: false` are injected automatically. |
+| `xMm` | no | number | Left edge in mm (default: content left margin) |
+
+### Resolution
+
+`canvasWidth` / `canvasHeight` control sharpness. `widthMm` / `heightMm` control the slot size in the PDF. Keep their aspect ratio consistent:
+
+```
+canvasWidth / canvasHeight  ≈  widthMm / heightMm
+```
+
+For a 160mm × 90mm slot, `canvasWidth: 1600, canvasHeight: 900` gives a clean 10px/mm density — sharp at any reasonable zoom.
+
+### Axis label clipping
+
+Chart.js does not automatically reserve space for tick labels outside the chart area. If x-axis labels are cut off, add bottom padding via `options.layout`:
+
+```js
+options: {
+  layout: { padding: { bottom: 10 } }
+}
+```
+
+### Writing a custom plugin
+
+Any module that implements the plugin contract can be registered:
+
+```js
+const myPlugin = {
+  render({ core, operation, bounds }) {
+    const widthMm = operation.widthMm || (bounds.right - bounds.left);
+    const heightMm = operation.heightMm || 40;
+    const x = bounds.left;
+
+    core.ensureSpace(heightMm);
+    const y = core.getCursorY();
+    // ... draw using core.doc (the jsPDF instance) ...
+    core.setCursorY(y + heightMm);
+  },
+
+  estimateHeight({ operation }) {
+    return (operation.heightMm || 40) + 4;
+  },
+};
+
+registerPlugin("myType", myPlugin);
+```
+
+`core.doc` is the raw jsPDF instance. Anything jsPDF can draw, a plugin can draw.

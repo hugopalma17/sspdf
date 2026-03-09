@@ -64,34 +64,51 @@ function getCanvas() {
   return _ChartJSNodeCanvas;
 }
 
+/**
+ * Pre-render the chart to a PNG buffer and cache it on the operation.
+ * Call this before renderDocument() for any source containing chart operations.
+ * @param {object} operation - the chart operation object (mutated in place)
+ * @returns {Promise<void>}
+ */
+async function preRender(operation) {
+  const ChartJSNodeCanvas = getCanvas();
+  const canvasW = operation.canvasWidth  || 1600;
+  const canvasH = operation.canvasHeight || 800;
+
+  const canvas = new ChartJSNodeCanvas({
+    width: canvasW,
+    height: canvasH,
+    backgroundColour: 'transparent',
+  });
+
+  operation._buf = await canvas.renderToBuffer({
+    type:    operation.chartType || 'bar',
+    data:    operation.data    || { labels: [], datasets: [] },
+    options: {
+      ...(operation.options || {}),
+      responsive: false,
+      animation:  false,
+    },
+  });
+}
+
 module.exports = {
-  async render(ctx) {
+  preRender,
+
+  render(ctx) {
     const { core, operation, bounds } = ctx;
-    const ChartJSNodeCanvas = getCanvas();
 
-    const widthMm    = operation.widthMm    || (bounds.right - bounds.left);
-    const heightMm   = operation.heightMm   || 80;
-    const canvasW    = operation.canvasWidth  || 1600;
-    const canvasH    = operation.canvasHeight || 800;
-    const x          = operation.xMm !== undefined ? operation.xMm : bounds.left;
+    if (!operation._buf) {
+      throw new Error(
+        'chart plugin: operation._buf is missing — call plugin.preRender(operation) before renderDocument()'
+      );
+    }
 
-    const canvas = new ChartJSNodeCanvas({
-      width: canvasW,
-      height: canvasH,
-      backgroundColour: 'transparent',
-    });
+    const widthMm  = operation.widthMm  || (bounds.right - bounds.left);
+    const heightMm = operation.heightMm || 80;
+    const x        = operation.xMm !== undefined ? operation.xMm : bounds.left;
 
-    const buf = await canvas.renderToBuffer({
-      type:    operation.chartType || 'bar',
-      data:    operation.data    || { labels: [], datasets: [] },
-      options: {
-        ...(operation.options || {}),
-        responsive: false,
-        animation:  false,
-      },
-    });
-
-    core.drawImage({ data: buf, format: 'PNG', x, widthMm, heightMm });
+    core.drawImage({ data: operation._buf, format: 'PNG', x, widthMm, heightMm });
   },
 
   estimateHeight(ctx) {
