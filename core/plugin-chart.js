@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Built-in chart plugin for jsPDF++.
+ * Built-in chart plugin for sspdf.
  *
  * Renders any Chart.js configuration server-side via chartjs-node-canvas
  * and embeds the result as a PNG image in the PDF.
@@ -10,7 +10,7 @@
  *   npm install chart.js chartjs-node-canvas
  *
  * Registration:
- *   const { registerPlugin, plugins } = require('jspdf-plusplus');
+ *   const { registerPlugin, plugins } = require('sspdf');
  *   registerPlugin('chart', plugins.chart);
  *
  * Operation format in source JSON:
