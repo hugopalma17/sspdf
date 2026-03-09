@@ -156,11 +156,11 @@ module.exports = {
       marker: "•",
     },
     "news.brief.text": {
-      fontFamily: "helvetica",
+      fontFamily: "GeorgiaNews",
       fontStyle: "normal",
-      fontSize: 8.7,
-      lineHeight: 1.4,
-      color: [66, 66, 66],
+      fontSize: 10.1,
+      lineHeight: 1.52,
+      color: [43, 43, 43],
       marginBottomPx: 2.5,
     },
     "news.stat.label": {
@@ -202,7 +202,6 @@ module.exports = {
       paddingBottomMm: 1.2,
       paddingLeftMm: 4,
       marginTopPx: 4,
-      marginBottomPx: 0,
       leftBorder: {
         color: [161, 98, 7],
         widthMm: 1.4,
@@ -217,10 +216,10 @@ module.exports = {
       color: [120, 120, 120],
       backgroundColor: [249, 246, 238],
       paddingRightMm: 4,
-      paddingBottomMm: 3,
+      paddingBottomMm: 2.5,
       paddingLeftMm: 4,
       marginTopMm: 0,
-      marginBottomPx: 8,
+      marginBottomPx: 0,
     },
     "news.footer.rule": {
       color: [180, 180, 180],
