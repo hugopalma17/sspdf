@@ -1,5 +1,8 @@
 # SuperSimplePDF
 
+[![npm](https://img.shields.io/npm/v/h17-sspdf)](https://www.npmjs.com/package/h17-sspdf)
+[![Socket Badge](https://socket.dev/api/badge/npm/package/h17-sspdf)](https://socket.dev/npm/package/h17-sspdf)
+
 Define the layout once. Feed it JSON. The core is blind to both and does all the math.
 
 The theme does not know what the content says. The JSON does not know how it looks. The core does not know it is rendering a newspaper, an invoice, or a certificate. Three blind components, one coherent output.
