@@ -407,3 +407,5 @@ npx sspdf -s source.json -t theme.js -o output.pdf
 ---
 
 Hugo Palma, 2026
+
+Built on [jsPDF](https://github.com/parallax/jsPDF).

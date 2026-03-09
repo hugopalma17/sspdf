@@ -130,7 +130,7 @@ class PDFCore {
       subject: meta.subject || "",
       author: meta.author || "Hugo Palma",
       keywords: meta.keywords || "",
-      creator: "SuperSimplePDF (github.com/hugopalma17/sspdf)",
+      creator: "SuperSimplePDF (github.com/hugopalma17/sspdf) — built on jsPDF",
     });
 
     this.paintBackground();
