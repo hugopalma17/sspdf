@@ -1,0 +1,48 @@
+{
+  "operations": [
+    { "type": "text", "label": "mag.category", "text": "Technology", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "text", "label": "mag.headline", "text": "The Quiet Revolution in Document Rendering", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "text", "label": "mag.deck", "text": "How label-driven architectures are replacing template engines, one PDF at a time.", "xMm": 22, "maxWidthMm": 166 },
+    {
+      "type": "row",
+      "leftLabel": "mag.author",
+      "rightLabel": "mag.date",
+      "leftText": "Hugo Palma \u00b7 Senior Editor",
+      "rightText": "March 2026",
+      "xLeftMm": 22,
+      "xRightMm": 188
+    },
+    { "type": "divider", "label": "mag.header.divider", "x1Mm": 22, "x2Mm": 188 },
+
+    { "type": "text", "label": "mag.body", "text": "For decades, document generation has been trapped in the template paradigm. You write a template with placeholders, feed it data, and pray the output looks right. When it doesn\u2019t \u2014 and it rarely does on the first try \u2014 you fight with margins, font sizes, and page breaks until the result is tolerable.", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "text", "label": "mag.body", "text": "The fundamental problem is coupling. Templates bind structure, style, and content into a single artifact. Change any one dimension and the other two resist. A new font breaks the layout. A longer paragraph overflows a box. A different paper size cascades through every element.", "xMm": 22, "maxWidthMm": 166 },
+
+    { "type": "text", "label": "mag.h2", "text": "Labels as the Universal Joint", "xMm": 22, "maxWidthMm": 166, "keepWithNext": 2 },
+    { "type": "divider", "label": "mag.h2.divider", "x1Mm": 22, "x2Mm": 188 },
+
+    { "type": "text", "label": "mag.body", "text": "Label-driven rendering introduces an indirection layer that decouples content from presentation. Each piece of content carries a semantic label \u2014 not a style declaration. The rendering engine resolves labels to styles at render time using a theme, a flat map from label names to visual properties.", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "text", "label": "mag.body", "text": "This means the same source document can produce radically different visual outputs simply by swapping the theme. A corporate report and a creative portfolio can share the same rendering core, the same operation types, and even the same source structure. Only the label-to-style map differs.", "xMm": 22, "maxWidthMm": 166 },
+
+    {
+      "type": "quote",
+      "label": "mag.pullquote",
+      "text": "\u201cThe best architecture is the one where you can change your mind about the visual design without touching the data model.\u201d",
+      "attribution": "\u2014 Software Design Principles, Third Edition",
+      "xMm": 22,
+      "maxWidthMm": 166
+    },
+
+    { "type": "text", "label": "mag.h2", "text": "The Operation Model", "xMm": 22, "maxWidthMm": 166, "keepWithNext": 2 },
+    { "type": "divider", "label": "mag.h2.divider", "x1Mm": 22, "x2Mm": 188 },
+
+    { "type": "text", "label": "mag.body", "text": "At the core sits a small set of primitive operations: text, row, bullet, divider, spacer, and block. Each operation carries its content and a label reference. The engine resolves the label against the active theme, applies the resulting style, and renders the primitive.", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "text", "label": "mag.body", "text": "Pagination, cursor management, font registration, and style isolation happen automatically. The consumer never calculates a Y coordinate or checks whether content fits on the current page. The engine handles all of this through a simple contract: declare what you want, and the core figures out how to lay it out.", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "text", "label": "mag.body", "text": "This is a fundamentally different model from template-based rendering. There is no page template to fill. There is no fixed grid to conform to. The document flows naturally from operation to operation, breaking pages when needed, respecting keep-together constraints, and maintaining typographic consistency throughout.", "xMm": 22, "maxWidthMm": 166 },
+
+    { "type": "text", "label": "mag.h2", "text": "What This Means in Practice", "xMm": 22, "maxWidthMm": 166, "keepWithNext": 2 },
+    { "type": "divider", "label": "mag.h2.divider", "x1Mm": 22, "x2Mm": 188 },
+
+    { "type": "text", "label": "mag.body", "text": "A magazine article, an invoice, a resume, and a blockquote collection can all be rendered by the same engine. The difference between them is not in the code \u2014 it is in the source JSON and the theme. The engine does not know or care what kind of document it is rendering. It simply executes operations.", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "text", "label": "mag.body", "text": "This separation makes the system composable. New document types require no new code in the rendering engine. They require only a new source JSON structure and a theme that defines the labels used by that structure. The engine remains stable while the ecosystem of document types grows around it.", "xMm": 22, "maxWidthMm": 166 }
+  ]
+}

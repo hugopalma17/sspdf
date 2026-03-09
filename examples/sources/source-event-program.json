@@ -1,0 +1,229 @@
+{
+  "pageTemplates": {
+    "footer": [
+      { "type": "divider", "label": "program.footer.rule", "x1Mm": 18, "x2Mm": 192 },
+      {
+        "type": "row",
+        "leftLabel": "program.footer.left",
+        "rightLabel": "program.footer.right",
+        "leftText": "Systems Design Summit 2026",
+        "rightText": "Page {{page}}",
+        "xLeftMm": 18,
+        "xRightMm": 192
+      }
+    ],
+    "footerHeightMm": 8,
+    "footerStartMm": 284,
+    "footerBypassMargins": false
+  },
+  "sections": [
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "program.kicker", "text": "Three-Day Program", "xMm": 18, "maxWidthMm": 174 },
+        { "type": "text", "label": "program.title", "text": "Systems Design Summit 2026", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "text",
+          "label": "program.subtitle",
+          "text": "March 18–20 | Porto Congress Hall | Product systems, internal tooling, and operational design at scale.",
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        { "type": "divider", "label": "program.divider", "x1Mm": 18, "x2Mm": 192 }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "program.day", "text": "Day One | Operating Systems", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "program.slot.time",
+              "rightLabel": "program.slot.room",
+              "leftText": "09:00 - 09:45",
+              "rightText": "Atrium Hall",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            { "type": "text", "label": "program.slot.title", "text": "Opening keynote: When internal tools become the business", "xMm": 18, "maxWidthMm": 174 },
+            { "type": "text", "label": "program.slot.meta", "text": "A practical talk on why workflow software, reporting, and document systems stop being support code once they shape operational throughput.", "xMm": 18, "maxWidthMm": 174 }
+          ]
+        },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "program.slot.time",
+              "rightLabel": "program.slot.room",
+              "leftText": "10:15 - 11:00",
+              "rightText": "Studio B",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            { "type": "text", "label": "program.slot.title", "text": "Designing contracts for repeatable PDF systems", "xMm": 18, "maxWidthMm": 174 },
+            { "type": "text", "label": "program.slot.meta", "text": "A session on replacing ad-hoc template edits with layout contracts, semantic tags, and deterministic pagination rules.", "xMm": 18, "maxWidthMm": 174 }
+          ]
+        },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "program.slot.time",
+              "rightLabel": "program.slot.room",
+              "leftText": "11:30 - 12:15",
+              "rightText": "Forum East",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            { "type": "text", "label": "program.slot.title", "text": "Panel: The hidden cost of brittle internal workflows", "xMm": 18, "maxWidthMm": 174 },
+            { "type": "text", "label": "program.slot.meta", "text": "Operators from logistics, healthcare, and government discuss where formatting debt slows real work down.", "xMm": 18, "maxWidthMm": 174 }
+          ]
+        },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "program.slot.time",
+              "rightLabel": "program.slot.room",
+              "leftText": "14:00 - 14:45",
+              "rightText": "Studio C",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            { "type": "text", "label": "program.slot.title", "text": "Clinic: Pagination, grouping, and deterministic output rules", "xMm": 18, "maxWidthMm": 174 },
+            { "type": "text", "label": "program.slot.meta", "text": "A hands-on walkthrough of the small rules that separate an attractive PDF demo from a reusable document system.", "xMm": 18, "maxWidthMm": 174 }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "program.day", "text": "Day Two | Teams & Tooling", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "program.slot.time",
+              "rightLabel": "program.slot.room",
+              "leftText": "09:15 - 10:00",
+              "rightText": "Atrium Hall",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            { "type": "text", "label": "program.slot.title", "text": "Workshop: Turning ops chaos into authorable systems", "xMm": 18, "maxWidthMm": 174 },
+            { "type": "text", "label": "program.slot.meta", "text": "Participants map one messy operational workflow into a stable authoring contract with defined layout and content boundaries.", "xMm": 18, "maxWidthMm": 174 }
+          ]
+        },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "program.slot.time",
+              "rightLabel": "program.slot.room",
+              "leftText": "10:30 - 11:15",
+              "rightText": "Studio A",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            { "type": "text", "label": "program.slot.title", "text": "Case study: Building internal publishing rails for public-sector records", "xMm": 18, "maxWidthMm": 174 },
+            { "type": "text", "label": "program.slot.meta", "text": "From accessibility tags to archival consistency, this talk covers why structured publishing now matters beyond mere appearance.", "xMm": 18, "maxWidthMm": 174 }
+          ]
+        },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "program.slot.time",
+              "rightLabel": "program.slot.room",
+              "leftText": "14:00 - 15:00",
+              "rightText": "Forum East",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            { "type": "text", "label": "program.slot.title", "text": "Roundtable: What should a document contract own?", "xMm": 18, "maxWidthMm": 174 },
+            { "type": "text", "label": "program.slot.meta", "text": "Participants debate the boundary between content schema, styling system, renderer guarantees, and backend-specific implementation details.", "xMm": 18, "maxWidthMm": 174 }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "program.day",
+          "text": "Day Three | Scale & Governance",
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "program.slot.time",
+              "rightLabel": "program.slot.room",
+              "leftText": "09:30 - 10:15",
+              "rightText": "Atrium Hall",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            { "type": "text", "label": "program.slot.title", "text": "Keynote: Governance patterns for internal platform contracts", "xMm": 18, "maxWidthMm": 174 },
+            { "type": "text", "label": "program.slot.meta", "text": "How mature teams keep layout systems flexible without letting every new request become an unreviewed primitive.", "xMm": 18, "maxWidthMm": 174 }
+          ]
+        },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "program.slot.time",
+              "rightLabel": "program.slot.room",
+              "leftText": "11:00 - 11:45",
+              "rightText": "Studio A",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            { "type": "text", "label": "program.slot.title", "text": "Maintaining a gallery of document systems without design drift", "xMm": 18, "maxWidthMm": 174 },
+            { "type": "text", "label": "program.slot.meta", "text": "A practical session on examples, validation, review workflows, and how to keep your document library coherent as use cases multiply.", "xMm": 18, "maxWidthMm": 174 }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "program.note",
+          "text": "Evening roundtables begin at 18:00 on day two. Speaker office hours, one-on-one layout reviews, and sponsor lounges are available by registration only.",
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "hiddenText",
+          "label": "program.hidden.tags",
+          "text": "event program conference agenda workshop keynote panel office hours systems design tooling operations"
+        }
+      ]
+    }
+  ]
+}

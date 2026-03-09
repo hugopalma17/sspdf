@@ -1,0 +1,54 @@
+{
+  "operations": [
+    { "type": "text", "label": "cert.kicker", "text": "Certificate of Recognition", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "text", "label": "cert.title", "text": "Excellence in Systems Design", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "divider", "label": "cert.rule", "x1Mm": 52, "x2Mm": 158 },
+    { "type": "spacer", "mm": 6 },
+    { "type": "text", "label": "cert.presented", "text": "Presented to", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "text", "label": "cert.name", "text": "Adriana Costa", "xMm": 22, "maxWidthMm": 166 },
+    {
+      "type": "text",
+      "label": "cert.statement",
+      "text": "For outstanding leadership in transforming manual document workflows into durable contract-driven publishing systems.",
+      "xMm": 28,
+      "maxWidthMm": 154
+    },
+    { "type": "spacer", "mm": 4 },
+    {
+      "type": "text",
+      "label": "cert.statement",
+      "text": [
+        "In recognition of exceptional work designing contract-driven internal systems that turned manual publishing workflows into durable, repeatable operating infrastructure.",
+        "Awarded by the Systems Design Summit committee for advancing the craft of reliable, human-centered tooling."
+      ],
+      "xMm": 28,
+      "maxWidthMm": 154
+    },
+    { "type": "spacer", "mm": 34 },
+    {
+      "type": "row",
+      "leftLabel": "cert.signature.name",
+      "rightLabel": "cert.signature.name",
+      "leftText": "Marina Falcao",
+      "rightText": "Duarte Nunes",
+      "xLeftMm": 32,
+      "xRightMm": 178
+    },
+    {
+      "type": "row",
+      "leftLabel": "cert.signature.role",
+      "rightLabel": "cert.signature.role",
+      "leftText": "Program Director",
+      "rightText": "Chair, Awards Committee",
+      "xLeftMm": 32,
+      "xRightMm": 178
+    },
+    { "type": "spacer", "mm": 16 },
+    { "type": "text", "label": "cert.date", "text": "Issued in Porto on March 20, 2026", "xMm": 22, "maxWidthMm": 166 },
+    {
+      "type": "hiddenText",
+      "label": "cert.hidden.tags",
+      "text": "certificate recognition award systems design internal tooling layout contract design ceremony"
+    }
+  ]
+}

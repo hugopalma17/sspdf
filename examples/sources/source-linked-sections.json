@@ -1,0 +1,64 @@
+{
+  "pageTemplates": {
+    "header": [
+      {
+        "type": "text",
+        "label": "doc.subtitle",
+        "text": "Linked Sections Example",
+        "xMm": 15,
+        "yMm": 6
+      }
+    ],
+    "headerHeightMm": 8
+  },
+  "sections": [
+    {
+      "content": [
+        {
+          "label": "doc.title",
+          "value": "Standardized Linked Rendering"
+        },
+        {
+          "type": "divider",
+          "label": "divider.default"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "keepTogether": true,
+      "children": [
+        {
+          "type": "row",
+          "leftLabel": "meta.left",
+          "rightLabel": "meta.right",
+          "leftText": "Company (experience)",
+          "rightText": "Period"
+        },
+        {
+          "type": "row",
+          "leftLabel": "meta.left",
+          "rightLabel": "meta.right",
+          "leftText": "Institution (education)",
+          "rightText": "Period"
+        }
+      ]
+    },
+    {
+      "items": [
+        {
+          "type": "bullet",
+          "label": "item.text",
+          "markerLabel": "item.marker",
+          "text": "Same labels, same style: role == degree, company == school."
+        },
+        {
+          "type": "bullet",
+          "label": "item.text",
+          "markerLabel": "item.marker",
+          "text": "JSON defines order/content/labels; theme defines look."
+        }
+      ]
+    }
+  ]
+}

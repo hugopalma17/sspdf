@@ -1,0 +1,48 @@
+{
+  "operations": [
+    {
+      "type": "text",
+      "label": "article.headline",
+      "text": "Designing Layout-Agnostic PDF Pipelines"
+    },
+    {
+      "type": "text",
+      "label": "article.author",
+      "text": "Hugo Palma"
+    },
+    {
+      "type": "text",
+      "label": "article.date",
+      "text": "2026-03-03"
+    },
+    {
+      "type": "text",
+      "label": "article.subtext",
+      "text": "How label-driven rendering decouples data, layout, and style."
+    },
+    {
+      "type": "divider",
+      "label": "article.divider"
+    },
+    {
+      "type": "text",
+      "label": "article.body",
+      "text": "A document renderer should not understand resume fields, invoice fields, or report-specific structures. It should only execute rendering operations."
+    },
+    {
+      "type": "text",
+      "label": "article.body",
+      "text": "By converting source JSON into labeled operations, we can adapt any domain schema into the same rendering engine while preserving visual consistency through themes."
+    },
+    {
+      "type": "text",
+      "label": "article.body",
+      "text": "This architecture makes document generation maintainable because layout and style can evolve without rewriting the core rendering primitives."
+    },
+    {
+      "type": "hiddenText",
+      "label": "article.hidden.tags",
+      "text": "pdf renderer layout theme"
+    }
+  ]
+}

@@ -1,0 +1,219 @@
+{
+  "pageTemplates": {
+    "footer": [
+      { "type": "divider", "label": "news.footer.rule", "x1Mm": 18, "x2Mm": 192 },
+      {
+        "type": "row",
+        "leftLabel": "news.footer.left",
+        "rightLabel": "news.footer.right",
+        "leftText": "The Meridian Times | Civic Systems Desk",
+        "rightText": "Page {{page}}",
+        "xLeftMm": 18,
+        "xRightMm": 192
+      }
+    ],
+    "footerHeightMm": 8,
+    "footerStartMm": 284,
+    "footerBypassMargins": false
+  },
+  "sections": [
+    {
+      "type": "section",
+      "spaceAfterMm": 2,
+      "content": [
+        { "type": "text", "label": "news.masthead", "text": "The Meridian Times", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "row",
+          "leftLabel": "news.edition.left",
+          "rightLabel": "news.edition.right",
+          "leftText": "Saturday, March 7, 2026",
+          "rightText": "Late City Edition",
+          "xLeftMm": 18,
+          "xRightMm": 192
+        },
+        { "type": "divider", "label": "news.rule.heavy", "x1Mm": 18, "x2Mm": 192 },
+        { "type": "text", "label": "news.kicker", "text": "Infrastructure & Society", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "text",
+          "label": "news.headline",
+          "text": "Local Governments Are Finally Rewriting How They Publish Public Records",
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "text",
+          "label": "news.deck",
+          "text": "A quiet wave of procurement reform is replacing scanned forms and brittle templates with structured systems that can publish every notice, filing, and board packet in a consistent, searchable format.",
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "row",
+          "leftLabel": "news.byline",
+          "rightLabel": "news.timestamp",
+          "leftText": "By Marta Ruiz",
+          "rightText": "Updated 6:40 PM",
+          "xLeftMm": 18,
+          "xRightMm": 192
+        },
+        { "type": "divider", "label": "news.rule.light", "x1Mm": 18, "x2Mm": 192 }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.body",
+          "text": [
+            "For decades, record offices treated document publishing as a sequence of one-off formatting exercises. Every agenda packet, ordinance notice, and hearing summary started from a template, moved through manual edits, and ended with a new round of visual corrections before it could go live.",
+            "That workflow is now under pressure from three sides at once: legal teams want more consistent disclosure formatting, archives want searchable long-term records, and residents expect public information to be readable on every screen before it ever becomes a PDF.",
+            "Officials who used to talk about design refreshes are now talking about publishing rails. The argument is no longer only about whether a packet looks polished. It is about whether every future packet in the same family will remain reliable when the content volume doubles, the legal boilerplate changes, or a clerk needs to publish from a different system."
+          ],
+          "xMm": 18,
+          "maxWidthMm": 174
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "spaceAfterMm": 2,
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "Inside the shift",
+          "keepWithNext": 3,
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "bullet",
+          "label": "news.brief.text",
+          "markerLabel": "news.brief.marker",
+          "bullets": [
+            "Procurement teams are replacing form-by-form templates with document contracts that encode layout rules once.",
+            "Public notices can now carry invisible semantic tags for search, archives, and downstream accessibility workflows.",
+            "Review cycles are shorter because legal formatting rules are enforced mathematically instead of rechecked by hand."
+          ],
+          "xMm": 22,
+          "maxWidthMm": 166
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "Contract-first publishing",
+          "keepWithNext": 4,
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "text",
+          "label": "news.body",
+          "text": [
+            "The cities making the biggest gains are not replacing staff judgment with software. They are replacing repeated formatting decisions with a contract. Each document family defines its labels, spacing, repeated regions, and invisible metadata rules once. After that, the publishing system receives structured JSON and renders the finished notice without negotiating visual rules again.",
+            "That contract layer changes how teams work. Legal can approve a document family instead of every tiny layout variation. Archives can rely on a stable semantic footprint across years of filings. Procurement can evaluate systems based on how well they emit structured content instead of how many templates they ship out of the box."
+          ],
+          "xMm": 18,
+          "maxWidthMm": 174
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "Pilot city scoreboard",
+          "keepWithNext": 6,
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "row",
+          "leftLabel": "news.stat.label",
+          "rightLabel": "news.stat.value",
+          "leftText": "Harbor City planning notices",
+          "rightText": "42% faster",
+          "xLeftMm": 18,
+          "xRightMm": 192
+        },
+        {
+          "type": "text",
+          "label": "news.stat.note",
+          "text": "Review time fell after zoning notices moved to a single contract with required hidden filing tags.",
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "row",
+          "leftLabel": "news.stat.label",
+          "rightLabel": "news.stat.value",
+          "leftText": "Riverton board packets",
+          "rightText": "0 format defects",
+          "xLeftMm": 18,
+          "xRightMm": 192
+        },
+        {
+          "type": "text",
+          "label": "news.stat.note",
+          "text": "The clerk's office says packet assembly stopped generating last-minute page-break fixes after standardizing section blocks.",
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "row",
+          "leftLabel": "news.stat.label",
+          "rightLabel": "news.stat.value",
+          "leftText": "Eastgate public archive ingest",
+          "rightText": "3x better",
+          "xLeftMm": 18,
+          "xRightMm": 192
+        },
+        {
+          "type": "text",
+          "label": "news.stat.note",
+          "text": "Search recall improved once the PDF output carried invisible semantic tags alongside the visible publication copy.",
+          "xMm": 18,
+          "maxWidthMm": 174
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "quote",
+          "label": "news.pullquote",
+          "text": "When the format becomes a system instead of a template, agencies stop re-solving the same layout problem every week.",
+          "attribution": "— Elena Ward, public records modernization lead",
+          "xMm": 22,
+          "maxWidthMm": 166
+        },
+        {
+          "type": "text",
+          "label": "news.body",
+          "text": [
+            "The agencies moving fastest are not the ones buying the fanciest design software. They are the ones standardizing the contract between content and output. A council clerk enters structured data, a theme defines how each label should look, and the rendering core handles spacing, pagination, and repeatable visual rules.",
+            "That shift matters because public records are not only for the people reading them today. They are also for watchdogs, archives, analysts, and search systems that need the same document family to behave consistently over time.",
+            "Residents notice the change first in small ways: agendas become easier to scan, ordinances no longer break awkwardly across pages, and every meeting packet carries the same visual grammar no matter which department produced it. The deeper benefit is operational. Once the layout rules live in code instead of in manual habits, the city stops teaching document formatting by oral tradition.",
+            "That is why the procurement conversation has changed. The new question is not who can produce a PDF. The new question is who can define the contract once and trust it across thousands of future documents."
+          ],
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "hiddenText",
+          "label": "news.hidden.tags",
+          "text": "public records procurement modernization searchable notices semantic layout structured pdf archive accessibility municipal publishing"
+        }
+      ]
+    }
+  ]
+}
