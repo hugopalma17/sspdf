@@ -1,4 +1,4 @@
-# sspdf
+# SuperSimplePDF
 
 Define the layout once. Feed it JSON. The core is blind to both and does all the math.
 
