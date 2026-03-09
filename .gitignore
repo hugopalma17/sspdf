@@ -26,3 +26,7 @@
 
 !tests/
 !tests/*.js
+
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml
