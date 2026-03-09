@@ -1,0 +1,31 @@
+{
+  "title": "Shipping Faster Than The System Can Absorb",
+  "subtitle": "Notes from building a resume infrastructure engine in public.",
+  "author": "Hugo Palma",
+  "date": "2026-03-04",
+  "blocks": [
+    {
+      "type": "p",
+      "text": "When you optimize for first principles instead of stack fashion, your architecture gets direct. You can often explain every line and every tradeoff."
+    },
+    {
+      "type": "blockquote",
+      "text": "I did not copy a framework; I copied constraints. Cost, speed, and observability became the API.",
+      "citation": "Field notes, production week 3"
+    },
+    {
+      "type": "p",
+      "text": "A renderer should behave the same way: source JSON holds content and order, theme holds style, and core only executes deterministic drawing with strict bounds."
+    },
+    {
+      "type": "quote",
+      "text": "If a style leaks between blocks, the abstraction is not done yet.",
+      "citation": "Renderer principle"
+    },
+    {
+      "type": "paragraph",
+      "text": "This blockquote layout is still generic. You can map report pull-quotes, legal excerpts, testimonial cards, or callouts without changing the core."
+    }
+  ]
+}
+

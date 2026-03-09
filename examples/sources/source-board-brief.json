@@ -1,0 +1,258 @@
+{
+  "pageTemplates": {
+    "header": [
+      {
+        "type": "row",
+        "leftLabel": "brief.header.left",
+        "rightLabel": "brief.header.right",
+        "leftText": "Northwind Freight | Board Brief",
+        "rightText": "Q2 Operating Review",
+        "xLeftMm": 18,
+        "xRightMm": 192
+      }
+    ],
+    "headerHeightMm": 8,
+    "headerStartMm": 6,
+    "headerBypassMargins": false,
+    "footer": [
+      { "type": "divider", "label": "brief.footer.rule", "x1Mm": 18, "x2Mm": 192 },
+      {
+        "type": "row",
+        "leftLabel": "brief.footer.left",
+        "rightLabel": "brief.footer.right",
+        "leftText": "Confidential board materials",
+        "rightText": "Page {{page}}",
+        "xLeftMm": 18,
+        "xRightMm": 192
+      }
+    ],
+    "footerHeightMm": 8,
+    "footerStartMm": 284,
+    "footerBypassMargins": false
+  },
+  "sections": [
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "brief.eyebrow", "text": "Operations & Finance", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "text",
+          "label": "brief.title",
+          "text": "Board Brief: Network Reliability, Margin Recovery, and Capacity Planning",
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "text",
+          "label": "brief.subtitle",
+          "text": "Prepared for the March operating committee. This brief summarizes the current freight network position, major decisions requested from the board, and the risks that need active oversight over the next thirty days.",
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "row",
+          "leftLabel": "brief.meta.left",
+          "rightLabel": "brief.meta.right",
+          "leftText": "Prepared by Maya Ellison, COO",
+          "rightText": "March 7, 2026",
+          "xLeftMm": 18,
+          "xRightMm": 192
+        },
+        { "type": "divider", "label": "brief.divider", "x1Mm": 18, "x2Mm": 192 }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "brief.section.title", "text": "Executive Summary", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "text",
+          "label": "brief.body",
+          "text": [
+            "Network punctuality improved for the fifth straight week after the Memphis routing redesign, but service stability remains exposed to two large warehouse transitions scheduled to overlap in late March.",
+            "Margin recovery is ahead of plan due to fuel normalization and fewer emergency reroutes. However, current gains will flatten unless the board approves the deferred yard automation package and the long-haul trailer refresh this month.",
+            "The operating team is no longer asking the board to bless isolated fixes. It is asking for approval of a connected plan: protect service reliability, lock in margin gains, and remove the manual interventions that still make every disruption more expensive than it should be."
+          ],
+          "xMm": 18,
+          "maxWidthMm": 174
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "brief.section.title", "text": "Key Metrics", "keepWithNext": 6, "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "row",
+          "leftLabel": "brief.metric.label",
+          "rightLabel": "brief.metric.value",
+          "leftText": "On-time network departures",
+          "rightText": "96.8%",
+          "xLeftMm": 18,
+          "xRightMm": 192
+        },
+        { "type": "text", "label": "brief.metric.note", "text": "Up 3.1 points versus prior quarter after hub resequencing.", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "row",
+          "leftLabel": "brief.metric.label",
+          "rightLabel": "brief.metric.value",
+          "leftText": "Contribution margin",
+          "rightText": "+4.6 pts",
+          "xLeftMm": 18,
+          "xRightMm": 192
+        },
+        { "type": "text", "label": "brief.metric.note", "text": "Higher than plan due to fuel tailwinds and fewer spot-market moves.", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "row",
+          "leftLabel": "brief.metric.label",
+          "rightLabel": "brief.metric.value",
+          "leftText": "Capital awaiting approval",
+          "rightText": "$3.4M",
+          "xLeftMm": 18,
+          "xRightMm": 192
+        },
+        { "type": "text", "label": "brief.metric.note", "text": "Trailer refresh and yard automation package bundled for a single board vote.", "xMm": 18, "maxWidthMm": 174 }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "brief.section.title", "text": "Decision Matrix", "keepWithNext": 6, "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "brief.metric.label",
+              "rightLabel": "brief.metric.value",
+              "leftText": "Trailer refresh approval",
+              "rightText": "Required now",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            {
+              "type": "text",
+              "label": "brief.metric.note",
+              "text": "Delaying beyond March 18 would force peak-season capacity back onto higher-cost spot agreements.",
+              "xMm": 18,
+              "maxWidthMm": 174
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "brief.metric.label",
+              "rightLabel": "brief.metric.value",
+              "leftText": "Yard automation package",
+              "rightText": "Phase in April",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            {
+              "type": "text",
+              "label": "brief.metric.note",
+              "text": "Phasing preserves service continuity while removing the manual yard touches now driving overtime variance.",
+              "xMm": 18,
+              "maxWidthMm": 174
+            }
+          ]
+        },
+        {
+          "type": "block",
+          "keepTogether": true,
+          "spaceAfterMm": 1.5,
+          "children": [
+            {
+              "type": "row",
+              "leftLabel": "brief.metric.label",
+              "rightLabel": "brief.metric.value",
+              "leftText": "Regional lane expansion",
+              "rightText": "Hold",
+              "xLeftMm": 18,
+              "xRightMm": 192
+            },
+            {
+              "type": "text",
+              "label": "brief.metric.note",
+              "text": "Expansion remains strategically sound, but current utilization does not justify adding complexity before the transition window closes.",
+              "xMm": 18,
+              "maxWidthMm": 174
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "brief.section.title", "text": "Decisions Requested", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "bullet",
+          "label": "brief.item.text",
+          "markerLabel": "brief.item.marker",
+          "bullets": [
+            "Approve the trailer refresh package before March 18 to avoid peak-season spot leasing.",
+            "Authorize the Memphis yard automation scope with phased deployment beginning in April.",
+            "Maintain the current freeze on low-yield regional lane expansion until utilization returns above target."
+          ],
+          "xMm": 22,
+          "maxWidthMm": 170
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "brief.section.title", "text": "Next 30 Days", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "bullet",
+          "label": "brief.item.text",
+          "markerLabel": "brief.item.marker",
+          "bullets": [
+            "Complete the Memphis routing cutover and validate dispatch stability for two consecutive weeks.",
+            "Finalize labor rebid contingency plans with pre-approved overtime bands for each affected yard.",
+            "Stand up a temporary board dashboard with weekly variance, service, and capital deployment updates.",
+            "Freeze any non-essential network experiments that could mask the impact of the approved plan."
+          ],
+          "xMm": 22,
+          "maxWidthMm": 170
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "brief.section.title", "text": "Principal Risk", "xMm": 18, "maxWidthMm": 174 },
+        {
+          "type": "text",
+          "label": "brief.callout",
+          "text": "The largest near-term risk is not demand softness. It is execution overlap: two warehouse transitions, one labor rebid, and one capital decision are all landing inside the same three-week window.",
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "text",
+          "label": "brief.body",
+          "text": [
+            "If even one transition slips, the network will recover, but margin gains will be consumed by temporary linehaul workarounds and manual yard staffing. The operating team has built contingency plans, though they are materially more expensive than the approved path.",
+            "The board should read the current moment as a sequencing problem, not a strategy problem. The plan is directionally sound. The risk is concentrated in execution overlap, which is why timing discipline matters more than incremental optimization over the next month."
+          ],
+          "xMm": 18,
+          "maxWidthMm": 174
+        },
+        {
+          "type": "hiddenText",
+          "label": "brief.hidden.tags",
+          "text": "board brief executive memo operating review capacity plan margin recovery logistics network risk capital approval"
+        }
+      ]
+    }
+  ]
+}

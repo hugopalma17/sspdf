@@ -1,0 +1,109 @@
+{
+  "operations": [
+    { "type": "text", "label": "sinv.company", "text": "Palma Systems Ltd." },
+    { "type": "text", "label": "sinv.tagline", "text": "Design \u00b7 Engineering \u00b7 Automation" },
+
+    { "type": "text", "label": "sinv.number", "text": "Invoice #INV-2026-0087" },
+    { "type": "text", "label": "sinv.status", "text": "Payment Due" },
+
+    {
+      "type": "row",
+      "leftLabel": "sinv.meta.left",
+      "rightLabel": "sinv.meta.right",
+      "leftText": "Issued: March 1, 2026",
+      "rightText": "Due: March 15, 2026"
+    },
+
+    { "type": "divider", "label": "sinv.divider" },
+
+    { "type": "text", "label": "sinv.party.label", "text": "From" },
+    { "type": "text", "label": "sinv.party.name", "text": "Palma Systems Ltd." },
+    { "type": "text", "label": "sinv.party.detail", "text": "142 Innovation Drive, Suite 400" },
+    { "type": "text", "label": "sinv.party.detail", "text": "Lisbon, Portugal 1100-234" },
+    { "type": "text", "label": "sinv.party.detail", "text": "billing@palmasystems.example" },
+
+    { "type": "spacer", "mm": 3 },
+
+    { "type": "text", "label": "sinv.party.label", "text": "Bill To" },
+    { "type": "text", "label": "sinv.party.name", "text": "Meridian Manufacturing GmbH" },
+    { "type": "text", "label": "sinv.party.detail", "text": "Bahnhofstrasse 22" },
+    { "type": "text", "label": "sinv.party.detail", "text": "Berlin, Germany 10115" },
+    { "type": "text", "label": "sinv.party.detail", "text": "accounts@meridian-mfg.example" },
+
+    { "type": "divider", "label": "sinv.divider" },
+    { "type": "text", "label": "sinv.section.title", "text": "Items" },
+
+    {
+      "type": "row",
+      "leftLabel": "sinv.item.description",
+      "rightLabel": "sinv.item.total",
+      "leftText": "Platform Architecture & Design",
+      "rightText": "$4,800.00"
+    },
+    { "type": "text", "label": "sinv.item.meta", "text": "1 \u00d7 $4,800.00" },
+    { "type": "bullet", "label": "sinv.item.detail", "markerLabel": "sinv.item.marker", "text": "System architecture documentation and technical specifications" },
+    { "type": "bullet", "label": "sinv.item.detail", "markerLabel": "sinv.item.marker", "text": "API design review and integration planning" },
+    { "type": "bullet", "label": "sinv.item.detail", "markerLabel": "sinv.item.marker", "text": "Infrastructure provisioning and deployment pipeline" },
+    { "type": "spacer", "label": "sinv.item.gap" },
+
+    {
+      "type": "row",
+      "leftLabel": "sinv.item.description",
+      "rightLabel": "sinv.item.total",
+      "leftText": "Automation Workflow Implementation",
+      "rightText": "$3,200.00"
+    },
+    { "type": "text", "label": "sinv.item.meta", "text": "1 \u00d7 $3,200.00" },
+    { "type": "bullet", "label": "sinv.item.detail", "markerLabel": "sinv.item.marker", "text": "CI/CD pipeline with automated testing and staging deployments" },
+    { "type": "bullet", "label": "sinv.item.detail", "markerLabel": "sinv.item.marker", "text": "Operational runbook and team handoff session included" },
+    { "type": "spacer", "label": "sinv.item.gap" },
+
+    {
+      "type": "row",
+      "leftLabel": "sinv.item.description",
+      "rightLabel": "sinv.item.total",
+      "leftText": "Monitoring & Reporting Dashboard",
+      "rightText": "$1,400.00"
+    },
+    { "type": "text", "label": "sinv.item.meta", "text": "1 \u00d7 $1,400.00" },
+    { "type": "bullet", "label": "sinv.item.detail", "markerLabel": "sinv.item.marker", "text": "Real-time KPI dashboard with weekly automated exports" },
+
+    { "type": "divider", "label": "sinv.divider" },
+    { "type": "spacer", "mm": 3 },
+
+    {
+      "type": "row",
+      "leftLabel": "sinv.totals.label",
+      "rightLabel": "sinv.totals.value",
+      "leftText": "Subtotal",
+      "rightText": "$9,400.00"
+    },
+    {
+      "type": "row",
+      "leftLabel": "sinv.totals.label",
+      "rightLabel": "sinv.totals.value",
+      "leftText": "Discount (10%)",
+      "rightText": "-$940.00"
+    },
+    {
+      "type": "row",
+      "leftLabel": "sinv.totals.label",
+      "rightLabel": "sinv.totals.value",
+      "leftText": "Tax (23% VAT)",
+      "rightText": "$1,945.80"
+    },
+    {
+      "type": "row",
+      "leftLabel": "sinv.totals.finalLabel",
+      "rightLabel": "sinv.totals.finalValue",
+      "leftText": "Total Due",
+      "rightText": "$10,405.80"
+    },
+
+    { "type": "divider", "label": "sinv.divider" },
+
+    { "type": "text", "label": "sinv.payment", "text": "Payment: Wire transfer to IBAN PT50 0035 0000 0000 1234 5678 9 (BIC: CGDIPTPL)" },
+    { "type": "text", "label": "sinv.terms", "text": "Terms: Net 14 from invoice date. Late payments subject to 1.5% monthly interest. All amounts in USD." },
+    { "type": "text", "label": "sinv.terms", "text": "Thank you for your business." }
+  ]
+}

@@ -1,0 +1,303 @@
+{
+  "pageTemplates": {
+    "footer": [
+      { "type": "divider", "label": "news.footer.rule" },
+      {
+        "type": "row",
+        "leftLabel": "news.footer.left",
+        "rightLabel": "news.footer.right",
+        "leftText": "The Meridian Times | Builders & Systems Desk",
+        "rightText": "Page {{page}}"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "news.masthead", "text": "The Meridian Times" },
+        {
+          "type": "row",
+          "leftLabel": "news.edition.left",
+          "rightLabel": "news.edition.right",
+          "leftText": "Saturday, March 7, 2026",
+          "rightText": "Late City Edition"
+        },
+        { "type": "divider", "label": "news.rule.heavy" },
+        { "type": "text", "label": "news.kicker", "text": "People & Systems" },
+        {
+          "type": "text",
+          "label": "news.headline",
+          "text": "How Hugo Palma Turned a Job Search Into a Full-Stack Publishing and ATS War Story"
+        },
+        {
+          "type": "text",
+          "label": "news.deck",
+          "text": "From building his own website in late 2025 to reverse-engineering applicant tracking systems and exposing how easily fake hiring funnels can be built, Hugo Palma's journal reads like a compressed record of one engineer colliding with every brittle layer of modern software at once."
+        },
+        {
+          "type": "row",
+          "leftLabel": "news.byline",
+          "rightLabel": "news.timestamp",
+          "leftText": "By Civic Systems Staff",
+          "rightText": "Updated 7:05 PM"
+        },
+        { "type": "divider", "label": "news.rule.light" }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.body",
+          "text": [
+            "The arc starts with a familiar premise and then refuses to stay small. In December 2025, Hugo Palma was documenting why he built his own site, what stack he chose, and how he wanted the work to present itself. Within weeks, that simple act of publishing had widened into a chain of deeper engineering problems: layout contracts, chart systems, PDF rendering, resume generation, and finally the opaque logic of automated hiring.",
+            "What makes the journal compelling is not only the speed of output. It is the throughline. Each post pushes on the same question from a different angle: what happens when a system claims intelligence but is really only hiding rigid mechanics under cleaner language. Sometimes that system is a design tool, sometimes a PDF library, sometimes an ATS product, and sometimes an entire job market.",
+            "By March 2026, the narrative has moved far beyond personal notes. The journal becomes a running field report on how quickly a determined builder can move from zero web experience in one area to a working platform, a data pipeline, a renderer, and a public critique of the market those tools are meant to navigate."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "Inside the arc",
+          "keepWithNext": 3
+        },
+        {
+          "type": "bullet",
+          "label": "news.body",
+          "markerLabel": "news.brief.marker",
+          "bullets": [
+            "The early journal frames the website itself as a serious technical object rather than a portfolio skin, establishing publishing, structure, and presentation as core engineering concerns.",
+            "January shifts from shipping surfaces to shipping infrastructure: theme-aware chart work, a running fight with jsPDF, and the emergence of reusable rendering contracts instead of ad hoc layout hacks.",
+            "By late January and early March, the same builder mindset is aimed at ATS systems, where reverse-engineering, scoring logic, scraping, automation, and skepticism all converge into one larger critique."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "December: build the surface seriously",
+          "keepWithNext": 4
+        },
+        {
+          "type": "text",
+          "label": "news.body",
+          "text": [
+            "The late-December entries establish the first important pattern: Palma does not treat presentation as decoration. The site is not a wrapper added after the work exists. It is part of the work. The journal about why he built the website and how he approached the stack reads like the opening move in a larger claim that technical credibility also depends on how systems expose themselves.",
+            "That matters because it explains everything that follows. A person who obsesses over how the site is structured is already halfway to obsessing over how a chart should inherit theme rules, how a PDF should behave under deterministic layout constraints, and why output quality should not depend on manual last-minute patching.",
+            "This is the phase where the journal still looks like a builder's notebook. The tone is exploratory, but the direction is already visible. Publishing is becoming infrastructure.",
+            "From that point on, every new tool he touches gets judged by the same standard: can it behave like a system, or does it collapse back into improvisation the moment the content changes."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "January: architecture before syntax",
+          "keepWithNext": 4
+        },
+        {
+          "type": "text",
+          "label": "news.body",
+          "text": [
+            "The January posts sharpen the argument. A theme-aware Chart.js piece pushes the idea that visual output should inherit intent from architecture rather than from repetitive hand tuning. The phrase matters because it keeps reappearing in later form: define the rules once, then let the system execute them everywhere the same way.",
+            "That same month, the journal records a direct confrontation with jsPDF. The point is not simply that one library was annoying. The point is that low-level rendering constraints force a choice between brittle page-by-page tweaking and a cleaner rendering model that can survive content variability. Palma's work keeps choosing the second path.",
+            "This is where the newspaper-style PDF experiment belongs in the arc. It is not a novelty. It is evidence that the earlier theory about publishing contracts has become operational. The layout is no longer a screenshot chase. It is a geometry problem with declared numbers, labels, spacing rules, and a renderer that can be trusted as long as the core math holds.",
+            "Once a builder starts talking this way, the leap to resume generation and ATS-safe PDF output is no leap at all. It is the same war on a different front."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "January: reverse-engineering the ATS",
+          "keepWithNext": 5
+        },
+        {
+          "type": "text",
+          "label": "news.body",
+          "text": [
+            "Then the journal turns outward. What began as frustration with bad recommendations and rejection patterns becomes a structured investigation. Palma scraped 3,292 LinkedIn job postings, compared systems, tuned prompts, watched costs rise, and gradually discovered that the so-called intelligent layer of ATS behavior looked suspiciously like a keyword counter wearing AI marketing copy.",
+            "One of the most useful parts of the writing is that it does not arrive pretending to be a pristine academic study. He describes prompt changes, score caps, and rule tweaks with unusual bluntness, admitting where the process was guided by cost pressure and judgment rather than formal experimentation. That honesty strengthens the larger conclusion because the convergence still showed up.",
+            "The claim is not that every hiring model is fake. The claim is narrower and more damaging: given the same incentives, a builder trying to save inference cost can accidentally arrive at the same behavior as expensive enterprise hiring products. If the output converges because both sides are optimizing cost and lexical matching, the black box was never very magical.",
+            "The journal also insists on a distinction too many vendors blur on purpose. Convergence with an existing system is not the same as accuracy. A model can agree with a flawed pipeline and still miss the candidates, roles, or signals that actually matter.",
+            "That is where the arc starts to feel less like a technical diary and more like a public autopsy."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "When the system answered back",
+          "keepWithNext": 5
+        },
+        {
+          "type": "quote",
+          "label": "news.pullquote",
+          "text": "Two months of building before I applied to a single job. Zero web experience in December. By February I'd shipped a scraper, a scoring engine, a CMS, a PDF resume generator, and a browser automation framework.",
+          "attribution": "— Hugo Palma, journal entry of March 3, 2026"
+        },
+        {
+          "type": "text",
+          "label": "news.body",
+          "text": [
+            "The March 3 journal entry marks the turn from analysis to confrontation. After building the pipeline, Palma finally presses submit. The responses that come back are not reassuring. A WhatsApp bot asks for an audio interview on a Saturday morning. Premium resume services appear almost immediately after applications. Listings that looked like jobs resolve into lead-capture funnels and opaque data collection plays.",
+            "This matters because it shifts the critique beyond ATS scoring and into the labor market built around it. If a gate is optimized for throughput, it does not only admit candidates faster. It also admits every opportunist who realizes the same infrastructure can be used to collect resumes, sell services, or impersonate hiring intent.",
+            "The journal's anger is specific. The system automated filtering, applicants automated back, and scammers learned that the same cheap submission pipeline works just as well for extraction. Once the human signal is pushed several steps away from first contact, fraud and indifference become hard to distinguish.",
+            "Even the apparently legitimate moments are framed by automation. A real company can still route a candidate from keyword filter to bot interview to templated evaluation without any evidence that a person meaningfully assessed the work. The result is a market where the applicant cannot tell whether the problem is low fit, bad timing, a broken model, a fake listing, or a bot grading another bot-shaped process.",
+            "In journal form, that lands harder than a generic anti-ATS rant because it is tied to a specific builder who actually constructed the bypass and still could not prove there was a human on the other side."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "What the prototype proved",
+          "keepWithNext": 7
+        },
+        {
+          "type": "row",
+          "leftLabel": "news.stat.label",
+          "rightLabel": "news.stat.value",
+          "leftText": "LinkedIn postings analyzed",
+          "rightText": "3,292 jobs"
+        },
+        {
+          "type": "text",
+          "label": "news.stat.note",
+          "text": "The ATS investigation was based on a large scraped dataset rather than a handful of anecdotal listings."
+        },
+        {
+          "type": "row",
+          "leftLabel": "news.stat.label",
+          "rightLabel": "news.stat.value",
+          "leftText": "Semantic search index",
+          "rightText": "7,000 embeddings"
+        },
+        {
+          "type": "text",
+          "label": "news.stat.note",
+          "text": "The scam-demonstration platform used real vector search machinery rather than fake demo copy."
+        },
+        {
+          "type": "row",
+          "leftLabel": "news.stat.label",
+          "rightLabel": "news.stat.value",
+          "leftText": "Time to build a convincing funnel",
+          "rightText": "1 afternoon"
+        },
+        {
+          "type": "text",
+          "label": "news.stat.note",
+          "text": "The journal argues that the scariest part is not sophistication but how little time and money are required to fake legitimacy."
+        },
+        {
+          "type": "row",
+          "leftLabel": "news.stat.label",
+          "rightLabel": "news.stat.value",
+          "leftText": "Vector dimensions in the matcher",
+          "rightText": "1024-d"
+        },
+        {
+          "type": "text",
+          "label": "news.stat.note",
+          "text": "Palma's point was that the fake platform was not technically empty; it was technically real and institutionally fake."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "The one-afternoon scam mirror",
+          "keepWithNext": 4
+        },
+        {
+          "type": "text",
+          "label": "news.body",
+          "text": [
+            "One of the journal's strongest moves is that it refuses to stop at complaint. Palma built a working scam-shaped platform to prove how little stands between a plausible hiring product and a lead-harvesting machine. The system included parsing, OCR fallback, extraction, embeddings, search, charts, branding, and paywall behavior. The point was not that these ingredients are exotic. The point was that they are now ordinary.",
+            "That demonstration sharpens the whole arc. The builder who started by caring about site structure and rendering quality ends up showing that modern technical polish has become dangerously cheap. A dashboard can look funded. A matcher can feel intelligent. A flow can appear legitimate. None of that proves the surrounding institution is real.",
+            "In older software narratives, sophistication implied trustworthiness. The journal argues the reverse: the cheaper it becomes to assemble convincing interfaces around commodity models and commodity infrastructure, the less surface polish should matter as evidence.",
+            "That is why the writing keeps circling back to scrutiny. Slow down. Check the company. Do not assume that fluent product language means there is a real employer, a real reviewer, or a real decision process behind the upload box."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "Lessons from the journal",
+          "keepWithNext": 3
+        },
+        {
+          "type": "bullet",
+          "label": "news.body",
+          "markerLabel": "news.brief.marker",
+          "bullets": [
+            "A publishing system earns trust when layout is contract-driven and reproducible, not when a designer can manually rescue one good-looking page.",
+            "An ATS earns distrust when its intelligence collapses into lexical scoring the moment cost optimization and scale pressure enter the room.",
+            "A polished interface is no longer strong evidence of legitimacy because a single competent builder can now assemble that polish in an afternoon."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        {
+          "type": "text",
+          "label": "news.section.title",
+          "text": "Why the arc holds together",
+          "keepWithNext": 4
+        },
+        {
+          "type": "text",
+          "label": "news.body",
+          "text": [
+            "Seen from a distance, the journal can look eclectic: website notes, chart architecture, PDF battles, ATS scoring, browser automation, scam prototypes. Up close, it is remarkably consistent. Every post is really about the same engineering instinct: remove theater, expose the mechanism, and then rebuild the mechanism so it behaves predictably under pressure.",
+            "That is why a newspaper treatment fits the material so well. The story is not just that Palma shipped a lot of things quickly. It is that each thing revealed the next brittle layer. A website led to output systems. Output systems led to PDFs. PDFs led to resumes. Resumes led to ATS filters. ATS filters led to the market of fake opportunity surrounding them.",
+            "By the end, the real subject is not hiring alone. It is modern software legitimacy. Which systems are actually reasoning, which are merely formatting, and which are using formatting to impersonate reasoning.",
+            "That makes the journal worth reading even for people who never touch an ATS. It is a field guide for recognizing when a system is solving a problem and when it is only becoming more persuasive about hiding one."
+          ]
+        },
+        {
+          "type": "hiddenText",
+          "label": "news.hidden.tags",
+          "text": "hugo palma journal website stack chart js pdf rendering newspaper layout ats job search linkedin scraper semantic search embeddings automation fake jobs scam funnels publishing systems"
+        }
+      ]
+    }
+  ]
+}

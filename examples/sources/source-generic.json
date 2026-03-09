@@ -1,0 +1,62 @@
+{
+  "operations": [
+    {
+      "type": "text",
+      "label": "doc.title",
+      "text": "Invoice #INV-2026-0319"
+    },
+    {
+      "type": "text",
+      "label": "doc.subtitle",
+      "text": "Acme Data Systems | billing@acme.example | +1 (415) 555-0108"
+    },
+    {
+      "type": "divider",
+      "label": "divider.default"
+    },
+    {
+      "type": "text",
+      "label": "section.title",
+      "text": "Line Items"
+    },
+    {
+      "type": "row",
+      "leftLabel": "meta.left",
+      "rightLabel": "meta.right",
+      "leftText": "Data pipeline implementation",
+      "rightText": "$2,500.00"
+    },
+    {
+      "type": "bullet",
+      "label": "item.text",
+      "markerLabel": "item.marker",
+      "text": "Scope includes ingestion, transformation, quality checks, orchestration, and deployment."
+    },
+    {
+      "type": "bullet",
+      "label": "item.text",
+      "markerLabel": "item.marker",
+      "text": "Delivery includes technical documentation and runbooks for operations handoff."
+    },
+    {
+      "type": "spacer",
+      "label": "space.section"
+    },
+    {
+      "type": "divider",
+      "label": "divider.default"
+    },
+    {
+      "type": "row",
+      "leftLabel": "totals.label",
+      "rightLabel": "totals.value",
+      "leftText": "Total Due",
+      "rightText": "$2,500.00"
+    },
+    {
+      "type": "hiddenText",
+      "label": "footnote.hidden",
+      "text": "invoice meta tags client:acme po:PO-992 tax:service"
+    }
+  ]
+}

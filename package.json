@@ -1,0 +1,62 @@
+{
+  "name": "sspdf",
+  "version": "0.1.0",
+  "description": "Declarative PDF engine — define layout once, feed it JSON, get consistent PDFs",
+  "main": "index.js",
+  "author": "Hugo Palma",
+  "license": "Apache-2.0",
+  "keywords": [
+    "pdf",
+    "jspdf",
+    "renderer",
+    "declarative",
+    "layout",
+    "theme",
+    "resume",
+    "invoice",
+    "report",
+    "chart"
+  ],
+  "files": [
+    "core",
+    "fonts",
+    "index.js",
+    "cli.js",
+    "README.md"
+  ],
+  "bin": {
+    "sspdf": "cli.js"
+  },
+  "scripts": {
+    "test": "node tests/run-tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:hugopalma17/sspdf.git"
+  },
+  "homepage": "https://github.com/hugopalma17/sspdf#readme",
+  "bugs": {
+    "url": "https://github.com/hugopalma17/sspdf/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "jspdf": "^4.1.0"
+  },
+  "peerDependencies": {
+    "chart.js": ">=4.0.0",
+    "chartjs-node-canvas": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "chart.js": {
+      "optional": true
+    },
+    "chartjs-node-canvas": {
+      "optional": true
+    }
+  }
+}

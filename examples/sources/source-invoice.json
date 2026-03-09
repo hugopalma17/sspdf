@@ -1,0 +1,133 @@
+{
+  "operations": [
+    {
+      "type": "text",
+      "label": "invoice.headline",
+      "text": "Invoice"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.meta.left",
+      "rightLabel": "invoice.meta.right",
+      "leftText": "Invoice No.",
+      "rightText": "INV-2026-0042"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.meta.left",
+      "rightLabel": "invoice.meta.right",
+      "leftText": "Issue Date",
+      "rightText": "2026-03-03"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.meta.left",
+      "rightLabel": "invoice.meta.right",
+      "leftText": "Due Date",
+      "rightText": "2026-03-17"
+    },
+    {
+      "type": "spacer",
+      "label": "invoice.item.gap"
+    },
+    {
+      "type": "text",
+      "label": "invoice.party.from",
+      "text": "From: Palma Systems Ltd. | billing@palmasystems.example"
+    },
+    {
+      "type": "text",
+      "label": "invoice.party.to",
+      "text": "To: Acme Manufacturing Inc. | ap@acme.example"
+    },
+    {
+      "type": "divider",
+      "label": "invoice.divider"
+    },
+    {
+      "type": "text",
+      "label": "invoice.section.items",
+      "text": "Line Items"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.item.description",
+      "rightLabel": "invoice.item.total",
+      "leftText": "Automation Workflow Implementation",
+      "rightText": "$3,200.00"
+    },
+    {
+      "type": "text",
+      "label": "invoice.item.meta",
+      "text": "Qty: 1 × $3,200.00"
+    },
+    {
+      "type": "bullet",
+      "label": "invoice.item.detail",
+      "markerLabel": "invoice.item.marker",
+      "text": "Includes orchestration design, error handling, and deployment scripts."
+    },
+    {
+      "type": "bullet",
+      "label": "invoice.item.detail",
+      "markerLabel": "invoice.item.marker",
+      "text": "Delivery includes operational runbook and handoff session."
+    },
+    {
+      "type": "spacer",
+      "label": "invoice.item.gap"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.item.description",
+      "rightLabel": "invoice.item.total",
+      "leftText": "Monitoring and Reporting Dashboard",
+      "rightText": "$1,400.00"
+    },
+    {
+      "type": "text",
+      "label": "invoice.item.meta",
+      "text": "Qty: 1 × $1,400.00"
+    },
+    {
+      "type": "bullet",
+      "label": "invoice.item.detail",
+      "markerLabel": "invoice.item.marker",
+      "text": "KPI dashboard with weekly export automation."
+    },
+    {
+      "type": "spacer",
+      "label": "invoice.item.gap"
+    },
+    {
+      "type": "divider",
+      "label": "invoice.divider"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.totals.label",
+      "rightLabel": "invoice.totals.value",
+      "leftText": "Subtotal",
+      "rightText": "$4,600.00"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.totals.label",
+      "rightLabel": "invoice.totals.value",
+      "leftText": "Tax (10%)",
+      "rightText": "$460.00"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.totals.finalLabel",
+      "rightLabel": "invoice.totals.finalValue",
+      "leftText": "Total Due",
+      "rightText": "$5,060.00"
+    },
+    {
+      "type": "text",
+      "label": "invoice.notes",
+      "text": "Payment terms: net 14. Bank details available on request."
+    }
+  ]
+}
