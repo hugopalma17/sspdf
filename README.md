@@ -400,9 +400,9 @@ npx sspdf -s source.json -t theme.js -o output.pdf
 ## Constraints
 
 - A4 only
-- Server-side (Node.js) only
 - Single-line `row` cells — no multi-line column pairs
 - No `{{pages}}` total page count token
+- The `chart` plugin requires Node.js (`chartjs-node-canvas` is server-side only) — the core engine works in the browser if you use the jsPDF UMD build
 
 ---
 
