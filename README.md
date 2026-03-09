@@ -2,6 +2,9 @@
 
 [![npm](https://img.shields.io/npm/v/h17-sspdf)](https://www.npmjs.com/package/h17-sspdf)
 [![Socket Badge](https://socket.dev/api/badge/npm/package/h17-sspdf)](https://socket.dev/npm/package/h17-sspdf)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+[![Node](https://img.shields.io/node/v/h17-sspdf)](https://www.npmjs.com/package/h17-sspdf)
+[![Publish](https://github.com/hugopalma17/sspdf/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/hugopalma17/sspdf/actions/workflows/npm-publish.yml)
 
 Define the layout once. Feed it JSON. The core is blind to both and does all the math.
 
