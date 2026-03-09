@@ -10,7 +10,7 @@
  *   npm install chart.js chartjs-node-canvas
  *
  * Registration:
- *   const { registerPlugin, plugins } = require('sspdf');
+ *   const { registerPlugin, plugins } = require('h17-sspdf');
  *   registerPlugin('chart', plugins.chart);
  *
  * Operation format in source JSON:
