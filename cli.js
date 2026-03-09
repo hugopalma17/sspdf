@@ -84,7 +84,7 @@ function readSource(sourcePath) {
 function printHelp() {
   const themes = listBuiltInThemes();
   console.log(`
-jsPDF++ CLI — Render a source JSON + theme into a PDF.
+sspdf CLI — Render a source JSON + theme into a PDF.
 
 Usage:
   node cli.js --source <file.json> --theme <theme> --output <file.pdf>
