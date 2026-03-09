@@ -11,7 +11,7 @@ Source JSON  +  Theme  =  PDF
 ## Install
 
 ```bash
-npm install sspdf
+npm install h17-sspdf
 ```
 
 ## The problem it solves
@@ -33,7 +33,7 @@ Page breaks happen automatically when content reaches the bottom margin. Style r
 ## Quick start
 
 ```js
-const { renderDocument } = require('sspdf');
+const { renderDocument } = require('h17-sspdf');
 
 renderDocument({
   source: {
@@ -347,7 +347,7 @@ npm install chart.js chartjs-node-canvas
 ### Register
 
 ```js
-const { registerPlugin, plugins } = require('sspdf');
+const { registerPlugin, plugins } = require('h17-sspdf');
 registerPlugin('chart', plugins.chart);
 ```
 
