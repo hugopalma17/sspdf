@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { renderDocument } = require("./core/render-document");
+const { renderDocument, registerPlugin, plugins } = require("./index");
 
 const EXAMPLES_THEMES_DIR = path.join(__dirname, "examples", "themes");
 
@@ -105,7 +105,25 @@ Examples:
 `.trim());
 }
 
-function main() {
+function collectChartOps(obj) {
+  const charts = [];
+  if (!obj || typeof obj !== "object") return charts;
+  if (Array.isArray(obj)) {
+    obj.forEach((item) => charts.push(...collectChartOps(item)));
+  } else {
+    if (obj.type === "chart") charts.push(obj);
+    for (const key of ["operations", "sections", "content", "items", "children"]) {
+      if (Array.isArray(obj[key])) charts.push(...collectChartOps(obj[key]));
+    }
+    if (obj.pageTemplates) {
+      if (Array.isArray(obj.pageTemplates.header)) charts.push(...collectChartOps(obj.pageTemplates.header));
+      if (Array.isArray(obj.pageTemplates.footer)) charts.push(...collectChartOps(obj.pageTemplates.footer));
+    }
+  }
+  return charts;
+}
+
+async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
     printHelp();
@@ -121,15 +139,21 @@ function main() {
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 
+  const chartOps = collectChartOps(source);
+  if (chartOps.length > 0) {
+    registerPlugin("chart", plugins.chart);
+    for (const op of chartOps) {
+      await plugins.chart.preRender(op);
+    }
+  }
+
   const result = renderDocument({ source, theme, outputPath });
 
   console.log(`[OK] ${result.operationsCount} operations rendered`);
   console.log(`[OK] ${outputPath}`);
 }
 
-try {
-  main();
-} catch (err) {
+main().catch((err) => {
   console.error(`[ERROR] ${err.message}`);
   process.exit(1);
-}
+});

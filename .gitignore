@@ -24,6 +24,8 @@
 !examples/sources/*.json
 !examples/plugins/
 !examples/plugins/*.js
+!examples/output/
+!examples/output/*.pdf
 
 !tests/
 !tests/*.js

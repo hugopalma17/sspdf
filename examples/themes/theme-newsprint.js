@@ -202,6 +202,7 @@ module.exports = {
       paddingBottomMm: 1.2,
       paddingLeftMm: 4,
       marginTopPx: 4,
+      marginBottomPx: 8,
       leftBorder: {
         color: [161, 98, 7],
         widthMm: 1.4,

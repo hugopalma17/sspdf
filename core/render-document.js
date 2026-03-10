@@ -145,8 +145,13 @@ function installPageTemplates(core, theme, pageTemplates) {
     return;
   }
 
-  const headerBypassMargins = pageTemplates.headerBypassMargins !== false;
-  const footerBypassMargins = pageTemplates.footerBypassMargins !== false;
+  const layout = theme.layout || {};
+  const headerBypassMargins = pageTemplates.headerBypassMargins !== undefined
+    ? pageTemplates.headerBypassMargins !== false
+    : layout.headerBypassMargins !== false;
+  const footerBypassMargins = pageTemplates.footerBypassMargins !== undefined
+    ? pageTemplates.footerBypassMargins !== false
+    : layout.footerBypassMargins !== false;
 
   const renderTemplatesForCurrentPage = () => {
     if (headerOps.length > 0) {
