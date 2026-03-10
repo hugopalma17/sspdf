@@ -860,7 +860,10 @@ function estimateOperationHeight(ctx) {
       ? resolveLabelStyle(theme, operation.headerLabel, operation, index, "headerLabel")
       : null;
     const margins = getStyleMarginsMm(cellStyle);
-    const cellPad = Number(cellStyle.cellPaddingMm) || 0;
+    const effectiveCellPadding = operation.cellPaddingMm !== undefined
+      ? Number(operation.cellPaddingMm)
+      : Number(cellStyle.cellPaddingMm) || 0;
+    const cellPad = effectiveCellPadding;
     const headerPad = headerStyle ? (Number(headerStyle.cellPaddingMm) || 0) : cellPad;
     const x = operation.xMm !== undefined ? operation.xMm : core.marginLeftMm;
     const maxWidth = operation.maxWidthMm !== undefined

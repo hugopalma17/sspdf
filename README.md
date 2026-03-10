@@ -344,10 +344,12 @@ Then use `fontFamily: 'Inter'` in any label.
 
 Renders any Chart.js configuration to a PNG and embeds it in the PDF.
 
-### Install peer dependencies
+### Requirements
+
+The chart plugin requires the `canvas` npm package (native C++ addon). Chart.js and chartjs-node-canvas are vendored and ship with the engine.
 
 ```bash
-npm install chart.js chartjs-node-canvas
+npm install canvas
 ```
 
 ### Register
@@ -408,7 +410,7 @@ npx sspdf -s source.json -t theme.js -o output.pdf
 - A4 only
 - Single-line `row` cells, no multi-line column pairs
 - No `{{pages}}` total page count token
-- The `chart` plugin requires the `canvas` npm package (native C++ addon, `npm install canvas`). The core engine has zero runtime dependencies.
+- The `canvas` npm package (native C++ addon) is the only runtime dependency, required for server-side chart rendering.
 
 ---
 

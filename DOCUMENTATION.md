@@ -1376,13 +1376,13 @@ A plugin is an object with:
 
 The built-in chart plugin renders Chart.js charts server-side via `chartjs-node-canvas` and embeds the result as a PNG image.
 
-### Peer dependencies
+### Requirements
+
+The chart plugin requires the `canvas` npm package (native C++ addon). Chart.js and chartjs-node-canvas are vendored and ship with the engine.
 
 ```bash
-npm install chart.js chartjs-node-canvas
+npm install canvas
 ```
-
-These are peer dependencies, not installed automatically with the engine.
 
 ### Registration
 
