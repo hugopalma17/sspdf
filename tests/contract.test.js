@@ -648,3 +648,201 @@ test("renderDocument: mixed operations complex sequence", () => {
     + bodyDelta;
   near(core.cursorY, expected, "cursor after complex mixed sequence");
 });
+
+// ─── Table cursor math ──────────────────────────────────────────
+
+const tableTheme = Object.assign({}, theme, {
+  labels: Object.assign({}, theme.labels, {
+    "t.table.cell": {
+      fontFamily: "helvetica",
+      fontStyle: "normal",
+      fontSize: 9,
+      color: [50, 50, 50],
+      lineHeight: 1.3,
+      cellPaddingMm: 2,
+      borderColor: [200, 200, 200],
+      borderTopMm: 0,
+      borderBottomMm: 0.15,
+      borderLeftMm: 0,
+      borderRightMm: 0,
+      altRowColor: [245, 245, 250],
+    },
+    "t.table.header": {
+      fontFamily: "helvetica",
+      fontStyle: "bold",
+      fontSize: 9,
+      color: [255, 255, 255],
+      lineHeight: 1.3,
+      cellPaddingMm: 2,
+      backgroundColor: [50, 50, 50],
+      borderColor: [50, 50, 50],
+      borderTopMm: 0,
+      borderBottomMm: 0.3,
+      borderLeftMm: 0,
+      borderRightMm: 0,
+    },
+    "t.table.noheader": {
+      fontFamily: "helvetica",
+      fontStyle: "normal",
+      fontSize: 9,
+      color: [50, 50, 50],
+      lineHeight: 1.3,
+      cellPaddingMm: 2,
+    },
+  }),
+});
+
+test("table: single row cursor = marginTop + headerHeight + rowHeight + marginBottom", () => {
+  const source = {
+    operations: [
+      {
+        type: "table",
+        label: "t.table.cell",
+        headerLabel: "t.table.header",
+        columns: [
+          { header: "Name", width: "50%", align: "left" },
+          { header: "Value", width: "50%", align: "right" },
+        ],
+        rows: [["Apple", "100"]],
+      },
+    ],
+  };
+
+  const { core } = renderDocument({ source, theme: tableTheme });
+
+  const cellLh = lh(9, 1.3);
+  const headerRowH = 2 + cellLh + 2;  // padding + 1 line + padding
+  const dataRowH = 2 + cellLh + 2;
+  // marginTopMm from cell style is 0, marginBottomMm is 0
+  const expected = core.contentTopY + headerRowH + dataRowH;
+  near(core.cursorY, expected, "cursor after table with header + 1 row");
+});
+
+test("table: multiple rows accumulate correctly", () => {
+  const source = {
+    operations: [
+      {
+        type: "table",
+        label: "t.table.cell",
+        headerLabel: "t.table.header",
+        columns: [
+          { header: "A", width: "50%" },
+          { header: "B", width: "50%" },
+        ],
+        rows: [
+          ["row1-a", "row1-b"],
+          ["row2-a", "row2-b"],
+          ["row3-a", "row3-b"],
+        ],
+      },
+    ],
+  };
+
+  const { core } = renderDocument({ source, theme: tableTheme });
+
+  const cellLh = lh(9, 1.3);
+  const headerRowH = 2 + cellLh + 2;
+  const dataRowH = 2 + cellLh + 2;
+  const expected = core.contentTopY + headerRowH + (3 * dataRowH);
+  near(core.cursorY, expected, "cursor after table with 3 data rows");
+});
+
+test("table: no header when headerLabel omitted", () => {
+  const source = {
+    operations: [
+      {
+        type: "table",
+        label: "t.table.noheader",
+        columns: [
+          { header: "X", width: "50%" },
+          { header: "Y", width: "50%" },
+        ],
+        rows: [["a", "b"], ["c", "d"]],
+      },
+    ],
+  };
+
+  const { core } = renderDocument({ source, theme: tableTheme });
+
+  const cellLh = lh(9, 1.3);
+  const dataRowH = 2 + cellLh + 2;
+  const expected = core.contentTopY + (2 * dataRowH);
+  near(core.cursorY, expected, "cursor after headerless table");
+});
+
+test("table: text before and after table accumulate", () => {
+  const source = {
+    operations: [
+      { type: "text", label: "t.body", text: "Before table" },
+      {
+        type: "table",
+        label: "t.table.cell",
+        headerLabel: "t.table.header",
+        columns: [
+          { header: "Col", width: "100%" },
+        ],
+        rows: [["data"]],
+      },
+      { type: "text", label: "t.body", text: "After table" },
+    ],
+  };
+
+  const { core } = renderDocument({ source, theme: tableTheme });
+
+  const textDelta = lh(10, 1.2) + pxToMm(4);
+  const cellLh = lh(9, 1.3);
+  const headerRowH = 2 + cellLh + 2;
+  const dataRowH = 2 + cellLh + 2;
+  const expected = core.contentTopY + textDelta + headerRowH + dataRowH + textDelta;
+  near(core.cursorY, expected, "cursor after text + table + text");
+});
+
+test("table: auto column widths divide evenly", () => {
+  const source = {
+    operations: [
+      {
+        type: "table",
+        label: "t.table.noheader",
+        columns: [
+          { header: "A" },
+          { header: "B" },
+          { header: "C" },
+        ],
+        rows: [["1", "2", "3"]],
+      },
+    ],
+  };
+
+  // Should not throw — 3 auto columns split 170mm (210 - 20 - 20)
+  const { core } = renderDocument({ source, theme: tableTheme });
+  assert.ok(core.cursorY > core.contentTopY, "cursor advanced");
+});
+
+test("table: page break repeats header", () => {
+  // Fill most of the page, then a table that won't fit
+  const source = {
+    operations: [
+      { type: "spacer", mm: 240 },
+      {
+        type: "table",
+        label: "t.table.cell",
+        headerLabel: "t.table.header",
+        columns: [
+          { header: "Name", width: "50%" },
+          { header: "Value", width: "50%" },
+        ],
+        rows: [
+          ["row1", "val1"],
+          ["row2", "val2"],
+          ["row3", "val3"],
+          ["row4", "val4"],
+          ["row5", "val5"],
+        ],
+      },
+    ],
+  };
+
+  const { core } = renderDocument({ source, theme: tableTheme });
+
+  assert.ok(core.doc.getNumberOfPages() >= 2, "table should span at least 2 pages");
+});

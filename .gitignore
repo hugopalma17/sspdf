@@ -28,6 +28,10 @@
 !tests/
 !tests/*.js
 
+!docs/
+!docs/specs/
+!docs/specs/*.md
+
 !.github/
 !.github/workflows/
 !.github/workflows/*.yml

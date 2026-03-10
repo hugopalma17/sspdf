@@ -2,7 +2,7 @@ const { hasPlugin } = require("./plugin-registry");
 
 const OPERATION_TYPES = new Set([
   "text", "row", "bullet", "divider", "spacer", "hiddenText",
-  "block", "group", "section", "quote",
+  "block", "group", "section", "quote", "table",
 ]);
 
 function validateSource(source) {
@@ -83,6 +83,17 @@ function validateOperation(op, path) {
     return;
   }
 
+  if (type === "table") {
+    if (!op.label) throw new Error(`${path}: table requires label`);
+    if (!Array.isArray(op.columns) || op.columns.length === 0) {
+      throw new Error(`${path}: table requires non-empty columns array`);
+    }
+    if (!Array.isArray(op.rows)) {
+      throw new Error(`${path}: table requires rows array`);
+    }
+    return;
+  }
+
   if (type === "block" || type === "group" || type === "section") {
     const children = op.children || op.content || op.items || op.sections;
     if (!Array.isArray(children)) {
@@ -136,6 +147,7 @@ function collectLabels(node, missing, themeLabels) {
   if (node.leftLabel && !themeLabels.has(node.leftLabel)) missing.push(node.leftLabel);
   if (node.rightLabel && !themeLabels.has(node.rightLabel)) missing.push(node.rightLabel);
   if (node.markerLabel && !themeLabels.has(node.markerLabel)) missing.push(node.markerLabel);
+  if (node.headerLabel && !themeLabels.has(node.headerLabel)) missing.push(node.headerLabel);
   if (node.spaceAfterLabel && !themeLabels.has(node.spaceAfterLabel)) missing.push(node.spaceAfterLabel);
 
   if (node.type === "quote" && node.attribution) {

@@ -328,6 +328,7 @@ function isOperationType(type) {
     || type === "divider"
     || type === "spacer"
     || type === "hiddenText"
+    || type === "table"
     || hasPlugin(type);
 }
 
@@ -666,6 +667,45 @@ function executeOperation(ctx) {
     return;
   }
 
+  if (operation.type === "table") {
+    const cellStyle = resolveLabelStyle(theme, operation.label, operation, index);
+    const headerStyle = operation.headerLabel
+      ? resolveLabelStyle(theme, operation.headerLabel, operation, index, "headerLabel")
+      : null;
+    const bounds = getHorizontalBounds(core, templateBypassMargins);
+    const x = operation.xMm !== undefined ? operation.xMm : bounds.left;
+    const maxWidth = operation.maxWidthMm !== undefined
+      ? operation.maxWidthMm
+      : bounds.right - x;
+
+    // Merge source-level style overrides onto cell style
+    const mergedCellStyle = Object.assign({}, cellStyle);
+    if (operation.altRowColor !== undefined) mergedCellStyle.altRowColor = operation.altRowColor;
+    if (operation.cellPaddingMm !== undefined) mergedCellStyle.cellPaddingMm = operation.cellPaddingMm;
+    if (operation.borderColor !== undefined) mergedCellStyle.borderColor = operation.borderColor;
+    if (operation.borderTopMm !== undefined) mergedCellStyle.borderTopMm = operation.borderTopMm;
+    if (operation.borderBottomMm !== undefined) mergedCellStyle.borderBottomMm = operation.borderBottomMm;
+    if (operation.borderLeftMm !== undefined) mergedCellStyle.borderLeftMm = operation.borderLeftMm;
+    if (operation.borderRightMm !== undefined) mergedCellStyle.borderRightMm = operation.borderRightMm;
+
+    const columns = resolveTableColumns(operation.columns, maxWidth);
+    const headers = operation.headerLabel
+      ? (operation.columns || []).map(function (col) { return col.header || ""; })
+      : null;
+
+    core.drawTable({
+      columns,
+      headers,
+      rows: operation.rows || [],
+      cellStyle: mergedCellStyle,
+      headerStyle,
+      x,
+      maxWidth,
+      allowPageBreak: !templateMode,
+    });
+    return;
+  }
+
   const plugin = getPlugin(operation.type);
   if (plugin) {
     const bounds = getHorizontalBounds(core, templateBypassMargins);
@@ -809,6 +849,44 @@ function estimateOperationHeight(ctx) {
     return 0;
   }
 
+  if (operation.type === "table") {
+    const cellStyle = resolveLabelStyle(theme, operation.label, operation, index);
+    const headerStyle = operation.headerLabel
+      ? resolveLabelStyle(theme, operation.headerLabel, operation, index, "headerLabel")
+      : null;
+    const margins = getStyleMarginsMm(cellStyle);
+    const cellPad = Number(cellStyle.cellPaddingMm) || 0;
+    const headerPad = headerStyle ? (Number(headerStyle.cellPaddingMm) || 0) : cellPad;
+    const x = operation.xMm !== undefined ? operation.xMm : core.marginLeftMm;
+    const maxWidth = operation.maxWidthMm !== undefined
+      ? operation.maxWidthMm
+      : core.pageWidth - core.marginRightMm - x;
+    const columns = resolveTableColumns(operation.columns, maxWidth);
+    const colX = [];
+    let cx = x;
+    for (let c = 0; c < columns.length; c++) {
+      colX.push(cx);
+      cx += columns[c].widthMm;
+    }
+
+    let total = margins.top;
+
+    // Header height
+    if (headerStyle && operation.headerLabel) {
+      const headers = (operation.columns || []).map(function (col) { return col.header || ""; });
+      total += core._measureTableRowHeight(headers, columns, colX, headerStyle, headerPad);
+    }
+
+    // Data row heights
+    const rows = operation.rows || [];
+    for (let r = 0; r < rows.length; r++) {
+      total += core._measureTableRowHeight(rows[r], columns, colX, cellStyle, cellPad);
+    }
+
+    total += margins.bottom;
+    return total;
+  }
+
   const plugin = getPlugin(operation.type);
   if (plugin) {
     if (typeof plugin.estimateHeight === "function") {
@@ -924,6 +1002,53 @@ function stripContainerProps(style) {
   delete s.borderRadiusMm;
   delete s.leftBorder;
   return s;
+}
+
+/**
+ * Resolve column width definitions to absolute mm values.
+ * Accepts: "30%" (percentage of available width), 35 (fixed mm), or undefined (auto-divide).
+ * @param {Array<object>} columns
+ * @param {number} availableWidth
+ * @returns {Array<{widthMm: number, align: string}>}
+ */
+function resolveTableColumns(columns, availableWidth) {
+  if (!Array.isArray(columns) || columns.length === 0) {
+    throw new Error("Table operation requires a non-empty columns array");
+  }
+
+  let usedWidth = 0;
+  let autoCount = 0;
+  const resolved = [];
+
+  for (let i = 0; i < columns.length; i++) {
+    const col = columns[i];
+    const align = col.align || "left";
+
+    if (col.width === undefined || col.width === null) {
+      resolved.push({ widthMm: null, align });
+      autoCount++;
+    } else if (typeof col.width === "string" && col.width.endsWith("%")) {
+      const pct = parseFloat(col.width) / 100;
+      const w = pct * availableWidth;
+      resolved.push({ widthMm: w, align });
+      usedWidth += w;
+    } else {
+      const w = Number(col.width) || 0;
+      resolved.push({ widthMm: w, align });
+      usedWidth += w;
+    }
+  }
+
+  if (autoCount > 0) {
+    const autoWidth = (availableWidth - usedWidth) / autoCount;
+    for (let i = 0; i < resolved.length; i++) {
+      if (resolved[i].widthMm === null) {
+        resolved[i].widthMm = autoWidth;
+      }
+    }
+  }
+
+  return resolved;
 }
 
 module.exports = {
