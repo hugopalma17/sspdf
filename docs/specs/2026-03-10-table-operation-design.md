@@ -1,11 +1,11 @@
-# Table Operation — Design Spec
+# Table Operation: Design Spec
 
 **Branch:** `beta/table-operation`
 **Date:** 2026-03-10
 
 ## Summary
 
-Add `table` as a built-in operation type in sspdf. Native vector rendering — `doc.text()`, `doc.rect()`, `doc.line()` — no images, no external deps. Sits alongside `text`, `row`, `bullet`, `divider` as a first-class primitive.
+Add `table` as a built-in operation type in sspdf. Native vector rendering: `doc.text()`, `doc.rect()`, `doc.line()`, no images, no external deps. Sits alongside `text`, `row`, `bullet`, `divider` as a first-class primitive.
 
 Also: auto-register the `chart` plugin and fix documentation that incorrectly describes it as manual opt-in.
 
@@ -115,11 +115,11 @@ These join the existing label property set (fontFamily, fontSize, color, lineHei
 Engine defaults  →  Theme label  →  Source JSON override
 ```
 
-1. **Engine defaults** — built into `drawTable` as fallbacks (cellPaddingMm: 1.5, borders: 0, altRowColor: null)
-2. **Theme label** — full control, composed from shared const files
-3. **Source override** — operation JSON can override table-specific properties per-instance
+1. **Engine defaults**: built into `drawTable` as fallbacks (cellPaddingMm: 1.5, borders: 0, altRowColor: null)
+2. **Theme label**: full control, composed from shared const files
+3. **Source override**: operation JSON can override table-specific properties per-instance
 
-## Theme Authoring — Shared Constants Pattern
+## Theme Authoring - Shared Constants Pattern
 
 Theme authors create a `table.js` const file with base table styles:
 
@@ -163,25 +163,25 @@ The engine sees fully resolved labels. The const file is a theme-author convenie
 
 ## Engine Implementation
 
-### pdf-core.js — `drawTable` method
+### pdf-core.js - `drawTable` method
 
 New method alongside `drawText`, `drawRow`, `drawBullet`, `drawDivider`, `drawImage`.
 
 ```
 drawTable(payload)
-  payload.columns       — array of { widthMm, align }  (resolved, in mm)
-  payload.headers       — array of header strings, or null
-  payload.rows          — array of string arrays
-  payload.cellStyle     — resolved label style for data cells
-  payload.headerStyle   — resolved label style for header cells (or null)
-  payload.x             — left edge x position
-  payload.maxWidth      — total available width
-  payload.allowPageBreak — whether to paginate (false in templates)
+  payload.columns       - array of { widthMm, align }  (resolved, in mm)
+  payload.headers       - array of header strings, or null
+  payload.rows          - array of string arrays
+  payload.cellStyle     - resolved label style for data cells
+  payload.headerStyle   - resolved label style for header cells (or null)
+  payload.x             - left edge x position
+  payload.maxWidth      - total available width
+  payload.allowPageBreak - whether to paginate (false in templates)
 ```
 
 #### Rendering algorithm
 
-1. **Resolve column widths** — `"%"` → mm from maxWidth; fixed mm stays; unspecified columns split remaining space equally.
+1. **Resolve column widths**: `"%"` → mm from maxWidth; fixed mm stays; unspecified columns split remaining space equally.
 
 2. **Draw header row** (if headerStyle and headers provided):
    - For each cell: `measureWrappedLines(text, columnWidth - 2*padding, headerStyle)`
@@ -189,9 +189,9 @@ drawTable(payload)
    - For each cell: draw background rect, draw text, draw per-edge borders
    - Advance cursor by row height
 
-3. **Draw data rows** — for each row:
+3. **Draw data rows**: for each row:
    - Measure all cells → compute row height (max cell height + padding)
-   - `ensureSpace(rowHeight)` — if page breaks, re-draw header row first
+   - `ensureSpace(rowHeight)`, if page breaks, re-draw header row first
    - Background: even rows use `backgroundColor`, odd rows use `altRowColor` (if set, else same)
    - For each cell: draw background rect, draw text at column position with alignment, draw per-edge borders
    - Advance cursor
@@ -200,9 +200,9 @@ drawTable(payload)
 
 ### render-document.js changes
 
-1. **`isOperationType()`** — add `"table"` to the built-in type set.
+1. **`isOperationType()`**: add `"table"` to the built-in type set.
 
-2. **`executeOperation()`** — add table case:
+2. **`executeOperation()`**: add table case:
    - Resolve `label` and `headerLabel` styles via `resolveLabelStyle()`
    - Get horizontal bounds
    - Resolve `xMm`/`maxWidthMm` overrides
@@ -210,7 +210,7 @@ drawTable(payload)
    - Extract header texts from `columns[].header`
    - Call `core.drawTable(...)` with resolved data
 
-3. **`estimateOperationHeight()`** — add table case:
+3. **`estimateOperationHeight()`**: add table case:
    - Header height + sum of data row heights
    - Each row: `max(cellLineCount) * lineHeightMm + paddingTop + paddingBottom`
    - Uses `measureWrappedLines` per cell for wrapped height estimation
@@ -248,7 +248,7 @@ Separate from table but included in this beta:
 | `core/render-document.js` | Add `"table"` to built-in types, execution, height estimation. Auto-register chart plugin. |
 | `core/validate.js` | Add table validation (columns required, rows required, label required) |
 | `core/plugin-registry.js` | Add `"table"` to `BUILT_IN_TYPES` set |
-| `examples/themes/table.js` | New file — shared table style constants |
+| `examples/themes/table.js` | New file - shared table style constants |
 | `examples/themes/theme-corporate.js` | Add table labels using shared constants |
 | `examples/sources/` | New example source JSON with table operations |
 | `examples/generate-*.js` | New example generation script |
@@ -259,8 +259,8 @@ Separate from table but included in this beta:
 
 ## Not in Scope
 
-- `altLabel` (full separate label for alt rows) — `altRowColor` covers 95% of cases, add later if needed
-- Per-cell style overrides — all cells in a row share the row's label style
-- Column spanning / row spanning — not needed for financial tables
+- `altLabel` (full separate label for alt rows) - `altRowColor` covers 95% of cases, add later if needed
+- Per-cell style overrides - all cells in a row share the row's label style
+- Column spanning / row spanning - not needed for financial tables
 - Nested tables
 - Images in cells

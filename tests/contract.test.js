@@ -813,7 +813,7 @@ test("table: auto column widths divide evenly", () => {
     ],
   };
 
-  // Should not throw — 3 auto columns split 170mm (210 - 20 - 20)
+  // Should not throw - 3 auto columns split 170mm (210 - 20 - 20)
   const { core } = renderDocument({ source, theme: tableTheme });
   assert.ok(core.cursorY > core.contentTopY, "cursor advanced");
 });

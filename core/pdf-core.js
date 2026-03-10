@@ -1,8 +1,8 @@
 const fs = require("fs");
-const { jsPDF } = require("jspdf");
+const { jsPDF } = require("../vendor/jspdf/jspdf.node");
 const { pxToMm, ptToMm, resolveLineHeightMm } = require("./units");
 
-// Style math helpers — shared between core rendering and height estimation.
+// Style math helpers, shared between core rendering and height estimation.
 
 function getMarginTopMm(style) {
   if (style.marginTopMm !== undefined) {
@@ -130,7 +130,7 @@ class PDFCore {
       subject: meta.subject || "",
       author: meta.author || "Hugo Palma",
       keywords: meta.keywords || "",
-      creator: "SuperSimplePDF (github.com/hugopalma17/sspdf) — built on jsPDF",
+      creator: "SuperSimplePDF (github.com/hugopalma17/sspdf) - built on jsPDF",
     });
 
     this.paintBackground();
@@ -630,12 +630,12 @@ class PDFCore {
 
   /**
    * Draw a table with header row, data rows, per-edge borders, and alt row shading.
-   * All values derived from style properties — no hardcoded constants.
+   * All values derived from style properties, no hardcoded constants.
    *
    * @param {object} payload
    * @param {Array<{widthMm: number, align: string}>} payload.columns  Resolved column definitions
    * @param {string[]|null} payload.headers  Header cell texts, or null for no header row
-   * @param {string[][]} payload.rows  Data rows — each row is an array of cell strings
+   * @param {string[][]} payload.rows  Data rows, each row is an array of cell strings
    * @param {object} payload.cellStyle  Resolved style for data cells
    * @param {object|null} payload.headerStyle  Resolved style for header cells
    * @param {number} [payload.x]  Left edge of table
@@ -694,7 +694,7 @@ class PDFCore {
       const rowData = rows[r];
       const rowHeight = this._measureTableRowHeight(rowData, columns, colX, cellStyle, cellPad);
 
-      // Page break check — re-draw header after break
+      // Page break check - re-draw header after break
       if (allowPageBreak && this.cursorY + rowHeight > this.contentBottomY) {
         this.addPage();
         if (headerStyle && headers) {

@@ -10,7 +10,7 @@
  *   - x, y: position (y is baseline of adjacent text)
  *   - color: [r, g, b] array
  *   - size: scale factor (default 1.0)
- *   - pt: font size in points — shape centers at half text height above baseline
+ *   - pt: font size in points, shape centers at half text height above baseline
  */
 
 'use strict';

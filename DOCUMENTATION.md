@@ -160,7 +160,7 @@ Used by `divider` operations. Does not use font properties.
 |---|---|---|
 | `color` | [R,G,B] | Line color |
 | `lineWidth` | number | Line thickness in mm |
-| `opacity` | number | 0–1 stroke opacity |
+| `opacity` | number | 0-1 stroke opacity |
 | `dashPattern` | number[] | Dash pattern (e.g., `[2, 1]`) |
 | `marginTopMm` | number | Space above |
 | `marginBottomMm` | number | Space below |
@@ -179,6 +179,32 @@ The marker label controls the bullet character's appearance.
 | `color` | [R,G,B] | Marker color |
 | `lineHeight` | number | Marker line height multiplier |
 | `marker` | string | The marker character (e.g., `"-"`) |
+
+#### Table label properties
+
+Used by `table` operations. The `label` controls data cell styling, `headerLabel` controls header cell styling.
+
+| Property | Type | Description |
+|---|---|---|
+| `fontFamily` | string | Cell text font |
+| `fontStyle` | string | Cell text font style |
+| `fontSize` | number | Cell text font size in points |
+| `color` | [R,G,B] | Cell text color |
+| `lineHeight` | number | Cell text line height multiplier |
+| `cellPaddingMm` | number | Padding inside each cell in mm |
+| `backgroundColor` | [R,G,B] | Cell/header background color (even rows use this, odd rows use `altRowColor`) |
+| `altRowColor` | [R,G,B] | Background color for odd data rows (alternating row shading) |
+| `borderColor` | [R,G,B] | Default border color for all edges |
+| `borderTopMm` | number | Top border width in mm |
+| `borderBottomMm` | number | Bottom border width in mm |
+| `borderLeftMm` | number | Left border width in mm |
+| `borderRightMm` | number | Right border width in mm |
+| `borderTopColor` | [R,G,B] | Override border color for top edge |
+| `borderBottomColor` | [R,G,B] | Override border color for bottom edge |
+| `borderLeftColor` | [R,G,B] | Override border color for left edge |
+| `borderRightColor` | [R,G,B] | Override border color for right edge |
+
+The header label typically sets `backgroundColor` for the header row background and `color` for white text on dark backgrounds.
 
 #### Spacer label properties
 
@@ -405,6 +431,56 @@ Renders a horizontal line.
 |---|---|---|---|
 | `label` | yes | string | Theme label (must define `lineWidth` and `color`) |
 
+#### `table`
+
+Renders a data table with optional header row, per-column alignment, alternating row colors, and per-edge borders. Pure vector rendering, no images.
+
+```json
+{
+  "type": "table",
+  "label": "invoice.table.cell",
+  "headerLabel": "invoice.table.header",
+  "columns": [
+    { "header": "Description",  "width": "45%", "align": "left" },
+    { "header": "Qty",          "width": "10%", "align": "right" },
+    { "header": "Unit Price",   "width": "20%", "align": "right" },
+    { "header": "Amount",       "width": "25%", "align": "right" }
+  ],
+  "rows": [
+    ["Automation Workflow", "1", "$3,200.00", "$3,200.00"],
+    ["Monitoring Dashboard", "1", "$1,400.00", "$1,400.00"]
+  ]
+}
+```
+
+| Field | Required | Type | Description |
+|---|---|---|---|
+| `label` | yes | string | Theme label for data cells |
+| `headerLabel` | no | string | Theme label for the header row. If omitted, no header is rendered. |
+| `columns` | yes | array | Column definitions (see below) |
+| `rows` | yes | string[][] | Data rows, each an array of cell strings |
+| `xMm` | no | number | Left edge in mm (default: content left margin) |
+| `maxWidthMm` | no | number | Total table width in mm (default: content area width) |
+| `altRowColor` | no | [R,G,B] | Override the label's `altRowColor` for this table |
+| `cellPaddingMm` | no | number | Override the label's `cellPaddingMm` for this table |
+| `borderColor` | no | [R,G,B] | Override the label's `borderColor` for this table |
+| `borderTopMm` | no | number | Override the label's `borderTopMm` for this table |
+| `borderBottomMm` | no | number | Override the label's `borderBottomMm` for this table |
+| `borderLeftMm` | no | number | Override the label's `borderLeftMm` for this table |
+| `borderRightMm` | no | number | Override the label's `borderRightMm` for this table |
+
+**Column definition:**
+
+| Field | Required | Type | Description |
+|---|---|---|---|
+| `header` | no | string | Header text for this column (used when `headerLabel` is set) |
+| `width` | no | string or number | `"30%"` (percentage), `35` (fixed mm), or omitted (auto-divide remaining space) |
+| `align` | no | string | `"left"`, `"right"`, or `"center"` (default: `"left"`) |
+
+**Page breaks:** When a table spans multiple pages, the header row is automatically re-drawn at the top of each new page.
+
+**Style cascade:** Engine defaults, then theme label, then source-level overrides. The source operation can override `altRowColor`, `cellPaddingMm`, and all border properties directly.
+
 #### `spacer`
 
 Adds vertical space without drawing anything.
@@ -525,6 +601,7 @@ The engine positions content using a cursor that starts at `marginTopMm` and mov
 | `divider` | marginTop + lineWidth + marginBottom |
 | `spacer` | the specified mm/px value |
 | `hiddenText` | 0 |
+| `table` | marginTop + headerRowHeight + sum(dataRowHeights) + marginBottom |
 | `block` | sum of children deltas (+ spaceAfter if defined) |
 
 Where:
@@ -1272,11 +1349,11 @@ A plugin is an object with:
   // Called during rendering. Must be synchronous.
   render(ctx) {
     const { core, operation, bounds, theme, index } = ctx;
-    // core     — PDFCore instance (cursor, drawImage, drawText, etc.)
-    // operation — the raw operation object from the source
-    // bounds   — { left, right } content area in mm
-    // theme    — resolved runtime theme
-    // index    — operation index string (for error messages)
+    // core     - PDFCore instance (cursor, drawImage, drawText, etc.)
+    // operation - the raw operation object from the source
+    // bounds   - { left, right } content area in mm
+    // theme    - resolved runtime theme
+    // index    - operation index string (for error messages)
   },
 
   // Optional. Returns estimated height in mm for keepWithNext/page break math.
@@ -1291,7 +1368,7 @@ A plugin is an object with:
 }
 ```
 
-`render` must be synchronous. For plugins that need async work (e.g., network fetches, canvas rendering), pre-render before calling `renderDocument` — see the Chart plugin section below.
+`render` must be synchronous. For plugins that need async work (e.g., network fetches, canvas rendering), pre-render before calling `renderDocument`, see the Chart plugin section below.
 
 ---
 
@@ -1305,7 +1382,7 @@ The built-in chart plugin renders Chart.js charts server-side via `chartjs-node-
 npm install chart.js chartjs-node-canvas
 ```
 
-These are peer dependencies — not installed automatically with the engine.
+These are peer dependencies, not installed automatically with the engine.
 
 ### Registration
 
@@ -1373,7 +1450,7 @@ main();
 canvasWidth / canvasHeight  ≈  widthMm / heightMm
 ```
 
-For a 160mm × 90mm slot, `canvasWidth: 1600, canvasHeight: 900` gives a clean 10px/mm density — sharp at any reasonable zoom.
+For a 160mm × 90mm slot, `canvasWidth: 1600, canvasHeight: 900` gives a clean 10px/mm density, sharp at any reasonable zoom.
 
 ### Axis label clipping
 

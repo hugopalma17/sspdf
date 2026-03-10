@@ -22,7 +22,7 @@ npm install h17-sspdf
 
 ## The problem it solves
 
-Generating PDFs imperatively means tracking the cursor yourself. Every element you place shifts everything below it. Line wrapping, page breaks, font resets — all manual.
+Generating PDFs imperatively means tracking the cursor yourself. Every element you place shifts everything below it. Line wrapping, page breaks, font resets, all manual.
 
 This engine inverts that. You describe *what* to render and *how it looks*. The cursor, the math, the page breaks happen automatically.
 
@@ -34,7 +34,7 @@ Every operation has a `type` and a `label`. The label maps to a style in the the
 operation → label → theme style → layout → cursor advance → next operation
 ```
 
-Page breaks happen automatically when content reaches the bottom margin. Style resets after every operation — nothing leaks.
+Page breaks happen automatically when content reaches the bottom margin. Style resets after every operation, nothing leaks.
 
 ## Quick start
 
@@ -203,7 +203,7 @@ A repeating pattern of `row` + `text` pairs. The row carries the label/value, th
 }
 ```
 
-`xMm` and `maxWidthMm` indent it from the body column — the indentation is in the source, not the theme.
+`xMm` and `maxWidthMm` indent it from the body column, the indentation is in the source, not the theme.
 
 #### Hidden text (ATS / search metadata)
 
@@ -273,8 +273,8 @@ Any operation accepts `xMm` and `maxWidthMm` to override the theme margins for t
 
 ### Page break control
 
-- `keepWithNext: N` — keep this operation on the same page as the next N operations
-- `block` with `keepTogether: true` — all children stay on the same page
+- `keepWithNext: N` - keep this operation on the same page as the next N operations
+- `block` with `keepTogether: true` - all children stay on the same page
 
 ---
 
@@ -385,7 +385,7 @@ registerPlugin('chart', plugins.chart);
 }
 ```
 
-`data` and `options` are passed directly to Chart.js — the plugin does not abstract the Chart.js API. `canvasWidth`/`canvasHeight` control render resolution (default 1600×800). `widthMm`/`heightMm` control the slot size in the PDF.
+`data` and `options` are passed directly to Chart.js, the plugin does not abstract the Chart.js API. `canvasWidth`/`canvasHeight` control render resolution (default 1600×800). `widthMm`/`heightMm` control the slot size in the PDF.
 
 ---
 
@@ -406,12 +406,20 @@ npx sspdf -s source.json -t theme.js -o output.pdf
 ## Constraints
 
 - A4 only
-- Single-line `row` cells — no multi-line column pairs
+- Single-line `row` cells, no multi-line column pairs
 - No `{{pages}}` total page count token
-- The `chart` plugin requires Node.js (`chartjs-node-canvas` is server-side only) — the core engine works in the browser if you use the jsPDF UMD build
+- The `chart` plugin requires the `canvas` npm package (native C++ addon, `npm install canvas`). The core engine has zero runtime dependencies.
 
 ---
 
 Hugo Palma, 2026
 
-Built on [jsPDF](https://github.com/parallax/jsPDF).
+## Third-party
+
+This project vendors the following MIT-licensed libraries:
+
+- [jsPDF](https://github.com/parallax/jsPDF) - PDF generation. Copyright (c) 2010-2025 James Hall, yWorks GmbH.
+- [Chart.js](https://github.com/chartjs/Chart.js) - Chart rendering. Copyright (c) 2014-2024 Chart.js Contributors.
+- [chartjs-node-canvas](https://github.com/SeanSobey/ChartjsNodeCanvas) - Server-side Chart.js rendering. Copyright (c) 2018 Sean Sobey.
+
+Full license texts are in `vendor/*/LICENSE`.
