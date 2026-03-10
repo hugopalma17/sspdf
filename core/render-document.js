@@ -695,13 +695,16 @@ function executeOperation(ctx) {
 
     const columns = resolveTableColumns(operation.columns, maxWidth);
     const headers = operation.headerLabel
-      ? (operation.columns || []).map(function (col) { return col.header || ""; })
+      ? (operation.columns || []).map(function (col) { return applyPageTokens(col.header || "", core); })
       : null;
+    const rows = (operation.rows || []).map(function (row) {
+      return row.map(function (cell) { return applyPageTokens(cell, core); });
+    });
 
     core.drawTable({
       columns,
       headers,
-      rows: operation.rows || [],
+      rows,
       cellStyle: mergedCellStyle,
       headerStyle,
       x,
@@ -1023,6 +1026,9 @@ function resolveTableColumns(columns, availableWidth) {
   if (!Array.isArray(columns) || columns.length === 0) {
     throw new Error("Table operation requires a non-empty columns array");
   }
+  if (!Number.isFinite(availableWidth) || availableWidth <= 0) {
+    throw new Error("Table operation requires a positive available width");
+  }
 
   let usedWidth = 0;
   let autoCount = 0;
@@ -1036,19 +1042,32 @@ function resolveTableColumns(columns, availableWidth) {
       resolved.push({ widthMm: null, align });
       autoCount++;
     } else if (typeof col.width === "string" && col.width.endsWith("%")) {
-      const pct = parseFloat(col.width) / 100;
-      const w = pct * availableWidth;
+      const pct = parseFloat(col.width);
+      if (!Number.isFinite(pct) || pct <= 0) {
+        throw new Error("Table column " + i + ' has invalid width "' + col.width + '"');
+      }
+      const w = (pct / 100) * availableWidth;
       resolved.push({ widthMm: w, align });
       usedWidth += w;
     } else {
-      const w = Number(col.width) || 0;
+      const w = Number(col.width);
+      if (!Number.isFinite(w) || w <= 0) {
+        throw new Error("Table column " + i + ' has invalid width "' + col.width + '"');
+      }
       resolved.push({ widthMm: w, align });
       usedWidth += w;
     }
   }
 
+  if (usedWidth > availableWidth && autoCount === 0) {
+    throw new Error("Table columns exceed the available width");
+  }
   if (autoCount > 0) {
-    const autoWidth = (availableWidth - usedWidth) / autoCount;
+    const remaining = availableWidth - usedWidth;
+    if (remaining <= 0) {
+      throw new Error("Table columns exceed the available width");
+    }
+    const autoWidth = remaining / autoCount;
     for (let i = 0; i < resolved.length; i++) {
       if (resolved[i].widthMm === null) {
         resolved[i].widthMm = autoWidth;

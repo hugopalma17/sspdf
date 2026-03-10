@@ -6,9 +6,15 @@ const freshRequire = (file) => {
     const resolvedFile = require.resolve(file);
     const temp = require.cache[resolvedFile];
     delete require.cache[resolvedFile];
-    const modified = require(resolvedFile);
-    require.cache[resolvedFile] = temp;
-    return modified;
+    try {
+        return require(resolvedFile);
+    } finally {
+        if (temp === undefined) {
+            delete require.cache[resolvedFile];
+        } else {
+            require.cache[resolvedFile] = temp;
+        }
+    }
 };
 exports.freshRequire = freshRequire;
 //# sourceMappingURL=freshRequire.js.map

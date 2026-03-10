@@ -70,6 +70,32 @@ function getCanvas() {
  * @param {object} operation - the chart operation object (mutated in place)
  * @returns {Promise<void>}
  */
+/**
+ * Walk an options object and convert callback template strings like "{{v}}%"
+ * into real functions. This lets JSON sources define simple tick formatters
+ * without requiring executable code in the source file.
+ *
+ * Supported token: {{v}} - replaced with the callback's first argument (value).
+ */
+function resolveCallbackTemplates(obj) {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) {
+    for (let i = 0; i < obj.length; i++) {
+      obj[i] = resolveCallbackTemplates(obj[i]);
+    }
+    return obj;
+  }
+  for (const key of Object.keys(obj)) {
+    if (key === 'callback' && typeof obj[key] === 'string' && obj[key].includes('{{v}}')) {
+      const template = obj[key];
+      obj[key] = function (value) { return template.replace(/\{\{v\}\}/g, String(value)); };
+    } else {
+      obj[key] = resolveCallbackTemplates(obj[key]);
+    }
+  }
+  return obj;
+}
+
 async function preRender(operation) {
   const ChartJSNodeCanvas = getCanvas();
   const canvasW = operation.canvasWidth  || 1600;
@@ -81,14 +107,16 @@ async function preRender(operation) {
     backgroundColour: 'transparent',
   });
 
+  const options = resolveCallbackTemplates({
+    ...(operation.options || {}),
+    responsive: false,
+    animation:  false,
+  });
+
   operation._buf = await canvas.renderToBuffer({
     type:    operation.chartType || 'bar',
     data:    operation.data    || { labels: [], datasets: [] },
-    options: {
-      ...(operation.options || {}),
-      responsive: false,
-      animation:  false,
-    },
+    options,
   });
 }
 
