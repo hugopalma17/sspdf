@@ -514,6 +514,14 @@ function executeOperation(ctx) {
       insideContainer: hasContainer || insideContainer,
     });
 
+    // Apply post-block margin from container label
+    if (hasContainer && containerStyle) {
+      const postMargin = getStyleMarginsMm(containerStyle);
+      if (postMargin.bottom > 0) {
+        core.moveDown(postMargin.bottom);
+      }
+    }
+
     if (operation.spaceAfterMm !== undefined) {
       core.moveDown(Number(operation.spaceAfterMm) || 0);
     } else if (operation.spaceAfterPx !== undefined) {
@@ -759,6 +767,16 @@ function estimateOperationHeight(ctx) {
       operations: children,
       indexPrefix: `${index}.block.`,
     });
+
+    // Post-block margin from container label
+    if (operation.label) {
+      const containerStyle = resolveLabelStyle(theme, operation.label, operation, index, "label", true);
+      if (containerStyle && (Array.isArray(containerStyle.backgroundColor) || Number(containerStyle.borderWidthMm) > 0)) {
+        const postMargin = getStyleMarginsMm(containerStyle);
+        total += postMargin.bottom;
+      }
+    }
+
     if (operation.spaceAfterMm !== undefined) {
       total += Number(operation.spaceAfterMm) || 0;
     } else if (operation.spaceAfterPx !== undefined) {
