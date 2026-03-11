@@ -17,7 +17,7 @@ module.exports = {
   getStyleMarginsMm,
   getTextPaddingMm,
   applyTextTransform,
-  // Built-in plugins (opt-in — require peer deps separately)
+  // Built-in plugins (opt-in, require peer deps separately)
   plugins: {
     chart: require('./core/plugin-chart'),
   },

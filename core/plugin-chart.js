@@ -6,8 +6,8 @@
  * Renders any Chart.js configuration server-side via chartjs-node-canvas
  * and embeds the result as a PNG image in the PDF.
  *
- * Requires peer dependencies:
- *   npm install chart.js chartjs-node-canvas
+ * Requires the `canvas` npm package (native C++ addon):
+ *   npm install canvas
  *
  * Registration:
  *   const { registerPlugin, plugins } = require('h17-sspdf');
@@ -45,7 +45,7 @@
  * - canvasWidth/canvasHeight control render resolution (default 1600x800).
  *   Higher values = sharper chart. widthMm/heightMm control the PDF slot size.
  * - responsive: false and animation: false are injected automatically.
- * - Pass any valid Chart.js config in data and options — the plugin does not
+ * - Pass any valid Chart.js config in data and options, the plugin does not
  *   modify or abstract it.
  */
 
@@ -54,10 +54,10 @@ let _ChartJSNodeCanvas = null;
 function getCanvas() {
   if (!_ChartJSNodeCanvas) {
     try {
-      _ChartJSNodeCanvas = require('chartjs-node-canvas').ChartJSNodeCanvas;
+      _ChartJSNodeCanvas = require('../vendor/chartjs-node-canvas').ChartJSNodeCanvas;
     } catch {
       throw new Error(
-        'chart plugin requires chartjs-node-canvas — run: npm install chart.js chartjs-node-canvas'
+        'chart plugin requires the canvas package - run: npm install canvas'
       );
     }
   }
@@ -70,6 +70,32 @@ function getCanvas() {
  * @param {object} operation - the chart operation object (mutated in place)
  * @returns {Promise<void>}
  */
+/**
+ * Walk an options object and convert callback template strings like "{{v}}%"
+ * into real functions. This lets JSON sources define simple tick formatters
+ * without requiring executable code in the source file.
+ *
+ * Supported token: {{v}} - replaced with the callback's first argument (value).
+ */
+function resolveCallbackTemplates(obj) {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) {
+    for (let i = 0; i < obj.length; i++) {
+      obj[i] = resolveCallbackTemplates(obj[i]);
+    }
+    return obj;
+  }
+  for (const key of Object.keys(obj)) {
+    if (key === 'callback' && typeof obj[key] === 'string' && obj[key].includes('{{v}}')) {
+      const template = obj[key];
+      obj[key] = function (value) { return template.replace(/\{\{v\}\}/g, String(value)); };
+    } else {
+      obj[key] = resolveCallbackTemplates(obj[key]);
+    }
+  }
+  return obj;
+}
+
 async function preRender(operation) {
   const ChartJSNodeCanvas = getCanvas();
   const canvasW = operation.canvasWidth  || 1600;
@@ -81,14 +107,16 @@ async function preRender(operation) {
     backgroundColour: 'transparent',
   });
 
+  const options = resolveCallbackTemplates({
+    ...(operation.options || {}),
+    responsive: false,
+    animation:  false,
+  });
+
   operation._buf = await canvas.renderToBuffer({
     type:    operation.chartType || 'bar',
     data:    operation.data    || { labels: [], datasets: [] },
-    options: {
-      ...(operation.options || {}),
-      responsive: false,
-      animation:  false,
-    },
+    options,
   });
 }
 
@@ -100,7 +128,7 @@ module.exports = {
 
     if (!operation._buf) {
       throw new Error(
-        'chart plugin: operation._buf is missing — call plugin.preRender(operation) before renderDocument()'
+        'chart plugin: operation._buf is missing - call plugin.preRender(operation) before renderDocument()'
       );
     }
 
@@ -120,7 +148,7 @@ module.exports = {
       throw new Error('chart operation requires chartType (e.g. "bar", "line", "doughnut")');
     }
     if (!operation.data) {
-      throw new Error('chart operation requires data — pass a Chart.js data config object');
+      throw new Error('chart operation requires data - pass a Chart.js data config object');
     }
   },
 };

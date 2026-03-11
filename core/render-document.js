@@ -145,8 +145,13 @@ function installPageTemplates(core, theme, pageTemplates) {
     return;
   }
 
-  const headerBypassMargins = pageTemplates.headerBypassMargins !== false;
-  const footerBypassMargins = pageTemplates.footerBypassMargins !== false;
+  const layout = theme.layout || {};
+  const headerBypassMargins = pageTemplates.headerBypassMargins !== undefined
+    ? pageTemplates.headerBypassMargins !== false
+    : layout.headerBypassMargins !== false;
+  const footerBypassMargins = pageTemplates.footerBypassMargins !== undefined
+    ? pageTemplates.footerBypassMargins !== false
+    : layout.footerBypassMargins !== false;
 
   const renderTemplatesForCurrentPage = () => {
     if (headerOps.length > 0) {
@@ -328,6 +333,7 @@ function isOperationType(type) {
     || type === "divider"
     || type === "spacer"
     || type === "hiddenText"
+    || type === "table"
     || hasPlugin(type);
 }
 
@@ -508,6 +514,14 @@ function executeOperation(ctx) {
       insideContainer: hasContainer || insideContainer,
     });
 
+    // Apply post-block margin from container label
+    if (hasContainer && containerStyle) {
+      const postMargin = getStyleMarginsMm(containerStyle);
+      if (postMargin.bottom > 0) {
+        core.moveDown(postMargin.bottom);
+      }
+    }
+
     if (operation.spaceAfterMm !== undefined) {
       core.moveDown(Number(operation.spaceAfterMm) || 0);
     } else if (operation.spaceAfterPx !== undefined) {
@@ -666,6 +680,48 @@ function executeOperation(ctx) {
     return;
   }
 
+  if (operation.type === "table") {
+    const cellStyle = resolveLabelStyle(theme, operation.label, operation, index);
+    const headerStyle = operation.headerLabel
+      ? resolveLabelStyle(theme, operation.headerLabel, operation, index, "headerLabel")
+      : null;
+    const bounds = getHorizontalBounds(core, templateBypassMargins);
+    const x = operation.xMm !== undefined ? operation.xMm : bounds.left;
+    const maxWidth = operation.maxWidthMm !== undefined
+      ? operation.maxWidthMm
+      : bounds.right - x;
+
+    // Merge source-level style overrides onto cell style
+    const mergedCellStyle = Object.assign({}, cellStyle);
+    if (operation.altRowColor !== undefined) mergedCellStyle.altRowColor = operation.altRowColor;
+    if (operation.cellPaddingMm !== undefined) mergedCellStyle.cellPaddingMm = operation.cellPaddingMm;
+    if (operation.borderColor !== undefined) mergedCellStyle.borderColor = operation.borderColor;
+    if (operation.borderTopMm !== undefined) mergedCellStyle.borderTopMm = operation.borderTopMm;
+    if (operation.borderBottomMm !== undefined) mergedCellStyle.borderBottomMm = operation.borderBottomMm;
+    if (operation.borderLeftMm !== undefined) mergedCellStyle.borderLeftMm = operation.borderLeftMm;
+    if (operation.borderRightMm !== undefined) mergedCellStyle.borderRightMm = operation.borderRightMm;
+
+    const columns = resolveTableColumns(operation.columns, maxWidth);
+    const headers = operation.headerLabel
+      ? (operation.columns || []).map(function (col) { return applyPageTokens(col.header || "", core); })
+      : null;
+    const rows = (operation.rows || []).map(function (row) {
+      return row.map(function (cell) { return applyPageTokens(cell, core); });
+    });
+
+    core.drawTable({
+      columns,
+      headers,
+      rows,
+      cellStyle: mergedCellStyle,
+      headerStyle,
+      x,
+      maxWidth,
+      allowPageBreak: !templateMode,
+    });
+    return;
+  }
+
   const plugin = getPlugin(operation.type);
   if (plugin) {
     const bounds = getHorizontalBounds(core, templateBypassMargins);
@@ -711,6 +767,16 @@ function estimateOperationHeight(ctx) {
       operations: children,
       indexPrefix: `${index}.block.`,
     });
+
+    // Post-block margin from container label
+    if (operation.label) {
+      const containerStyle = resolveLabelStyle(theme, operation.label, operation, index, "label", true);
+      if (containerStyle && (Array.isArray(containerStyle.backgroundColor) || Number(containerStyle.borderWidthMm) > 0)) {
+        const postMargin = getStyleMarginsMm(containerStyle);
+        total += postMargin.bottom;
+      }
+    }
+
     if (operation.spaceAfterMm !== undefined) {
       total += Number(operation.spaceAfterMm) || 0;
     } else if (operation.spaceAfterPx !== undefined) {
@@ -807,6 +873,47 @@ function estimateOperationHeight(ctx) {
 
   if (operation.type === "hiddenText") {
     return 0;
+  }
+
+  if (operation.type === "table") {
+    const cellStyle = resolveLabelStyle(theme, operation.label, operation, index);
+    const headerStyle = operation.headerLabel
+      ? resolveLabelStyle(theme, operation.headerLabel, operation, index, "headerLabel")
+      : null;
+    const margins = getStyleMarginsMm(cellStyle);
+    const effectiveCellPadding = operation.cellPaddingMm !== undefined
+      ? Number(operation.cellPaddingMm)
+      : Number(cellStyle.cellPaddingMm) || 0;
+    const cellPad = effectiveCellPadding;
+    const headerPad = headerStyle ? (Number(headerStyle.cellPaddingMm) || 0) : cellPad;
+    const x = operation.xMm !== undefined ? operation.xMm : core.marginLeftMm;
+    const maxWidth = operation.maxWidthMm !== undefined
+      ? operation.maxWidthMm
+      : core.pageWidth - core.marginRightMm - x;
+    const columns = resolveTableColumns(operation.columns, maxWidth);
+    const colX = [];
+    let cx = x;
+    for (let c = 0; c < columns.length; c++) {
+      colX.push(cx);
+      cx += columns[c].widthMm;
+    }
+
+    let total = margins.top;
+
+    // Header height
+    if (headerStyle && operation.headerLabel) {
+      const headers = (operation.columns || []).map(function (col) { return col.header || ""; });
+      total += core._measureTableRowHeight(headers, columns, colX, headerStyle, headerPad);
+    }
+
+    // Data row heights
+    const rows = operation.rows || [];
+    for (let r = 0; r < rows.length; r++) {
+      total += core._measureTableRowHeight(rows[r], columns, colX, cellStyle, cellPad);
+    }
+
+    total += margins.bottom;
+    return total;
   }
 
   const plugin = getPlugin(operation.type);
@@ -924,6 +1031,69 @@ function stripContainerProps(style) {
   delete s.borderRadiusMm;
   delete s.leftBorder;
   return s;
+}
+
+/**
+ * Resolve column width definitions to absolute mm values.
+ * Accepts: "30%" (percentage of available width), 35 (fixed mm), or undefined (auto-divide).
+ * @param {Array<object>} columns
+ * @param {number} availableWidth
+ * @returns {Array<{widthMm: number, align: string}>}
+ */
+function resolveTableColumns(columns, availableWidth) {
+  if (!Array.isArray(columns) || columns.length === 0) {
+    throw new Error("Table operation requires a non-empty columns array");
+  }
+  if (!Number.isFinite(availableWidth) || availableWidth <= 0) {
+    throw new Error("Table operation requires a positive available width");
+  }
+
+  let usedWidth = 0;
+  let autoCount = 0;
+  const resolved = [];
+
+  for (let i = 0; i < columns.length; i++) {
+    const col = columns[i];
+    const align = col.align || "left";
+
+    if (col.width === undefined || col.width === null) {
+      resolved.push({ widthMm: null, align });
+      autoCount++;
+    } else if (typeof col.width === "string" && col.width.endsWith("%")) {
+      const pct = parseFloat(col.width);
+      if (!Number.isFinite(pct) || pct <= 0) {
+        throw new Error("Table column " + i + ' has invalid width "' + col.width + '"');
+      }
+      const w = (pct / 100) * availableWidth;
+      resolved.push({ widthMm: w, align });
+      usedWidth += w;
+    } else {
+      const w = Number(col.width);
+      if (!Number.isFinite(w) || w <= 0) {
+        throw new Error("Table column " + i + ' has invalid width "' + col.width + '"');
+      }
+      resolved.push({ widthMm: w, align });
+      usedWidth += w;
+    }
+  }
+
+  if (usedWidth > availableWidth && autoCount === 0) {
+    throw new Error("Table columns exceed the available width");
+  }
+  if (autoCount > 0) {
+    const remaining = availableWidth - usedWidth;
+    if (remaining <= 0) {
+      throw new Error("Table columns exceed the available width");
+    }
+    const autoWidth = remaining / autoCount;
+    for (let i = 0; i < resolved.length; i++) {
+      if (resolved[i].widthMm === null) {
+        resolved[i].widthMm = autoWidth;
+      }
+    }
+  }
+
+  return resolved;
 }
 
 module.exports = {

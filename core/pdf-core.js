@@ -1,8 +1,8 @@
 const fs = require("fs");
-const { jsPDF } = require("jspdf");
+const { jsPDF } = require("../vendor/jspdf/jspdf.node");
 const { pxToMm, ptToMm, resolveLineHeightMm } = require("./units");
 
-// Style math helpers — shared between core rendering and height estimation.
+// Style math helpers, shared between core rendering and height estimation.
 
 function getMarginTopMm(style) {
   if (style.marginTopMm !== undefined) {
@@ -130,7 +130,7 @@ class PDFCore {
       subject: meta.subject || "",
       author: meta.author || "Hugo Palma",
       keywords: meta.keywords || "",
-      creator: "SuperSimplePDF (github.com/hugopalma17/sspdf) — built on jsPDF",
+      creator: "SuperSimplePDF (github.com/hugopalma17/sspdf) - built on jsPDF",
     });
 
     this.paintBackground();
@@ -626,6 +626,213 @@ class PDFCore {
     }
 
     return { y: drawY, endY };
+  }
+
+  /**
+   * Draw a table with header row, data rows, per-edge borders, and alt row shading.
+   * All values derived from style properties, no hardcoded constants.
+   *
+   * @param {object} payload
+   * @param {Array<{widthMm: number, align: string}>} payload.columns  Resolved column definitions
+   * @param {string[]|null} payload.headers  Header cell texts, or null for no header row
+   * @param {string[][]} payload.rows  Data rows, each row is an array of cell strings
+   * @param {object} payload.cellStyle  Resolved style for data cells
+   * @param {object|null} payload.headerStyle  Resolved style for header cells
+   * @param {number} [payload.x]  Left edge of table
+   * @param {number} [payload.maxWidth]  Total table width
+   * @param {boolean} [payload.allowPageBreak]
+   * @returns {{ y: number, endY: number, rowCount: number }}
+   */
+  drawTable(payload) {
+    const columns = payload.columns;
+    const headers = payload.headers || null;
+    const rows = payload.rows || [];
+    const cellStyle = payload.cellStyle || {};
+    const headerStyle = payload.headerStyle || null;
+    const x = payload.x !== undefined ? payload.x : this.marginLeftMm;
+    const allowPageBreak = payload.allowPageBreak !== false;
+
+    const marginTopMm = getMarginTopMm(cellStyle);
+    const marginBottomMm = getMarginBottomMm(cellStyle);
+
+    const cellPad = Number(cellStyle.cellPaddingMm) || 0;
+    const headerPad = headerStyle
+      ? (Number(headerStyle.cellPaddingMm) || 0)
+      : cellPad;
+
+    // Column x positions
+    const colX = [];
+    let cx = x;
+    for (let c = 0; c < columns.length; c++) {
+      colX.push(cx);
+      cx += columns[c].widthMm;
+    }
+
+    // Margin before table
+    if (allowPageBreak) {
+      const firstRowHeight = headers
+        ? this._measureTableRowHeight(headers, columns, colX, headerStyle, headerPad)
+        : this._measureTableRowHeight(rows[0] || [], columns, colX, cellStyle, cellPad);
+      this.ensureSpace(marginTopMm + firstRowHeight);
+    }
+    const tableStartY = this.cursorY + marginTopMm;
+    this.cursorY = tableStartY;
+
+    // Draw header
+    if (headerStyle && headers) {
+      this._drawTableRow({
+        rowData: headers,
+        columns, colX,
+        style: headerStyle,
+        cellPadding: headerPad,
+        bgColor: this._resolveColor(headerStyle.backgroundColor),
+      });
+    }
+
+    // Draw data rows
+    for (let r = 0; r < rows.length; r++) {
+      const rowData = rows[r];
+      const rowHeight = this._measureTableRowHeight(rowData, columns, colX, cellStyle, cellPad);
+
+      // Page break check - re-draw header after break
+      if (allowPageBreak && this.cursorY + rowHeight > this.contentBottomY) {
+        this.addPage();
+        if (headerStyle && headers) {
+          this._drawTableRow({
+            rowData: headers,
+            columns, colX,
+            style: headerStyle,
+            cellPadding: headerPad,
+            bgColor: this._resolveColor(headerStyle.backgroundColor),
+          });
+        }
+      }
+
+      // Determine row background
+      const baseBg = this._resolveColor(cellStyle.backgroundColor);
+      const altBg = cellStyle.altRowColor && Array.isArray(cellStyle.altRowColor) && cellStyle.altRowColor.length === 3
+        ? cellStyle.altRowColor
+        : null;
+      const bgColor = (altBg && r % 2 === 1) ? altBg : baseBg;
+
+      this._drawTableRow({
+        rowData,
+        columns, colX,
+        style: cellStyle,
+        cellPadding: cellPad,
+        bgColor,
+      });
+    }
+
+    const endY = this.cursorY;
+    this.cursorY = endY + marginBottomMm;
+
+    this.lastDrawnBounds = {
+      topY: tableStartY,
+      bottomY: endY,
+      leftX: x,
+      rightX: colX.length > 0 ? colX[colX.length - 1] + columns[columns.length - 1].widthMm : x,
+    };
+
+    return { y: tableStartY, endY, rowCount: rows.length };
+  }
+
+  /**
+   * Measure the height of a single table row.
+   * @private
+   */
+  _measureTableRowHeight(rowData, columns, colX, style, cellPadding) {
+    const lineHeightMm = style.lineHeightMm || resolveLineHeightMm(Number(style.fontSize), style.lineHeight);
+    let maxLines = 1;
+    for (let c = 0; c < columns.length; c++) {
+      const innerWidth = columns[c].widthMm - (cellPadding * 2);
+      if (innerWidth <= 0) continue;
+      const text = String((rowData && rowData[c]) || "");
+      const lines = this.measureWrappedLines(text, innerWidth, style);
+      if (lines.length > maxLines) maxLines = lines.length;
+    }
+    return cellPadding + (maxLines * lineHeightMm) + cellPadding;
+  }
+
+  /**
+   * Draw a single table row (background, text, borders).
+   * @private
+   */
+  _drawTableRow(payload) {
+    const { rowData, columns, colX, style, cellPadding, bgColor } = payload;
+    const rowY = this.cursorY;
+    const lineHeightMm = style.lineHeightMm || resolveLineHeightMm(Number(style.fontSize), style.lineHeight);
+
+    // Measure row height
+    let maxLines = 1;
+    const cellLines = [];
+    for (let c = 0; c < columns.length; c++) {
+      const innerWidth = columns[c].widthMm - (cellPadding * 2);
+      const text = String((rowData && rowData[c]) || "");
+      const lines = innerWidth > 0 ? this.measureWrappedLines(text, innerWidth, style) : [text];
+      cellLines.push(lines);
+      if (lines.length > maxLines) maxLines = lines.length;
+    }
+    const rowHeight = cellPadding + (maxLines * lineHeightMm) + cellPadding;
+
+    // Draw cell backgrounds
+    if (bgColor) {
+      this.doc.setFillColor(...bgColor);
+      for (let c = 0; c < columns.length; c++) {
+        this.doc.rect(colX[c], rowY, columns[c].widthMm, rowHeight, "F");
+      }
+    }
+
+    // Draw cell text
+    this.applyTextStyle(style);
+    const baselineOffset = this._getBaselineOffsetMm(Number(style.fontSize));
+    this.doc.setLineHeightFactor(Number(style.lineHeight));
+    for (let c = 0; c < columns.length; c++) {
+      const innerWidth = columns[c].widthMm - (cellPadding * 2);
+      if (innerWidth <= 0) continue;
+      const textX = colX[c] + cellPadding;
+      const textY = rowY + cellPadding + baselineOffset;
+      const align = columns[c].align || "left";
+      this._drawTextLines(cellLines[c], {
+        x: textX,
+        y: textY,
+        maxWidth: innerWidth,
+        align,
+        lineHeightMm,
+      });
+    }
+
+    // Draw cell borders
+    for (let c = 0; c < columns.length; c++) {
+      this._drawTableCellBorders(style, colX[c], rowY, columns[c].widthMm, rowHeight);
+    }
+
+    this.applyDefaultRenderState();
+    this.cursorY = rowY + rowHeight;
+    return rowHeight;
+  }
+
+  /**
+   * Draw per-edge borders for a single table cell.
+   * @private
+   */
+  _drawTableCellBorders(style, cellX, cellY, cellWidth, cellHeight) {
+    const baseBorderColor = this._resolveColor(style.borderColor, [200, 200, 200]);
+    const edges = [
+      { widthProp: "borderTopMm",    colorProp: "borderTopColor",    x1: cellX, y1: cellY, x2: cellX + cellWidth, y2: cellY },
+      { widthProp: "borderBottomMm", colorProp: "borderBottomColor", x1: cellX, y1: cellY + cellHeight, x2: cellX + cellWidth, y2: cellY + cellHeight },
+      { widthProp: "borderLeftMm",   colorProp: "borderLeftColor",   x1: cellX, y1: cellY, x2: cellX, y2: cellY + cellHeight },
+      { widthProp: "borderRightMm",  colorProp: "borderRightColor",  x1: cellX + cellWidth, y1: cellY, x2: cellX + cellWidth, y2: cellY + cellHeight },
+    ];
+
+    for (const edge of edges) {
+      const width = Number(style[edge.widthProp]) || 0;
+      if (width <= 0) continue;
+      const color = this._resolveColor(style[edge.colorProp], baseBorderColor);
+      this.doc.setDrawColor(...color);
+      this.doc.setLineWidth(width);
+      this.doc.line(edge.x1, edge.y1, edge.x2, edge.y2);
+    }
   }
 
   /**

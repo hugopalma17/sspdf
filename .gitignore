@@ -24,10 +24,33 @@
 !examples/sources/*.json
 !examples/plugins/
 !examples/plugins/*.js
+!examples/output/
+!examples/output/*.pdf
 
 !tests/
 !tests/*.js
 
+!docs/
+!docs/specs/
+!docs/specs/*.md
+
 !.github/
 !.github/workflows/
 !.github/workflows/*.yml
+
+!vendor/
+!vendor/jspdf/
+!vendor/jspdf/jspdf.node.js
+!vendor/jspdf/LICENSE
+!vendor/chart.js/
+!vendor/chart.js/chart.umd.js
+!vendor/chart.js/LICENSE
+!vendor/chartjs-node-canvas/
+!vendor/chartjs-node-canvas/*.js
+!vendor/chartjs-node-canvas/LICENSE
+
+!skills/
+!skills/sspdf-theme-generator/
+!skills/sspdf-theme-generator/*.md
+!skills/sspdf/
+!skills/sspdf/*.md

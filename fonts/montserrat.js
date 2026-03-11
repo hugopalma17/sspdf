@@ -1,4 +1,4 @@
-// Montserrat — SIL Open Font License / Apache 2.0
+// Montserrat  - SIL Open Font License / Apache 2.0
 // Source: Google Fonts (fonts.google.com)
 "use strict";
 

@@ -2,7 +2,7 @@ const _plugins = new Map();
 
 const BUILT_IN_TYPES = new Set([
   "text", "row", "bullet", "divider", "spacer", "hiddenText",
-  "block", "section", "group", "quote",
+  "block", "section", "group", "quote", "table",
 ]);
 
 function registerPlugin(type, handler) {

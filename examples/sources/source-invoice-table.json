@@ -1,0 +1,100 @@
+{
+  "operations": [
+    {
+      "type": "text",
+      "label": "invoice.headline",
+      "text": "Invoice"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.meta.left",
+      "rightLabel": "invoice.meta.right",
+      "leftText": "Invoice No.",
+      "rightText": "INV-2026-0078"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.meta.left",
+      "rightLabel": "invoice.meta.right",
+      "leftText": "Issue Date",
+      "rightText": "2026-03-10"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.meta.left",
+      "rightLabel": "invoice.meta.right",
+      "leftText": "Due Date",
+      "rightText": "2026-03-24"
+    },
+    {
+      "type": "spacer",
+      "label": "invoice.item.gap"
+    },
+    {
+      "type": "text",
+      "label": "invoice.party.from",
+      "text": "From: Palma Systems Ltd. | billing@palmasystems.example"
+    },
+    {
+      "type": "text",
+      "label": "invoice.party.to",
+      "text": "To: Northern Capital Partners | ap@northcap.example"
+    },
+    {
+      "type": "divider",
+      "label": "invoice.divider"
+    },
+    {
+      "type": "table",
+      "label": "invoice.table.cell",
+      "headerLabel": "invoice.table.header",
+      "columns": [
+        { "header": "Description",  "width": "45%", "align": "left" },
+        { "header": "Qty",          "width": "10%", "align": "right" },
+        { "header": "Unit Price",   "width": "20%", "align": "right" },
+        { "header": "Amount",       "width": "25%", "align": "right" }
+      ],
+      "rows": [
+        ["Automation Workflow Implementation",       "1", "$3,200.00", "$3,200.00"],
+        ["Monitoring and Reporting Dashboard",       "1", "$1,400.00", "$1,400.00"],
+        ["Data Pipeline Integration (hourly)",       "8", "$175.00",   "$1,400.00"],
+        ["Production Deployment and QA",             "1", "$800.00",   "$800.00"],
+        ["Operational Runbook and Documentation",    "1", "$450.00",   "$450.00"]
+      ]
+    },
+    {
+      "type": "spacer",
+      "mm": 3
+    },
+    {
+      "type": "divider",
+      "label": "invoice.divider"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.totals.label",
+      "rightLabel": "invoice.totals.value",
+      "leftText": "Subtotal",
+      "rightText": "$7,250.00"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.totals.label",
+      "rightLabel": "invoice.totals.value",
+      "leftText": "Tax (10%)",
+      "rightText": "$725.00"
+    },
+    {
+      "type": "row",
+      "leftLabel": "invoice.totals.finalLabel",
+      "rightLabel": "invoice.totals.finalValue",
+      "leftText": "Total Due",
+      "rightText": "$7,975.00"
+    },
+    {
+      "type": "text",
+      "label": "invoice.notes",
+      "text": "Payment terms: net 14. Bank details available on request."
+    }
+  ]
+}

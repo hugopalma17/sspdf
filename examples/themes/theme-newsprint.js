@@ -202,6 +202,7 @@ module.exports = {
       paddingBottomMm: 1.2,
       paddingLeftMm: 4,
       marginTopPx: 4,
+      marginBottomMm: 4,
       leftBorder: {
         color: [161, 98, 7],
         widthMm: 1.4,
@@ -216,7 +217,7 @@ module.exports = {
       color: [120, 120, 120],
       backgroundColor: [249, 246, 238],
       paddingRightMm: 4,
-      paddingBottomMm: 2.5,
+      paddingBottomMm: 1,
       paddingLeftMm: 4,
       marginTopMm: 0,
       marginBottomPx: 0,

@@ -1,0 +1,301 @@
+{
+  "pageTemplates": {
+    "header": [
+      {
+        "type": "row",
+        "leftLabel": "fin.header.left",
+        "rightLabel": "fin.header.right",
+        "leftText": "Meridian Capital Partners",
+        "rightText": "Confidential"
+      },
+      { "type": "divider", "label": "fin.header.rule" }
+    ],
+    "headerHeightMm": 14,
+    "headerStartMm": 8,
+    "footer": [
+      { "type": "divider", "label": "fin.footer.rule" },
+      {
+        "type": "row",
+        "leftLabel": "fin.footer.left",
+        "rightLabel": "fin.footer.right",
+        "leftText": "Meridian Capital Partners - Q4 2025 Performance Report",
+        "rightText": "Page {{page}}"
+      }
+    ],
+    "footerHeightMm": 10
+  },
+  "sections": [
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "fin.title", "text": "Quarterly Performance Report" },
+        { "type": "text", "label": "fin.subtitle", "text": "Q4 2025 - Fund Performance and Market Analysis" },
+        {
+          "type": "row",
+          "leftLabel": "fin.meta.left",
+          "rightLabel": "fin.meta.right",
+          "leftText": "Prepared by: Investment Analytics Group",
+          "rightText": "January 15, 2026"
+        },
+        { "type": "divider", "label": "fin.rule" }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "fin.heading", "text": "Executive Summary", "keepWithNext": 2 },
+        {
+          "type": "text",
+          "label": "fin.body",
+          "text": [
+            "The fund delivered a net return of 8.7% in Q4 2025, outperforming the benchmark by 210 basis points. Total AUM reached $2.4B, driven by strong allocation in technology and healthcare sectors.",
+            "Risk-adjusted returns remained favorable with a Sharpe ratio of 1.42. Drawdown was limited to 3.1% during the October correction, within policy guidelines."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "fin.heading", "text": "Key Metrics", "keepWithNext": 5 },
+        { "type": "row", "leftLabel": "fin.kpi.label", "rightLabel": "fin.kpi.value", "leftText": "Net Return (Q4)", "rightText": "8.7%" },
+        { "type": "row", "leftLabel": "fin.kpi.label", "rightLabel": "fin.kpi.value", "leftText": "Benchmark Return", "rightText": "6.6%" },
+        { "type": "row", "leftLabel": "fin.kpi.label", "rightLabel": "fin.kpi.value", "leftText": "AUM", "rightText": "$2.41B" },
+        { "type": "row", "leftLabel": "fin.kpi.label", "rightLabel": "fin.kpi.value", "leftText": "Sharpe Ratio", "rightText": "1.42" },
+        { "type": "row", "leftLabel": "fin.kpi.label", "rightLabel": "fin.kpi.value", "leftText": "Max Drawdown", "rightText": "-3.1%" },
+        { "type": "divider", "label": "fin.rule" }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "fin.heading", "text": "Quarterly Returns", "keepWithNext": 1 },
+        {
+          "type": "chart",
+          "chartType": "bar",
+          "widthMm": 174,
+          "heightMm": 85,
+          "canvasWidth": 1740,
+          "canvasHeight": 850,
+          "data": {
+            "labels": ["Q1 2024", "Q2 2024", "Q3 2024", "Q4 2024", "Q1 2025", "Q2 2025", "Q3 2025", "Q4 2025"],
+            "datasets": [
+              {
+                "label": "Fund",
+                "data": [5.2, 3.8, 6.1, 7.4, 4.9, 6.7, 5.3, 8.7],
+                "backgroundColor": "rgba(15, 23, 42, 0.85)",
+                "borderColor": "rgba(15, 23, 42, 1)",
+                "borderWidth": 1
+              },
+              {
+                "label": "Benchmark",
+                "data": [4.1, 3.2, 5.0, 5.9, 4.4, 5.1, 4.8, 6.6],
+                "backgroundColor": "rgba(148, 163, 184, 0.6)",
+                "borderColor": "rgba(148, 163, 184, 1)",
+                "borderWidth": 1
+              }
+            ]
+          },
+          "options": {
+            "scales": {
+              "y": {
+                "beginAtZero": true,
+                "ticks": { "callback": "{{v}}%" },
+                "title": { "display": true, "text": "Return (%)" }
+              }
+            },
+            "plugins": {
+              "legend": { "position": "bottom" }
+            },
+            "layout": { "padding": { "bottom": 5 } }
+          }
+        },
+        { "type": "spacer", "label": "fin.gap.sm" }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "fin.heading", "text": "Sector Allocation", "keepWithNext": 1 },
+        {
+          "type": "chart",
+          "chartType": "doughnut",
+          "widthMm": 120,
+          "heightMm": 100,
+          "canvasWidth": 1200,
+          "canvasHeight": 1000,
+          "xMm": 45,
+          "data": {
+            "labels": ["Technology", "Healthcare", "Financials", "Industrials", "Energy", "Consumer", "Other"],
+            "datasets": [
+              {
+                "data": [28, 22, 18, 12, 8, 7, 5],
+                "backgroundColor": [
+                  "rgba(15, 23, 42, 0.85)",
+                  "rgba(37, 99, 235, 0.80)",
+                  "rgba(100, 116, 139, 0.70)",
+                  "rgba(148, 163, 184, 0.65)",
+                  "rgba(203, 213, 225, 0.60)",
+                  "rgba(226, 232, 240, 0.80)",
+                  "rgba(241, 245, 249, 0.90)"
+                ],
+                "borderColor": "rgba(255, 255, 255, 1)",
+                "borderWidth": 2
+              }
+            ]
+          },
+          "options": {
+            "plugins": {
+              "legend": { "position": "right" }
+            }
+          }
+        },
+        { "type": "spacer", "label": "fin.gap.sm" }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "fin.heading", "text": "Portfolio Holdings - Top 10", "keepWithNext": 1 },
+        {
+          "type": "table",
+          "label": "fin.table.cell",
+          "headerLabel": "fin.table.header",
+          "columns": [
+            { "header": "Holding", "width": "30%", "align": "left" },
+            { "header": "Sector", "width": "20%", "align": "left" },
+            { "header": "Weight", "width": "12%", "align": "right" },
+            { "header": "Q4 Return", "width": "13%", "align": "right" },
+            { "header": "Contribution", "width": "13%", "align": "right" },
+            { "header": "Market Cap", "width": "12%", "align": "right" }
+          ],
+          "rows": [
+            ["Apex Dynamics Corp", "Technology", "8.2%", "+14.3%", "+117bp", "$284B"],
+            ["Helios BioSciences", "Healthcare", "6.8%", "+11.7%", "+80bp", "$142B"],
+            ["Pinnacle Financial", "Financials", "5.4%", "+9.2%", "+50bp", "$98B"],
+            ["Vertex Semiconductor", "Technology", "5.1%", "+12.8%", "+65bp", "$167B"],
+            ["Cascade Health Systems", "Healthcare", "4.7%", "+8.4%", "+39bp", "$76B"],
+            ["Sterling Industrial", "Industrials", "4.2%", "+6.1%", "+26bp", "$54B"],
+            ["Pacific Energy Holdings", "Energy", "3.8%", "+4.9%", "+19bp", "$89B"],
+            ["Nova Consumer Brands", "Consumer", "3.5%", "+7.3%", "+26bp", "$43B"],
+            ["Granite Capital Group", "Financials", "3.1%", "+5.8%", "+18bp", "$67B"],
+            ["Quantum Cloud Services", "Technology", "2.9%", "+16.1%", "+47bp", "$112B"]
+          ]
+        },
+        { "type": "divider", "label": "fin.rule" }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "fin.heading", "text": "AUM Growth", "keepWithNext": 1 },
+        {
+          "type": "chart",
+          "chartType": "line",
+          "widthMm": 174,
+          "heightMm": 80,
+          "canvasWidth": 1740,
+          "canvasHeight": 800,
+          "data": {
+            "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            "datasets": [
+              {
+                "label": "AUM ($B)",
+                "data": [2.12, 2.15, 2.18, 2.14, 2.21, 2.26, 2.29, 2.31, 2.28, 2.33, 2.37, 2.41],
+                "borderColor": "rgba(15, 23, 42, 1)",
+                "backgroundColor": "rgba(15, 23, 42, 0.08)",
+                "fill": true,
+                "tension": 0.3,
+                "pointRadius": 3,
+                "pointBackgroundColor": "rgba(15, 23, 42, 1)"
+              }
+            ]
+          },
+          "options": {
+            "scales": {
+              "y": {
+                "min": 2.0,
+                "max": 2.5,
+                "title": { "display": true, "text": "AUM ($B)" }
+              }
+            },
+            "plugins": {
+              "legend": { "display": false }
+            }
+          }
+        },
+        { "type": "divider", "label": "fin.rule" }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "fin.heading", "text": "Risk Analysis", "keepWithNext": 2 },
+        {
+          "type": "text",
+          "label": "fin.body",
+          "text": "Portfolio risk metrics remained within target bands throughout Q4. The October correction tested downside protection, with the fund's max drawdown of 3.1% outperforming the benchmark's 4.8% decline."
+        },
+        {
+          "type": "table",
+          "label": "fin.table.cell",
+          "headerLabel": "fin.table.header",
+          "columns": [
+            { "header": "Metric", "width": "35%", "align": "left" },
+            { "header": "Fund", "width": "20%", "align": "right" },
+            { "header": "Benchmark", "width": "20%", "align": "right" },
+            { "header": "Target", "width": "25%", "align": "right" }
+          ],
+          "rows": [
+            ["Annualized Volatility", "11.4%", "13.2%", "< 15%"],
+            ["Sharpe Ratio", "1.42", "1.08", "> 1.0"],
+            ["Max Drawdown", "-3.1%", "-4.8%", "> -5%"],
+            ["Beta", "0.87", "1.00", "0.80 - 1.00"],
+            ["Tracking Error", "2.8%", "-", "< 4%"],
+            ["Information Ratio", "1.12", "-", "> 0.5"]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "text", "label": "fin.heading", "text": "Outlook", "keepWithNext": 2 },
+        {
+          "type": "text",
+          "label": "fin.body",
+          "text": [
+            "We maintain a constructive view for Q1 2026. Technology remains the largest overweight, driven by secular AI infrastructure demand. Healthcare allocation will increase modestly as late-stage pipeline catalysts approach.",
+            "Key risks include potential rate volatility and geopolitical disruption in energy markets. The portfolio is positioned defensively in cyclicals with trailing stops on concentrated positions."
+          ]
+        },
+        {
+          "type": "bullet",
+          "label": "fin.body",
+          "markerLabel": "fin.marker",
+          "bullets": [
+            "Increase healthcare allocation from 22% to 25% as clinical trial data releases approach",
+            "Reduce energy exposure from 8% to 5%, rotate into renewable infrastructure",
+            "Maintain technology overweight, trim semiconductor names above 5% weight",
+            "Add tail risk hedging via put spreads on broad market indices"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "content": [
+        { "type": "spacer", "label": "fin.gap.md" },
+        {
+          "type": "block",
+          "label": "fin.callout",
+          "keepTogether": true,
+          "children": [
+            { "type": "text", "label": "fin.callout.title", "text": "Disclaimer" },
+            { "type": "text", "label": "fin.body", "text": "This report is prepared for authorized recipients only and does not constitute investment advice. Past performance is not indicative of future results. All data as of December 31, 2025." }
+          ]
+        }
+      ]
+    }
+  ]
+}
