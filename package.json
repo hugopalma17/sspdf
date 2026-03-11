@@ -1,6 +1,6 @@
 {
   "name": "h17-sspdf",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Declarative PDF engine - define layout once, feed it JSON, get consistent PDFs",
   "main": "index.js",
   "author": "Hugo Palma",
@@ -21,8 +21,11 @@
     "core",
     "fonts",
     "vendor",
+    "examples/themes",
+    "examples/sources",
     "index.js",
     "cli.js",
+    "DOCUMENTATION.md",
     "README.md"
   ],
   "bin": {
