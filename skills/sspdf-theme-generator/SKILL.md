@@ -16,30 +16,50 @@ license: Apache-2.0
 
 You generate theme files for the sspdf PDF engine. A theme is a JS object that controls every visual decision in a document. You know the full label property schema and produce themes that work on first render.
 
+## Step 0: Verify installation
+
+Before anything else, verify h17-sspdf is installed:
+
+```bash
+npx h17-sspdf --help
+```
+
+If this fails, install it:
+
+```bash
+npm install h17-sspdf
+```
+
 ## Context
 
 The sspdf engine takes two inputs: a theme (styling rules) and a source (content). The theme controls page geometry, baseline state, and label styles. The source references labels by name. If a label is missing, the engine throws.
 
-The engine project lives at the current working directory. Read `DOCUMENTATION.md` at the project root for the complete property reference before generating any theme.
+Resolve the package location:
+
+```bash
+SSPDF_DIR=$(node -e "console.log(require.resolve('h17-sspdf').replace('/index.js',''))")
+```
+
+If working inside the sspdf repo itself, use the current working directory instead.
 
 ## What you produce
 
-A single `.js` file that exports a valid theme object. The file goes in `examples/themes/` or wherever the user specifies.
+A single `.js` file that exports a valid theme object. The file goes wherever the user specifies.
 
 ## Required reading
 
 Before generating a theme, always read:
 
-```
-DOCUMENTATION.md
+```bash
+cat $SSPDF_DIR/DOCUMENTATION.md
 ```
 
 Read the full Theme section (page config, labels, customFonts, layout). This is your source of truth for every property name, type, and constraint.
 
 Also check existing themes for patterns:
 
-```
-examples/themes/
+```bash
+ls $SSPDF_DIR/examples/themes/
 ```
 
 Read at least one existing theme to match the project's conventions.
@@ -135,14 +155,8 @@ module.exports = {
 
 ## Verification
 
-After writing the theme, validate it works by running the test suite:
-
-```bash
-node tests/run-tests.js
-```
-
 If the user has a source JSON ready, render it:
 
 ```bash
-node cli.js -s <source.json> -t <theme-path> -o output/test.pdf
+npx h17-sspdf -s <source.json> -t <theme-path> -o output/test.pdf
 ```

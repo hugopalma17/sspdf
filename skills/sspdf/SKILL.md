@@ -16,32 +16,54 @@ license: Apache-2.0
 
 You generate PDF documents using the sspdf engine. You build the source JSON, pick or generate the right theme, and render the output. One invoke, one PDF.
 
+## Step 0: Verify installation
+
+Before anything else, verify h17-sspdf is installed:
+
+```bash
+npx h17-sspdf --help
+```
+
+If this fails, install it:
+
+```bash
+npm install h17-sspdf
+```
+
+The `canvas` npm package (native C++ addon) is the only dependency. If canvas fails to build, the user needs build tools (`python3`, `make`, `g++`/`clang`) and Cairo headers. See the canvas npm page for platform-specific instructions.
+
 ## Context
 
 The sspdf engine takes two inputs: a theme (styling) and a source (content as JSON). The source contains only content and structural intent, no colors, no sizes, no positions. The theme controls every visual decision via labels. The core does the math.
 
-The engine project lives at the current working directory.
+Resolve the package location:
+
+```bash
+SSPDF_DIR=$(node -e "console.log(require.resolve('h17-sspdf').replace('/index.js',''))")
+```
+
+If working inside the sspdf repo itself, use the current working directory instead.
 
 ## Required reading
 
 Before generating any document, always read:
 
-```
-DOCUMENTATION.md
+```bash
+cat $SSPDF_DIR/DOCUMENTATION.md
 ```
 
 Read the full Source section for operation types, field requirements, and patterns. Read the Theme section if you need to create or modify a theme.
 
 Check available themes:
 
-```
-examples/themes/
+```bash
+ls $SSPDF_DIR/examples/themes/
 ```
 
 Check existing source examples for patterns:
 
-```
-examples/sources/
+```bash
+ls $SSPDF_DIR/examples/sources/
 ```
 
 ## Operation types
@@ -125,31 +147,33 @@ Column widths: `"30%"` (percentage), `35` (fixed mm), or omitted (auto-divide). 
 ### CLI (simplest)
 
 ```bash
-node cli.js -s examples/sources/my-source.json -t default -o output/my-doc.pdf
+npx h17-sspdf -s my-source.json -t default -o output/my-doc.pdf
 ```
 
-Built-in themes: `default`, `editorial`, `newsprint`, `corporate`, `ceremony`, `program`.
+Built-in themes: `default`, `editorial`, `newsprint`, `corporate`, `ceremony`, `program`, `financial`.
 
 Custom theme file:
 
 ```bash
-node cli.js -s my-source.json -t ./my-custom-theme.js -o output/custom.pdf
+npx h17-sspdf -s my-source.json -t ./my-custom-theme.js -o output/custom.pdf
 ```
+
+The CLI auto-detects chart operations and pre-renders them. No extra setup needed.
 
 ### Programmatic
 
 ```js
-const { renderDocument } = require("./index");
-const theme = require("./examples/themes/theme-default");
-const source = require("./examples/sources/my-source.json");
+const { renderDocument } = require("h17-sspdf");
+const theme = require("h17-sspdf/examples/themes/theme-default");
+const source = require("./my-source.json");
 
 renderDocument({ source, theme, outputPath: "output/my-doc.pdf" });
 ```
 
-### With charts (async)
+### With charts (async, programmatic only)
 
 ```js
-const { renderDocument, registerPlugin, plugins } = require("./index");
+const { renderDocument, registerPlugin, plugins } = require("h17-sspdf");
 
 registerPlugin("chart", plugins.chart);
 
@@ -167,6 +191,8 @@ async function main() {
 main();
 ```
 
+Note: the CLI handles chart pre-rendering automatically. The programmatic API requires manual pre-rendering.
+
 ## Verification
 
 After rendering, confirm the PDF exists and open it for the user:
@@ -179,4 +205,4 @@ open output/my-doc.pdf
 If something fails, check:
 - All labels referenced in the source exist in the theme
 - Table columns array is non-empty, rows array exists
-- Chart operations were pre-rendered before renderDocument
+- h17-sspdf is installed (`npx h17-sspdf --help`)
