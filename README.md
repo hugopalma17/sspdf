@@ -409,8 +409,8 @@ npx sspdf -s source.json -t theme.js -o output.pdf
 
 - A4 only
 - Single-line `row` cells, no multi-line column pairs
-- No `{{pages}}` total page count token
-- The `canvas` npm package (native C++ addon) is the only runtime dependency, required for server-side chart rendering.
+- `{{page}}` gives the current page number; `{{pages}}` (total page count) is not supported because keep-together rules make the final page count unpredictable until the last operation is laid out
+- Charts require the `canvas` npm package (native C++ addon) for server-side rendering; everything else is zero native dependencies
 
 ---
 
