@@ -1397,6 +1397,8 @@ registerPlugin("chart", plugins.chart);
 The chart plugin is synchronous during `renderDocument`, but Chart.js rendering is async. You must call `plugins.chart.preRender(operation)` before `renderDocument`. This renders the chart to a PNG buffer and caches it on the operation object.
 
 ```js
+const theme = require("./my-theme");
+
 const chartOp = {
   type: "chart",
   chartType: "bar",

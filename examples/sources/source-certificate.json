@@ -44,7 +44,7 @@
       "xRightMm": 178
     },
     { "type": "spacer", "mm": 16 },
-    { "type": "text", "label": "cert.date", "text": "Issued in Porto on March 20, 2026", "xMm": 22, "maxWidthMm": 166 },
+    { "type": "text", "label": "cert.date", "text": "Issued in São Paulo, Brazil on March 20, 2026", "xMm": 22, "maxWidthMm": 166 },
     {
       "type": "hiddenText",
       "label": "cert.hidden.tags",
