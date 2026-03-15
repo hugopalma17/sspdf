@@ -1,8 +1,11 @@
+const fs = require("fs");
+const path = require("path");
 const { PDFCore, getStyleMarginsMm, getTextPaddingMm, applyTextTransform } = require("./pdf-core");
 const { pxToMm, resolveLineHeightMm } = require("./units");
 const { registerThemeFonts } = require("./font-registry");
 const { getPlugin, hasPlugin } = require("./plugin-registry");
 const { validateSource, validateTheme, validateSourceAgainstTheme } = require("./validate");
+const { getImageDimensions, resolveImageSize } = require("./image-utils");
 
 /**
  * Render a document by executing labeled operations.
@@ -334,6 +337,7 @@ function isOperationType(type) {
     || type === "spacer"
     || type === "hiddenText"
     || type === "table"
+    || type === "image"
     || hasPlugin(type);
 }
 
@@ -731,6 +735,108 @@ function executeOperation(ctx) {
     return;
   }
 
+  if (operation.type === "image") {
+    const bounds = getHorizontalBounds(core, templateBypassMargins);
+    const contentWidthMm = bounds.right - bounds.left;
+
+    // Read image file
+    const srcPath = operation.src;
+    if (!srcPath) {
+      throw new Error(`Operation ${index} (image) missing "src" field`);
+    }
+    const resolvedPath = path.isAbsolute(srcPath) ? srcPath : path.resolve(process.cwd(), srcPath);
+    const buf = fs.readFileSync(resolvedPath);
+    const imgInfo = getImageDimensions(buf);
+    const { widthMm, heightMm } = resolveImageSize(operation, imgInfo.width, imgInfo.height, contentWidthMm);
+
+    // Resolve padding from label
+    const style = operation.label
+      ? resolveLabelStyle(theme, operation.label, operation, index)
+      : {};
+    const padding = getTextPaddingMm(style);
+    const marginTop = getStyleMarginsMm(style).top;
+    const marginBottom = getStyleMarginsMm(style).bottom;
+
+    // Caption style and height
+    let captionLines = [];
+    let captionStyle = null;
+    let captionLineHeightMm = 0;
+    let captionHeight = 0;
+    if (operation.caption) {
+      const capLabel = operation.captionLabel || (operation.label ? operation.label + ".caption" : null);
+      captionStyle = capLabel
+        ? resolveLabelStyle(theme, capLabel, operation, index, "captionLabel", true)
+        : null;
+      if (!captionStyle) {
+        // Fall back to theme default text
+        captionStyle = Object.assign({}, theme.page.defaultText, { align: "center" });
+      }
+      if (!captionStyle.align) {
+        captionStyle.align = "center";
+      }
+      captionLineHeightMm = resolveLineHeightMm(
+        Number(captionStyle.fontSize) || 10,
+        captionStyle.lineHeight || 1.2
+      );
+      const captionWidth = widthMm - padding.left - padding.right;
+      captionLines = core.measureWrappedLines(
+        applyTextTransform(operation.caption, captionStyle.textTransform),
+        captionWidth > 0 ? captionWidth : widthMm,
+        captionStyle
+      );
+      const captionMargins = getStyleMarginsMm(captionStyle);
+      captionHeight = captionMargins.top + (Math.max(captionLines.length, 1) * captionLineHeightMm) + captionMargins.bottom;
+    }
+
+    // Total block height
+    const totalHeight = marginTop + padding.top + heightMm + captionHeight + padding.bottom + marginBottom;
+
+    if (!templateMode) {
+      core.ensureSpace(totalHeight);
+    }
+
+    const startY = core.cursorY + marginTop;
+    const innerLeft = bounds.left + padding.left;
+    const innerWidth = contentWidthMm - padding.left - padding.right;
+
+    // Center image within padded area
+    const imgX = innerLeft + (innerWidth - widthMm) / 2;
+    const imgY = startY + padding.top;
+
+    // Draw image
+    const base64 = buf.toString("base64");
+    core.drawImage({
+      data: base64,
+      format: imgInfo.format,
+      x: imgX,
+      y: imgY,
+      widthMm,
+      heightMm,
+      style: {},
+      advance: false,
+      allowPageBreak: false,
+    });
+
+    // Draw caption at the correct Y by setting cursor before drawText
+    if (operation.caption && captionStyle && captionLines.length > 0) {
+      core.cursorY = imgY + heightMm;
+      const captionX = innerLeft;
+      const captionWidth = innerWidth > 0 ? innerWidth : widthMm;
+      core.drawText({
+        text: operation.caption,
+        style: captionStyle,
+        x: captionX,
+        maxWidth: captionWidth,
+        advance: true,
+        allowPageBreak: false,
+      });
+    }
+
+    // Advance cursor past the whole block
+    core.cursorY = startY + padding.top + heightMm + captionHeight + padding.bottom + marginBottom;
+    return;
+  }
+
   const plugin = getPlugin(operation.type);
   if (plugin) {
     const bounds = getHorizontalBounds(core, templateBypassMargins);
@@ -933,6 +1039,45 @@ function estimateOperationHeight(ctx) {
 
     total += margins.bottom;
     return total;
+  }
+
+  if (operation.type === "image") {
+    const style = operation.label
+      ? resolveLabelStyle(theme, operation.label, operation, index)
+      : {};
+    const margins = getStyleMarginsMm(style);
+    const padding = getTextPaddingMm(style);
+    const contentWidthMm = core.pageWidth - core.marginLeftMm - core.marginRightMm;
+
+    // Read image to get dimensions for height calculation
+    let imgHeightMm = 80; // fallback
+    if (operation.src) {
+      try {
+        const resolvedPath = path.isAbsolute(operation.src) ? operation.src : path.resolve(process.cwd(), operation.src);
+        const buf = fs.readFileSync(resolvedPath);
+        const imgInfo = getImageDimensions(buf);
+        const resolved = resolveImageSize(operation, imgInfo.width, imgInfo.height, contentWidthMm - padding.left - padding.right);
+        imgHeightMm = resolved.heightMm;
+      } catch (e) {
+        // If file can't be read during height calc, use fallback
+      }
+    } else if (operation.heightMm !== undefined) {
+      imgHeightMm = Number(operation.heightMm);
+    }
+
+    let captionHeight = 0;
+    if (operation.caption) {
+      const capLabel = operation.captionLabel || (operation.label ? operation.label + ".caption" : null);
+      const captionStyle = capLabel
+        ? resolveLabelStyle(theme, capLabel, operation, index, "captionLabel", true)
+        : Object.assign({}, theme.page.defaultText);
+      const capLh = resolveLineHeightMm(Number(captionStyle.fontSize) || 10, captionStyle.lineHeight || 1.2);
+      const capMargins = getStyleMarginsMm(captionStyle);
+      // Rough: 1 line for caption height calc
+      captionHeight = capMargins.top + capLh + capMargins.bottom;
+    }
+
+    return margins.top + padding.top + imgHeightMm + captionHeight + padding.bottom + margins.bottom;
   }
 
   const plugin = getPlugin(operation.type);
