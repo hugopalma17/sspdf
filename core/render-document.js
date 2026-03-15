@@ -768,8 +768,13 @@ function executeOperation(ctx) {
         ? resolveLabelStyle(theme, capLabel, operation, index, "captionLabel", true)
         : null;
       if (!captionStyle) {
-        // Fall back to theme default text
-        captionStyle = Object.assign({}, theme.page.defaultText, { align: "center" });
+        // Fall back to theme default text: same family, italic, smaller, centered
+        const dt = theme.page.defaultText || {};
+        captionStyle = Object.assign({}, dt, {
+          fontStyle: "italic",
+          fontSize: Math.max((Number(dt.fontSize) || 10) - 2, 7),
+          align: "center",
+        });
       }
       if (!captionStyle.align) {
         captionStyle.align = "center";

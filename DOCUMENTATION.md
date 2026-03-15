@@ -494,6 +494,47 @@ Renders a data table with optional header row, per-column alignment, alternating
 
 **Style cascade:** Engine defaults, then theme label, then source-level overrides. The source operation can override `altRowColor`, `cellPaddingMm`, and all border properties directly.
 
+#### `image`
+
+Embeds a PNG or JPEG image from a file path. The image and its caption are always kept together on the same page.
+
+```json
+{
+  "type": "image",
+  "src": "photos/cityscape.jpg",
+  "width": "100%",
+  "label": "editorial.photo",
+  "caption": "Fig. 1 - Downtown skyline at dusk",
+  "captionLabel": "editorial.photo.caption"
+}
+```
+
+| Field | Required | Type | Description |
+|---|---|---|---|
+| `src` | yes | string | File path to a PNG or JPEG image (absolute, or relative to CWD) |
+| `width` | no | string | Percentage of content width (e.g., `"100%"`, `"50%"`). Height derived from aspect ratio. |
+| `widthMm` | no | number | Explicit width in mm. If `heightMm` is omitted, height derived from aspect ratio. |
+| `heightMm` | no | number | Explicit height in mm. If both `widthMm` and `heightMm` are set, the image may distort. |
+| `label` | no | string | Theme label for padding and margins around the image |
+| `caption` | no | string | Caption text rendered centered below the image |
+| `captionLabel` | no | string | Theme label for caption styling (default: `label + ".caption"`) |
+
+**Size resolution priority:**
+
+1. `widthMm` + `heightMm` both set: exact slot, may distort if aspect ratio differs
+2. `width: "80%"`: percentage of content area width, height from aspect ratio
+3. `widthMm` only: fixed width, height from aspect ratio
+4. `heightMm` only: fixed height, width from aspect ratio
+5. Nothing set: fills content width, height from aspect ratio
+
+When the image is narrower than the content area, it is centered horizontally within the padded bounds.
+
+**Caption behavior:** If `caption` is set, the text renders centered below the image. The caption label defaults to `label + ".caption"`. If no caption label exists in the theme, the caption uses the theme's default text style with italic and a smaller font size, center-aligned.
+
+**Image label properties:** The `label` on an image operation controls spacing around the image block (padding and margins), not typography. Use it to set `paddingTopMm`, `paddingBottomMm`, `paddingLeftMm`, `paddingRightMm`, `marginTopMm`, `marginBottomMm`.
+
+**Keep-together:** The image and its caption are always rendered as one unit. If the total height (margins + padding + image + caption) does not fit on the current page, the entire block moves to the next page.
+
 #### `spacer`
 
 Adds vertical space without drawing anything.
@@ -615,6 +656,7 @@ The engine positions content using a cursor that starts at `marginTopMm` and mov
 | `spacer` | the specified mm/px value |
 | `hiddenText` | 0 |
 | `table` | marginTop + headerRowHeight + sum(dataRowHeights) + marginBottom |
+| `image` | marginTop + paddingTop + imageHeightMm + captionHeight + paddingBottom + marginBottom |
 | `block` | sum of children deltas (+ spaceAfter if defined) |
 
 Where:
@@ -1285,6 +1327,7 @@ This applies to all color properties: `color`, `backgroundColor`, `borderColor`,
 | `bullet` | `label`, `text`/`items`/`bullets` | `markerLabel`, `marker`, `textIndentMm` |
 | `divider` | `label` | `x1Mm`, `x2Mm` |
 | `table` | `label`, `columns`, `rows` | `headerLabel`, `xMm`, `maxWidthMm`, border/padding overrides |
+| `image` | `src` | `width`, `widthMm`, `heightMm`, `label`, `caption`, `captionLabel` |
 | `spacer` | `mm` or `px` or `label` | - |
 | `block` | `children`/`content`/`items` | `label`, `keepTogether`, `spaceAfterMm`/`Px`/`Label` |
 | `section` | `content` | `label`, `keepTogether` |

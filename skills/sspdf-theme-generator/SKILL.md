@@ -204,6 +204,10 @@ The source JSON uses the same `bullet` operation with `markerLabel` pointing to 
 
 **Spacer labels:** `spaceMm`, `spacePx`
 
+**Image labels:** `paddingTopMm`, `paddingBottomMm`, `paddingLeftMm`, `paddingRightMm`, `marginTopMm`, `marginBottomMm` (controls spacing around the image block, not typography)
+
+**Image caption labels:** `fontFamily`, `fontStyle`, `fontSize`, `color`, `lineHeight`, `align` (always center-aligned). If not declared in the theme, the caption defaults to the theme's `defaultText` font family, italic, smaller size, centered.
+
 **Table cell labels:** `fontFamily`, `fontStyle`, `fontSize`, `color`, `lineHeight`, `cellPaddingMm`, `backgroundColor`, `altRowColor`, `borderColor`, `borderTopMm`, `borderBottomMm`, `borderLeftMm`, `borderRightMm`, per-edge color overrides
 
 ## Workflow
@@ -234,6 +238,8 @@ Before finalizing a theme, verify:
 - Divider labels have `color` and `lineWidth`
 - Bullet text marker labels have `marker` character
 - Bullet shape marker labels have `shape` name
+- Image labels use padding/margin props only (not font props)
+- Image caption labels have `fontFamily`, `fontSize`, `color`, `align: "center"`
 - Colors are `[R, G, B]` arrays, not hex strings
 
 **If using custom fonts:**

@@ -85,8 +85,38 @@ ls $SSPDF_DIR/examples/sources/
 - `block` - groups children, optional container background/border, `keepTogether`
 - `section` - groups children, allows page breaks inside (keepTogether defaults false)
 - `table` - data table with header, per-column alignment, alternating rows, borders
+- `image` - embedded PNG/JPEG with optional centered caption
 
 Read DOCUMENTATION.md for field details on each type.
+
+## Image operations
+
+Embed images from file paths. Works in any source JSON, any layout.
+
+```json
+{
+  "type": "image",
+  "src": "photos/building.jpg",
+  "width": "100%",
+  "label": "doc.image",
+  "caption": "Fig. 1 - The main office building",
+  "captionLabel": "doc.image.caption"
+}
+```
+
+**Size options:**
+- `width: "80%"` - percentage of content width, height from aspect ratio (most common)
+- `widthMm: 120` - explicit width in mm, height from aspect ratio
+- `widthMm: 120, heightMm: 80` - exact slot, may distort if ratio differs
+- No size specified - fills content width, height from aspect ratio
+
+**Caption:** If `caption` is set, renders centered below the image. Uses `captionLabel` for styling. If no `captionLabel` is specified, defaults to `label + ".caption"`. If that label does not exist in the theme, falls back to the theme's default text in italic at a smaller size, center-aligned.
+
+**Label:** Controls padding and margins around the image block, not text. Set `paddingTopMm`, `paddingBottomMm`, `paddingLeftMm`, `paddingRightMm`, `marginTopMm`, `marginBottomMm`.
+
+**Keep-together:** Image + caption never split across pages. If the block does not fit, it moves to the next page.
+
+**Resolution:** For crisp output at full A4 content width (170mm), images should be at least 1000px wide. 1200px+ is comfortable. Below 800px it starts looking soft.
 
 ## Built-in fonts
 
@@ -249,6 +279,8 @@ All colors are `[R, G, B]` arrays, values 0-255. Example: `[255, 0, 128]` is pin
 5. Prefer text arrays over repeating the same operation for multiple paragraphs.
 6. Table `rows` must match `columns` length. Each cell is a string.
 7. When using shapes as bullet markers, the source JSON is identical to text markers. Only the theme label changes (`shape` instead of `marker`).
+8. Image `src` must point to an existing PNG or JPEG file. For crisp full-width A4 output, source images should be at least 1000px wide.
+9. Image + caption are always kept together. They never split across pages.
 
 ## Workflow
 
