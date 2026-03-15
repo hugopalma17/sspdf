@@ -2,7 +2,7 @@ const { hasPlugin } = require("./plugin-registry");
 
 const OPERATION_TYPES = new Set([
   "text", "row", "bullet", "divider", "spacer", "hiddenText",
-  "block", "group", "section", "quote", "table",
+  "block", "group", "section", "quote", "table", "image",
 ]);
 
 function validateSource(source) {
@@ -94,6 +94,11 @@ function validateOperation(op, path) {
     return;
   }
 
+  if (type === "image") {
+    if (!op.src) throw new Error(`${path}: image requires src`);
+    return;
+  }
+
   if (type === "block" || type === "group" || type === "section") {
     const children = op.children || op.content || op.items || op.sections;
     if (!Array.isArray(children)) {
@@ -150,9 +155,16 @@ function collectLabels(node, missing, themeLabels) {
   if (node.headerLabel && !themeLabels.has(node.headerLabel)) missing.push(node.headerLabel);
   if (node.spaceAfterLabel && !themeLabels.has(node.spaceAfterLabel)) missing.push(node.spaceAfterLabel);
 
+  if (node.captionLabel && !themeLabels.has(node.captionLabel)) missing.push(node.captionLabel);
+
   if (node.type === "quote" && node.attribution) {
     const attrLabel = node.attributionLabel || (node.label + ".attribution");
     if (!themeLabels.has(attrLabel)) missing.push(attrLabel);
+  }
+
+  if (node.type === "image" && node.caption && !node.captionLabel && node.label) {
+    const capLabel = node.label + ".caption";
+    if (!themeLabels.has(capLabel)) missing.push(capLabel);
   }
 }
 

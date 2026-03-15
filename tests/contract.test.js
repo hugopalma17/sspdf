@@ -900,3 +900,59 @@ test("table: page break repeats header", () => {
 
   assert.ok(core.doc.getNumberOfPages() >= 2, "table should span at least 2 pages");
 });
+
+// ─── Image cursor math ──────────────────────────────────────────
+
+const { getImageDimensions, resolveImageSize } = require("../core/image-utils");
+
+test("image-utils: PNG dimensions parsed correctly", () => {
+  const zlib = require("zlib");
+  // Create minimal valid PNG: 120x80
+  function crc32(buf) {
+    let crc = 0xFFFFFFFF;
+    const table = new Int32Array(256);
+    for (let n = 0; n < 256; n++) {
+      let c = n;
+      for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+      table[n] = c;
+    }
+    for (let i = 0; i < buf.length; i++) crc = table[(crc ^ buf[i]) & 0xFF] ^ (crc >>> 8);
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+  }
+  function makeChunk(type, data) {
+    const len = Buffer.alloc(4); len.writeUInt32BE(data.length);
+    const typeB = Buffer.from(type);
+    const body = Buffer.concat([typeB, data]);
+    const c = Buffer.alloc(4); c.writeUInt32BE(crc32(body));
+    return Buffer.concat([len, body, c]);
+  }
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(120, 0); ihdr.writeUInt32BE(80, 4);
+  ihdr[8] = 8; ihdr[9] = 2;
+  const raw = Buffer.alloc(80 * (1 + 120 * 3));
+  const compressed = zlib.deflateSync(raw);
+  const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  const png = Buffer.concat([sig, makeChunk("IHDR", ihdr), makeChunk("IDAT", compressed), makeChunk("IEND", Buffer.alloc(0))]);
+  const info = getImageDimensions(png);
+  assert.strictEqual(info.width, 120);
+  assert.strictEqual(info.height, 80);
+  assert.strictEqual(info.format, "PNG");
+});
+
+test("image-utils: resolveImageSize percentage width", () => {
+  const { widthMm, heightMm } = resolveImageSize({ width: "50%" }, 200, 100, 170);
+  near(widthMm, 85, "50% of 170mm");
+  near(heightMm, 42.5, "height preserves 2:1 aspect ratio");
+});
+
+test("image-utils: resolveImageSize explicit widthMm derives height", () => {
+  const { widthMm, heightMm } = resolveImageSize({ widthMm: 100 }, 400, 200, 170);
+  near(widthMm, 100, "explicit widthMm");
+  near(heightMm, 50, "height from 2:1 ratio");
+});
+
+test("image-utils: resolveImageSize both dimensions (may distort)", () => {
+  const { widthMm, heightMm } = resolveImageSize({ widthMm: 100, heightMm: 100 }, 400, 200, 170);
+  near(widthMm, 100, "explicit widthMm");
+  near(heightMm, 100, "explicit heightMm (distorted)");
+});

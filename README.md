@@ -261,6 +261,7 @@ labels: {
 | `row` | Left/right pair on one line | `leftLabel`, `rightLabel`, `leftText`, `rightText` |
 | `bullet` | Marker + wrapped text | `label`, `markerLabel`, `bullets` (array) |
 | `divider` | Horizontal rule | `label`, `x1Mm`, `x2Mm` |
+| `image` | Embedded PNG/JPEG | `src`, `width` (percentage or mm), `caption` |
 | `spacer` | Vertical gap | `mm`, `px`, or `label` |
 | `hiddenText` | Invisible text | `label`, `text` |
 | `quote` | Blockquote with attribution | `label`, `text`, `attribution` |

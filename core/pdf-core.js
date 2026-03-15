@@ -614,6 +614,10 @@ class PDFCore {
       ? Number(payload.y) + marginTopMm
       : this.cursorY + marginTopMm;
 
+    // Save/restore graphics state around addImage to prevent jsPDF font leak
+    if (typeof this.doc.saveGraphicsState === "function") {
+      this.doc.saveGraphicsState();
+    }
     this.doc.addImage(
       payload.data,
       payload.format || "PNG",
@@ -622,6 +626,10 @@ class PDFCore {
       widthMm,
       heightMm
     );
+    if (typeof this.doc.restoreGraphicsState === "function") {
+      this.doc.restoreGraphicsState();
+    }
+    this.applyDefaultRenderState();
 
     const endY = drawY + heightMm;
     this.lastDrawnBounds = {
