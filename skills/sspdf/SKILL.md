@@ -110,7 +110,7 @@ Embed images from file paths. Works in any source JSON, any layout.
 - `widthMm: 120, heightMm: 80` - exact slot, may distort if ratio differs
 - No size specified - fills content width, height from aspect ratio
 
-**Caption:** If `caption` is set, renders centered below the image. Uses `captionLabel` for styling. If no `captionLabel` is specified, defaults to `label + ".caption"`. If that label does not exist in the theme, falls back to the theme's default text in italic at a smaller size, center-aligned.
+**Caption:** If `caption` is set, renders centered below the image. Uses `captionLabel` for styling. If no `captionLabel` is specified, defaults to `label + ".caption"`. If that label does not exist in the theme, the engine applies defaults: same font family as `page.defaultText`, italic, 2pt smaller, centered, 1.5mm gap. Color inherited from `defaultText`. To override, declare a `captionLabel` in the theme.
 
 **Label:** Controls padding and margins around the image block, not text. Set `paddingTopMm`, `paddingBottomMm`, `paddingLeftMm`, `paddingRightMm`, `marginTopMm`, `marginBottomMm`.
 

@@ -206,7 +206,7 @@ The source JSON uses the same `bullet` operation with `markerLabel` pointing to 
 
 **Image labels:** `paddingTopMm`, `paddingBottomMm`, `paddingLeftMm`, `paddingRightMm`, `marginTopMm`, `marginBottomMm` (controls spacing around the image block, not typography)
 
-**Image caption labels:** `fontFamily`, `fontStyle`, `fontSize`, `color`, `lineHeight`, `align` (always center-aligned). If not declared in the theme, the caption defaults to the theme's `defaultText` font family, italic, smaller size, centered.
+**Image caption labels:** `fontFamily`, `fontStyle`, `fontSize`, `color`, `lineHeight`, `align` (always center-aligned). If not declared in the theme, the engine applies defaults: same font family as `page.defaultText`, italic, 2pt smaller, centered, 1.5mm gap. Color inherited from `defaultText`. To override, declare the caption label in the theme.
 
 **Table cell labels:** `fontFamily`, `fontStyle`, `fontSize`, `color`, `lineHeight`, `cellPaddingMm`, `backgroundColor`, `altRowColor`, `borderColor`, `borderTopMm`, `borderBottomMm`, `borderLeftMm`, `borderRightMm`, per-edge color overrides
 

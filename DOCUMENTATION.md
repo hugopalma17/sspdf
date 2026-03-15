@@ -529,11 +529,13 @@ Embeds a PNG or JPEG image from a file path. The image and its caption are alway
 
 When the image is narrower than the content area, it is centered horizontally within the padded bounds.
 
-**Caption behavior:** If `caption` is set, the text renders centered below the image. The caption label defaults to `label + ".caption"`. If no caption label exists in the theme, the caption uses the theme's default text style with italic and a smaller font size, center-aligned.
+**Caption behavior:** If `caption` is set, the text renders centered below the image. The caption label defaults to `label + ".caption"`. If no `captionLabel` or derived label exists in the theme, the engine applies defaults: same font family as `page.defaultText`, italic, 2pt smaller, centered, with a 1.5mm gap above the caption. Color is inherited from `defaultText` (not hardcoded), so it works on any background. To override the defaults, declare a `captionLabel` in the theme.
 
-**Image label properties:** The `label` on an image operation controls spacing around the image block (padding and margins), not typography. Use it to set `paddingTopMm`, `paddingBottomMm`, `paddingLeftMm`, `paddingRightMm`, `marginTopMm`, `marginBottomMm`.
+**Image label properties:** The `label` on an image operation controls spacing around the image block (padding and margins), not typography. Use it to set `paddingTopMm`, `paddingBottomMm`, `paddingLeftMm`, `paddingRightMm`, `marginTopMm`, `marginBottomMm`. If no `label` is set, the image renders with zero padding and margins.
 
 **Keep-together:** The image and its caption are always rendered as one unit. If the total height (margins + padding + image + caption) does not fit on the current page, the entire block moves to the next page.
+
+**Works in any layout:** The image operation is a core type, not a plugin. It works in any source JSON with any theme. No registration or setup needed.
 
 #### `spacer`
 
