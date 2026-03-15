@@ -85,6 +85,12 @@ const theme = {
       lineHeight: 1.2,
       marker: "-",
     },
+    "bullet.marker.arrow": {
+      shape: "arrow",
+      shapeColor: [0, 128, 255],
+      shapeSize: 1,
+      textIndentMm: 2,
+    },
     "t.row.left": {
       fontFamily: "helvetica",
       fontStyle: "normal",
@@ -369,6 +375,54 @@ test("bullet: multi-line wraps correctly", () => {
 
   const expected = startY + (lines.length * lh(10, 1.2)) + pxToMm(4);
   near(core.cursorY, expected, "cursor after multi-line bullet");
+});
+
+test("bullet: shape marker same cursor delta as text marker", () => {
+  const { getShapeWidth } = require("../core/shapes");
+  const core = makeCore();
+  const startY = core.cursorY;
+  const textStyle = theme.labels["t.body"];
+  const markerStyle = theme.labels["bullet.marker.arrow"];
+
+  const shapeW = getShapeWidth("arrow", 1);
+  const indent = shapeW + 2; // shapeWidth + markerStyle.textIndentMm
+  const maxWidth = 170 - indent;
+
+  core.drawBullet({
+    text: "Shape bullet",
+    textStyle,
+    markerStyle,
+    x: 20,
+    textIndentMm: indent,
+    maxWidth,
+  });
+
+  const expected = startY + lh(10, 1.2) + pxToMm(4);
+  near(core.cursorY, expected, "cursor after shape bullet");
+});
+
+test("renderDocument: shape marker bullet via markerLabel", () => {
+  const { getShapeWidth } = require("../core/shapes");
+  const source = {
+    operations: [
+      { type: "text", label: "t.body", text: "Before" },
+      {
+        type: "bullet",
+        label: "t.body",
+        markerLabel: "bullet.marker.arrow",
+        bullets: ["First point", "Second point"],
+      },
+      { type: "text", label: "t.body", text: "After" },
+    ],
+  };
+
+  const { core } = renderDocument({ source, theme });
+
+  // Shape indent = getShapeWidth("arrow", 1) + textIndentMm(2) + gap(1.5)
+  const textDelta = lh(10, 1.2) + pxToMm(4);
+  const bulletDelta = lh(10, 1.2) + pxToMm(4);
+  const expected = core.contentTopY + textDelta + bulletDelta + bulletDelta + textDelta;
+  near(core.cursorY, expected, "cursor after shape bullet list via renderDocument");
 });
 
 // ─── Spacer and hidden text ─────────────────────────────────────

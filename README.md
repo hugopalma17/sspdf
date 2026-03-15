@@ -320,23 +320,69 @@ Any operation accepts `xMm` and `maxWidthMm` to override the theme margins for t
 
 ---
 
+## Built-in fonts
+
+20 Google Fonts ship with the package as base64 TTF. Each exports `{ Regular, Bold }`.
+
+**Sans-serif:** Inter, Roboto, Open Sans, Montserrat, Lato, Raleway, Nunito, Work Sans, IBM Plex Sans, PT Sans, Oswald
+
+**Serif:** Merriweather, Lora, Playfair Display, Crimson Text, Libre Baskerville, Source Serif 4
+
+**Monospace:** Fira Code, JetBrains Mono, Source Code Pro
+
+```js
+const INTER = require('h17-sspdf/fonts/inter.js');
+
+customFonts: [{
+  family: 'Inter',
+  faces: [
+    { style: 'normal', fileName: 'Inter-Regular.ttf', data: INTER.Regular },
+    { style: 'bold',   fileName: 'Inter-Bold.ttf',    data: INTER.Bold },
+  ],
+}],
+```
+
+List all fonts: `npx h17-sspdf --fonts`
+
+---
+
+## Vector shapes
+
+20 built-in vector shapes rendered via jsPDF drawing primitives. No text encoding, no font dependencies.
+
+Use as bullet markers by setting `shape` on a marker label:
+
+```js
+// Theme
+'bullet.arrow': { shape: 'arrow', shapeColor: [0, 128, 255], shapeSize: 0.8 }
+
+// Source JSON (same bullet operation as always)
+{ "type": "bullet", "label": "doc.body", "markerLabel": "bullet.arrow", "bullets": ["Point one"] }
+```
+
+Available: `arrow`, `circle`, `square`, `diamond`, `triangle`, `dash`, `chevron`, `doubleColon`, `commentSlash`, `hashComment`, `bracketChevron`, `treeBranch`, `terminalPrompt`, `checkmark`, `cross`, `star`, `plus`, `minus`, `warning`, `infoCircle`
+
+List all shapes: `npx h17-sspdf --shapes`
+
+---
+
 ## Custom fonts
 
-Embed TTF as base64 and register in the theme:
+Embed your own TTF as base64 and register in the theme:
 
 ```js
 customFonts: [
   {
-    family: 'Inter',
+    family: 'MyFont',
     faces: [
-      { style: 'normal', fileName: 'Inter-Regular.ttf', data: '<base64>' },
-      { style: 'bold',   fileName: 'Inter-Bold.ttf',    data: '<base64>' },
+      { style: 'normal', fileName: 'MyFont-Regular.ttf', data: '<base64>' },
+      { style: 'bold',   fileName: 'MyFont-Bold.ttf',    data: '<base64>' },
     ],
   },
 ],
 ```
 
-Then use `fontFamily: 'Inter'` in any label.
+Then use `fontFamily: 'MyFont'` in any label.
 
 ---
 
@@ -394,14 +440,26 @@ registerPlugin('chart', plugins.chart);
 ## CLI
 
 ```bash
-npx sspdf -s source.json -t theme.js -o output.pdf
+npx h17-sspdf -s source.json -t theme.js -o output.pdf
 ```
 
 | Flag | Short | Description |
 |------|-------|-------------|
 | `--source` | `-s` | Path to source JSON (or pipe via stdin) |
-| `--theme` | `-t` | Path to theme `.js` file |
+| `--theme` | `-t` | Path to theme `.js` file or built-in name |
 | `--output` | `-o` | Output PDF path |
+| `--fonts` | | List built-in fonts |
+| `--shapes` | | List built-in vector shapes |
+| `--help` | `-h` | Show help |
+
+---
+
+## AI skills
+
+Claude Code skills for generating PDFs and themes are available in the `skills/` directory of the [GitHub repository](https://github.com/hugopalma17/sspdf):
+
+- `skills/sspdf/` - Generate PDF documents from a task description
+- `skills/sspdf-theme-generator/` - Generate theme files from brand specs
 
 ---
 

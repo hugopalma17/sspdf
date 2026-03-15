@@ -16,6 +16,13 @@ license: Apache-2.0
 
 You generate theme files for the sspdf PDF engine. A theme is a JS object that controls every visual decision in a document. You know the full label property schema and produce themes that work on first render.
 
+## GitHub repository
+
+The full source, examples, tests, and additional resources are at:
+https://github.com/hugopalma17/sspdf
+
+The npm package includes core, fonts, vendor, example themes, and example sources. The GitHub repo also contains test suites, skills, and development history.
+
 ## Step 0: Verify installation
 
 Before anything else, verify h17-sspdf is installed:
@@ -112,6 +119,59 @@ module.exports = {
 };
 ```
 
+## Built-in fonts
+
+The package ships with 20 Google Fonts as base64 TTF files. Each exports `{ Regular, Bold }` (capitalized). Only normal and bold faces ship. No italic TTFs included.
+
+**Sans-serif:** Inter (`inter`), Roboto (`roboto`), Open Sans (`open-sans`), Montserrat (`montserrat`), Lato (`lato`), Raleway (`raleway`), Nunito (`nunito`), Work Sans (`work-sans`), IBM Plex Sans (`ibm-plex-sans`), PT Sans (`pt-sans`), Oswald (`oswald`)
+
+**Serif:** Merriweather (`merriweather`), Lora (`lora`), Playfair Display (`playfair-display`), Crimson Text (`crimson-text`), Libre Baskerville (`libre-baskerville`), Source Serif 4 (`source-serif-4`)
+
+**Monospace:** Fira Code (`fira-code`), JetBrains Mono (`jetbrains-mono`), Source Code Pro (`source-code-pro`)
+
+Require path: `h17-sspdf/fonts/<name>.js` where `<name>` is the value in parentheses above.
+
+```js
+const INTER = require("h17-sspdf/fonts/inter.js");
+const MERRIWEATHER = require("h17-sspdf/fonts/merriweather.js");
+
+customFonts: [
+  {
+    family: "Inter",
+    faces: [
+      { style: "normal", fileName: "Inter-Regular.ttf", data: INTER.Regular },
+      { style: "bold", fileName: "Inter-Bold.ttf", data: INTER.Bold },
+    ],
+  },
+  {
+    family: "Merriweather",
+    faces: [
+      { style: "normal", fileName: "Merriweather-Regular.ttf", data: MERRIWEATHER.Regular },
+      { style: "bold", fileName: "Merriweather-Bold.ttf", data: MERRIWEATHER.Bold },
+    ],
+  },
+],
+```
+
+If you set `fontStyle: "italic"` without a matching TTF, jsPDF throws: `Unable to look up font label for font 'Inter', 'italic'`.
+
+## Shape-based bullet markers
+
+Instead of text markers that may have unicode encoding issues, use vector shapes:
+
+```js
+"doc.marker.arrow": {
+  shape: "arrow",           // shape name from core/shapes.js
+  shapeColor: [0, 128, 255],
+  shapeSize: 0.8,
+  textIndentMm: 2,          // gap after shape (added to shape width)
+}
+```
+
+List available shapes: `npx h17-sspdf --shapes`
+
+The source JSON uses the same `bullet` operation with `markerLabel` pointing to this label. No changes needed on the source side.
+
 ## Rules
 
 1. Every label is self-contained. No inheritance between labels. If a label needs `fontFamily`, write `fontFamily`.
@@ -119,9 +179,10 @@ module.exports = {
 3. Only `"a4"` format and `"mm"` units are supported. The engine throws on anything else.
 4. The `page` section must include `defaultText`, `defaultStroke`, and `defaultFillColor`, all fully specified. These reset after every operation to prevent style leaks.
 5. Label names are arbitrary strings. Use a dot-namespace convention: `invoice.title`, `report.body`, `news.headline`.
-6. Built-in font families: `helvetica`, `courier`, `times`. For anything else, embed TTF via `customFonts`.
+6. Built-in jsPDF font families: `helvetica`, `courier`, `times`. For better typography, use the 20 shipped Google Fonts listed in the Built-in fonts section above, or embed your own TTF via `customFonts`.
 7. Table labels need `cellPaddingMm`, border properties, and optionally `altRowColor`. Use the shared constants pattern from `examples/themes/table.js` if the document includes tables.
 8. Do not hardcode positions or sizes in labels that belong in the source JSON.
+9. Only `"normal"` and `"bold"` font styles are available for built-in fonts. Do not use `"italic"` or `"bolditalic"` unless the font includes those TTF files.
 
 ## Label property quick reference
 
@@ -137,7 +198,9 @@ module.exports = {
 
 **Divider labels:** `color`, `lineWidth`, `opacity`, `dashPattern`, spacing props
 
-**Bullet marker:** `fontFamily`, `fontStyle`, `fontSize`, `color`, `lineHeight`, `marker`
+**Bullet marker (text):** `fontFamily`, `fontStyle`, `fontSize`, `color`, `lineHeight`, `marker`
+
+**Bullet marker (shape):** `shape`, `shapeColor`, `shapeSize`, `textIndentMm`
 
 **Spacer labels:** `spaceMm`, `spacePx`
 
@@ -152,6 +215,31 @@ module.exports = {
 5. Generate the theme file with all labels fully specified.
 6. If the document uses tables, read `examples/themes/table.js` and use the shared constants pattern.
 7. Write the file to the specified path.
+
+## Theme validation checklist
+
+Before finalizing a theme, verify:
+
+**Page section:**
+- `format: "a4"` and `unit: "mm"` (only supported values)
+- `orientation`: "portrait" or "landscape"
+- All four margins set (`marginTopMm`, `marginBottomMm`, `marginLeftMm`, `marginRightMm`)
+- `defaultText` fully specified (`fontFamily`, `fontStyle`, `fontSize`, `color`, `lineHeight`)
+- `defaultStroke` fully specified (`color`, `lineWidth`, `lineCap`, `lineJoin`)
+- `defaultFillColor` set
+
+**Labels:**
+- Every label has `fontFamily` explicitly set (no inheritance)
+- Table labels have `cellPaddingMm`, `borderColor`, `altRowColor` if using alternating rows
+- Divider labels have `color` and `lineWidth`
+- Bullet text marker labels have `marker` character
+- Bullet shape marker labels have `shape` name
+- Colors are `[R, G, B]` arrays, not hex strings
+
+**If using custom fonts:**
+- `customFonts` array includes all fonts used in labels
+- Each face has `style`, `fileName` (ending in `.ttf`), and `data` (base64)
+- `fontFamily` in labels matches `family` in `customFonts` exactly
 
 ## Verification
 

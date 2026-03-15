@@ -169,7 +169,9 @@ Used by `divider` operations. Does not use font properties.
 
 #### Bullet marker label properties
 
-The marker label controls the bullet character's appearance.
+The marker label controls the bullet character's appearance. A marker can be either a text character or a vector shape.
+
+**Text marker** (default):
 
 | Property | Type | Description |
 |---|---|---|
@@ -179,6 +181,17 @@ The marker label controls the bullet character's appearance.
 | `color` | [R,G,B] | Marker color |
 | `lineHeight` | number | Marker line height multiplier |
 | `marker` | string | The marker character (e.g., `"-"`) |
+
+**Shape marker** (vector, no text encoding needed):
+
+| Property | Type | Description |
+|---|---|---|
+| `shape` | string | Shape name from the built-in shape library (see Vector Shapes below) |
+| `shapeColor` | [R,G,B] | Shape fill/stroke color (falls back to `color` if omitted) |
+| `shapeSize` | number | Scale factor (default: 1) |
+| `textIndentMm` | number | Gap between shape and bullet text in mm (default: 1.5, added to shape width) |
+
+When `shape` is set, the core renders a vector shape instead of a text character. The text indent is calculated as `shapeWidth + textIndentMm`. No `fontFamily`, `fontSize`, or `marker` needed.
 
 #### Table label properties
 
@@ -1086,6 +1099,224 @@ module.exports = {
 - The `family` string must match exactly between `customFonts` and label `fontFamily`
 - Each face needs its own file - there's no automatic bold/italic synthesis
 - If you reference a font style that wasn't registered, jsPDF will throw
+
+### Font style limitations
+
+The built-in fonts ship with `Regular` and `Bold` faces only. There are no italic or bolditalic TTF files included. If you set `fontStyle: "italic"` with a built-in font, you will get:
+
+```
+Unable to look up font label for font 'Inter', 'italic'
+```
+
+To use italic text, you need a font that includes an italic TTF file, registered as a separate face in `customFonts`.
+
+---
+
+## Built-in fonts
+
+The package ships with 20 pre-embedded Google Fonts as base64-encoded TTF files. No need to convert fonts yourself.
+
+**Sans-serif:** Inter, Roboto, Open Sans, Montserrat, Lato, Raleway, Nunito, Work Sans, IBM Plex Sans, PT Sans, Oswald
+
+**Serif:** Merriweather, Lora, Playfair Display, Crimson Text, Libre Baskerville, Source Serif 4
+
+**Monospace:** Fira Code, JetBrains Mono, Source Code Pro
+
+### Usage
+
+```js
+const INTER = require("h17-sspdf/fonts/inter.js");
+
+module.exports = {
+  name: "My Theme",
+
+  customFonts: [
+    {
+      family: "Inter",
+      faces: [
+        { style: "normal", fileName: "Inter-Regular.ttf", data: INTER.Regular },
+        { style: "bold", fileName: "Inter-Bold.ttf", data: INTER.Bold },
+      ],
+    },
+  ],
+
+  // now use fontFamily: "Inter" in any label
+  labels: {
+    "doc.body": {
+      fontFamily: "Inter",
+      fontStyle: "normal",
+      fontSize: 10,
+      color: [40, 40, 40],
+      lineHeight: 1.4,
+    },
+  },
+};
+```
+
+The exported properties are `Regular` and `Bold` (capitalized). Every built-in font file exports these two keys.
+
+### Available font files
+
+| Font | Require path |
+|---|---|
+| Inter | `h17-sspdf/fonts/inter.js` |
+| Roboto | `h17-sspdf/fonts/roboto.js` |
+| Open Sans | `h17-sspdf/fonts/open-sans.js` |
+| Montserrat | `h17-sspdf/fonts/montserrat.js` |
+| Lato | `h17-sspdf/fonts/lato.js` |
+| Raleway | `h17-sspdf/fonts/raleway.js` |
+| Nunito | `h17-sspdf/fonts/nunito.js` |
+| Work Sans | `h17-sspdf/fonts/work-sans.js` |
+| IBM Plex Sans | `h17-sspdf/fonts/ibm-plex-sans.js` |
+| PT Sans | `h17-sspdf/fonts/pt-sans.js` |
+| Oswald | `h17-sspdf/fonts/oswald.js` |
+| Merriweather | `h17-sspdf/fonts/merriweather.js` |
+| Lora | `h17-sspdf/fonts/lora.js` |
+| Playfair Display | `h17-sspdf/fonts/playfair-display.js` |
+| Crimson Text | `h17-sspdf/fonts/crimson-text.js` |
+| Libre Baskerville | `h17-sspdf/fonts/libre-baskerville.js` |
+| Source Serif 4 | `h17-sspdf/fonts/source-serif-4.js` |
+| Fira Code | `h17-sspdf/fonts/fira-code.js` |
+| JetBrains Mono | `h17-sspdf/fonts/jetbrains-mono.js` |
+| Source Code Pro | `h17-sspdf/fonts/source-code-pro.js` |
+
+You can also list available fonts from the CLI:
+
+```bash
+npx h17-sspdf --fonts
+```
+
+---
+
+## Vector shapes
+
+The engine includes 20 vector shapes rendered directly via jsPDF drawing primitives. These bypass text encoding entirely, so they work regardless of font or character support.
+
+### Available shapes
+
+**Bullets:** `arrow`, `circle`, `square`, `diamond`, `triangle`, `dash`, `chevron`
+
+**Decorators:** `doubleColon`, `commentSlash`, `hashComment`, `bracketChevron`, `treeBranch`, `terminalPrompt`
+
+**Symbols:** `checkmark`, `cross`, `star`, `plus`, `minus`, `warning`, `infoCircle`
+
+### Using shapes as bullet markers
+
+Shapes work through the existing `bullet` operation. The theme label decides whether the marker is text or a vector shape. The source JSON does not change.
+
+**Theme:**
+
+```js
+labels: {
+  "doc.marker.arrow": {
+    shape: "arrow",
+    shapeColor: [0, 128, 255],
+    shapeSize: 0.8,
+    textIndentMm: 2,
+  },
+  "doc.body": {
+    fontFamily: "helvetica",
+    fontStyle: "normal",
+    fontSize: 10,
+    color: [40, 40, 40],
+    lineHeight: 1.4,
+  },
+}
+```
+
+**Source:**
+
+```json
+{
+  "type": "bullet",
+  "label": "doc.body",
+  "markerLabel": "doc.marker.arrow",
+  "bullets": ["First point", "Second point"]
+}
+```
+
+The core calculates the text indent from the shape's known width (defined in `core/shapes.js`) plus the label's `textIndentMm`. All positioning is exact, derived from the shape width constants.
+
+### Programmatic usage
+
+For custom plugins or advanced rendering, shapes can be called directly:
+
+```js
+const { renderShape, getShapeWidth } = require("h17-sspdf/core/shapes");
+
+// Draw a shape at position (x, y) aligned to text baseline
+renderShape("arrow", doc, x, baseline, [0, 128, 255], 0.8, fontSize);
+
+// Get the shape's width in mm for spacing calculations
+const widthMm = getShapeWidth("arrow", 0.8);
+```
+
+Parameters: `renderShape(name, doc, x, y, color, size, fontSizePt)`
+
+The shape centers vertically at half the font height above the baseline, so it aligns with adjacent text.
+
+---
+
+## Colors
+
+All colors in the engine are RGB arrays with values 0-255:
+
+```js
+color: [255, 0, 128],              // pink
+backgroundColor: [18, 18, 26],     // dark background
+borderColor: [200, 200, 200],      // light gray border
+```
+
+Common values:
+- White: `[255, 255, 255]`
+- Black: `[0, 0, 0]`
+- Gray: `[128, 128, 128]`
+
+This applies to all color properties: `color`, `backgroundColor`, `borderColor`, `altRowColor`, `shapeColor`, and all per-edge border color overrides.
+
+---
+
+## Operation quick reference
+
+| Type | Required fields | Optional fields |
+|---|---|---|
+| `text` | `label`, `text` | `align`, `keepWithNext`, `wrap`, `advance` |
+| `row` | `leftLabel`, `rightLabel`, `leftText`, `rightText` | `xLeftMm`, `xRightMm` |
+| `bullet` | `label`, `text`/`items`/`bullets` | `markerLabel`, `marker`, `textIndentMm` |
+| `divider` | `label` | `x1Mm`, `x2Mm` |
+| `table` | `label`, `columns`, `rows` | `headerLabel`, `xMm`, `maxWidthMm`, border/padding overrides |
+| `spacer` | `mm` or `px` or `label` | - |
+| `block` | `children`/`content`/`items` | `label`, `keepTogether`, `spaceAfterMm`/`Px`/`Label` |
+| `section` | `content` | `label`, `keepTogether` |
+| `quote` | `label`, `text` | `attribution`, `attributionLabel` |
+| `hiddenText` | `label`, `text` | - |
+
+Every operation also accepts `xMm` and `maxWidthMm` to override the theme margins for that operation only.
+
+---
+
+## Table labels pattern
+
+For tables, define two labels: one for data cells, one for headers. The shared constants file `examples/themes/table.js` provides base styles you can spread and override:
+
+```js
+const table = require("h17-sspdf/examples/themes/table");
+
+labels: {
+  "report.table.cell": {
+    ...table.cell,
+    color: [51, 65, 85],
+    altRowColor: [248, 249, 252],
+  },
+  "report.table.header": {
+    ...table.header,
+    backgroundColor: [55, 65, 81],
+    color: [255, 255, 255],
+  },
+}
+```
+
+The spread gives you sensible defaults for `cellPaddingMm`, `borderColor`, border widths, `altRowColor`, and font settings. Override the properties you want to customize.
 
 ---
 

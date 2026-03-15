@@ -7,7 +7,7 @@ const { renderDocument, registerPlugin, plugins } = require("./index");
 const EXAMPLES_THEMES_DIR = path.join(__dirname, "examples", "themes");
 
 function parseArgs(argv) {
-  const out = { source: null, theme: null, output: null, help: false };
+  const out = { source: null, theme: null, output: null, help: false, fonts: false, shapes: false };
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -19,6 +19,10 @@ function parseArgs(argv) {
       out.output = argv[++i];
     } else if (arg === "--help" || arg === "-h") {
       out.help = true;
+    } else if (arg === "--fonts") {
+      out.fonts = true;
+    } else if (arg === "--shapes") {
+      out.shapes = true;
     } else {
       throw new Error(`Unknown argument: ${arg}`);
     }
@@ -81,6 +85,43 @@ function readSource(sourcePath) {
   return JSON.parse(raw);
 }
 
+function listBuiltInFonts() {
+  const fontsDir = path.join(__dirname, "fonts");
+  try {
+    return fs.readdirSync(fontsDir)
+      .filter((f) => f.endsWith(".js"))
+      .map((f) => f.replace(".js", ""))
+      .sort();
+  } catch (e) {
+    return [];
+  }
+}
+
+function printFonts() {
+  const fonts = listBuiltInFonts();
+  if (fonts.length === 0) {
+    console.log("No built-in fonts found.");
+    return;
+  }
+  console.log(`Built-in fonts (${fonts.length}):\n`);
+  for (const font of fonts) {
+    console.log(`  ${font.padEnd(22)} require("h17-sspdf/fonts/${font}.js")`);
+  }
+  console.log(`\nEach font exports { Regular, Bold } as base64 strings.`);
+  console.log(`See DOCUMENTATION.md "Built-in fonts" for usage.`);
+}
+
+function printShapes() {
+  const { shapeWidths } = require("./core/shapes");
+  const names = Object.keys(shapeWidths);
+  console.log(`Built-in shapes (${names.length}):\n`);
+  console.log("  Bullets:    arrow, circle, square, diamond, triangle, dash, chevron");
+  console.log("  Decorators: doubleColon, commentSlash, hashComment, bracketChevron, treeBranch, terminalPrompt");
+  console.log("  Symbols:    checkmark, cross, star, plus, minus, warning, infoCircle");
+  console.log(`\nUse as marker labels: { shape: "arrow", shapeColor: [0,0,0], shapeSize: 1 }`);
+  console.log(`See DOCUMENTATION.md "Vector shapes" for usage.`);
+}
+
 function printHelp() {
   const themes = listBuiltInThemes();
   console.log(`
@@ -95,6 +136,8 @@ Options:
   -t, --theme <name|path>  Built-in theme name or path to a .js theme file
   -o, --output <path>   Output PDF path (default: output/cli-output.pdf)
   -h, --help            Show this help
+  --fonts               List built-in fonts
+  --shapes              List built-in vector shapes
 
 Built-in themes: ${themes.join(", ")}
 
@@ -127,6 +170,14 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
     printHelp();
+    return;
+  }
+  if (args.fonts) {
+    printFonts();
+    return;
+  }
+  if (args.shapes) {
+    printShapes();
     return;
   }
 

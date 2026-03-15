@@ -493,8 +493,18 @@ class PDFCore {
     );
     const baseline = y + baselineOffsetMm;
 
-    this.applyTextStyle(markerStyle);
-    this.doc.text(String(marker), x, baseline);
+    if (markerStyle.shape) {
+      // Vector shape marker: renders via core/shapes.js, no text encoding needed
+      const { renderShape, getShapeWidth } = require("./shapes");
+      const shapeColor = markerStyle.shapeColor || markerStyle.color || [0, 0, 0];
+      const shapeSize = markerStyle.shapeSize || 1;
+      renderShape(markerStyle.shape, this.doc, x, baseline, shapeColor, shapeSize, textFontSize);
+      this.applyDefaultRenderState();
+    } else {
+      // Text-based marker (existing behavior)
+      this.applyTextStyle(markerStyle);
+      this.doc.text(String(marker), x, baseline);
+    }
 
     this.applyTextStyle(textStyle);
     this.doc.setLineHeightFactor(Number(textStyle.lineHeight));

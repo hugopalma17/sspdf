@@ -603,9 +603,18 @@ function executeOperation(ctx) {
     const defaultX = bounds.left;
     const x = operation.xMm !== undefined ? operation.xMm : defaultX;
     validatePointInsideBounds("xMm", x, bounds, index, templateBypassMargins);
-    const textIndentMm = operation.textIndentMm !== undefined
-      ? operation.textIndentMm
-      : (theme.layout && Number(theme.layout.bulletIndentMm)) || 4;
+    let textIndentMm;
+    if (operation.textIndentMm !== undefined) {
+      textIndentMm = operation.textIndentMm;
+    } else if (markerStyle && markerStyle.shape) {
+      const { getShapeWidth } = require("./shapes");
+      const shapeW = getShapeWidth(markerStyle.shape, markerStyle.shapeSize || 1);
+      textIndentMm = shapeW + (markerStyle.textIndentMm !== undefined ? markerStyle.textIndentMm : 1.5);
+    } else if (markerStyle && markerStyle.textIndentMm !== undefined) {
+      textIndentMm = markerStyle.textIndentMm;
+    } else {
+      textIndentMm = (theme.layout && Number(theme.layout.bulletIndentMm)) || 4;
+    }
     const rightBoundary = bounds.right;
     const maxWidth = operation.maxWidthMm !== undefined
       ? operation.maxWidthMm
@@ -833,10 +842,20 @@ function estimateOperationHeight(ctx) {
 
   if (operation.type === "bullet") {
     const style = resolveLabelStyle(theme, operation.label, operation, index);
+    const markerEstStyle = resolveLabelStyle(theme, operation.markerLabel || "bullet.marker", operation, index, "markerLabel", true);
     const x = operation.xMm !== undefined ? operation.xMm : core.marginLeftMm;
-    const textIndentMm = operation.textIndentMm !== undefined
-      ? operation.textIndentMm
-      : (theme.layout && Number(theme.layout.bulletIndentMm)) || 4;
+    let textIndentMm;
+    if (operation.textIndentMm !== undefined) {
+      textIndentMm = operation.textIndentMm;
+    } else if (markerEstStyle && markerEstStyle.shape) {
+      const { getShapeWidth } = require("./shapes");
+      const shapeW = getShapeWidth(markerEstStyle.shape, markerEstStyle.shapeSize || 1);
+      textIndentMm = shapeW + (markerEstStyle.textIndentMm !== undefined ? markerEstStyle.textIndentMm : 1.5);
+    } else if (markerEstStyle && markerEstStyle.textIndentMm !== undefined) {
+      textIndentMm = markerEstStyle.textIndentMm;
+    } else {
+      textIndentMm = (theme.layout && Number(theme.layout.bulletIndentMm)) || 4;
+    }
     const maxWidth = operation.maxWidthMm !== undefined
       ? operation.maxWidthMm
       : core.pageWidth - core.marginRightMm - (x + textIndentMm);

@@ -16,6 +16,13 @@ license: Apache-2.0
 
 You generate PDF documents using the sspdf engine. You build the source JSON, pick or generate the right theme, and render the output. One invoke, one PDF.
 
+## GitHub repository
+
+The full source, examples, tests, and additional resources are at:
+https://github.com/hugopalma17/sspdf
+
+The npm package includes core, fonts, vendor, example themes, and example sources. The GitHub repo also contains test suites, skills, and development history.
+
 ## Step 0: Verify installation
 
 Before anything else, verify h17-sspdf is installed:
@@ -70,7 +77,7 @@ ls $SSPDF_DIR/examples/sources/
 
 - `text` - wrapped text paragraphs (supports string arrays for multiple paragraphs)
 - `row` - two values on one line, left-aligned and right-aligned
-- `bullet` - marker character + wrapped text (supports arrays)
+- `bullet` - marker character or vector shape + wrapped text (supports arrays)
 - `divider` - horizontal line
 - `spacer` - vertical space
 - `hiddenText` - invisible text for ATS keyword injection
@@ -80,6 +87,62 @@ ls $SSPDF_DIR/examples/sources/
 - `table` - data table with header, per-column alignment, alternating rows, borders
 
 Read DOCUMENTATION.md for field details on each type.
+
+## Built-in fonts
+
+The package ships with 20 Google Fonts as base64 TTF files. Each exports `{ Regular, Bold }` (capitalized). Only normal and bold faces ship. No italic TTFs included.
+
+**Sans-serif:** Inter (`inter`), Roboto (`roboto`), Open Sans (`open-sans`), Montserrat (`montserrat`), Lato (`lato`), Raleway (`raleway`), Nunito (`nunito`), Work Sans (`work-sans`), IBM Plex Sans (`ibm-plex-sans`), PT Sans (`pt-sans`), Oswald (`oswald`)
+
+**Serif:** Merriweather (`merriweather`), Lora (`lora`), Playfair Display (`playfair-display`), Crimson Text (`crimson-text`), Libre Baskerville (`libre-baskerville`), Source Serif 4 (`source-serif-4`)
+
+**Monospace:** Fira Code (`fira-code`), JetBrains Mono (`jetbrains-mono`), Source Code Pro (`source-code-pro`)
+
+Require path: `h17-sspdf/fonts/<name>.js`. Also: `npx h17-sspdf --fonts`
+
+```js
+const INTER = require("h17-sspdf/fonts/inter.js");
+
+customFonts: [{
+  family: "Inter",
+  faces: [
+    { style: "normal", fileName: "Inter-Regular.ttf", data: INTER.Regular },
+    { style: "bold", fileName: "Inter-Bold.ttf", data: INTER.Bold },
+  ],
+}],
+```
+
+## Vector shapes as bullet markers
+
+The engine includes 20 vector shapes that bypass text encoding. Use them as bullet markers by setting `shape` on the marker label instead of `marker`:
+
+```js
+// Theme label
+"doc.marker.arrow": {
+  shape: "arrow",
+  shapeColor: [0, 128, 255],
+  shapeSize: 0.8,
+  textIndentMm: 2,
+}
+```
+
+```json
+// Source JSON (unchanged from text markers)
+{
+  "type": "bullet",
+  "label": "doc.body",
+  "markerLabel": "doc.marker.arrow",
+  "bullets": ["First point", "Second point"]
+}
+```
+
+List available shapes:
+
+```bash
+npx h17-sspdf --shapes
+```
+
+Available: `arrow`, `circle`, `square`, `diamond`, `triangle`, `dash`, `chevron`, `doubleColon`, `commentSlash`, `hashComment`, `bracketChevron`, `treeBranch`, `terminalPrompt`, `checkmark`, `cross`, `star`, `plus`, `minus`, `warning`, `infoCircle`.
 
 ## Source JSON structure
 
@@ -123,6 +186,60 @@ Tables are first-class. Define columns with width and alignment, provide rows as
 
 Column widths: `"30%"` (percentage), `35` (fixed mm), or omitted (auto-divide). Headers re-draw on page breaks.
 
+## Table labels pattern
+
+For tables, use the shared constants from `examples/themes/table.js`:
+
+```js
+const table = require("h17-sspdf/examples/themes/table");
+
+labels: {
+  "report.table.cell": {
+    ...table.cell,
+    color: [51, 65, 85],
+    altRowColor: [248, 249, 252],
+  },
+  "report.table.header": {
+    ...table.header,
+    backgroundColor: [55, 65, 81],
+    color: [255, 255, 255],
+  },
+}
+```
+
+## Page templates (headers/footers)
+
+Reserve space and control margins for repeating headers/footers:
+
+```json
+{
+  "pageTemplates": {
+    "footer": [
+      { "type": "divider", "label": "footer.rule" },
+      {
+        "type": "row",
+        "leftLabel": "footer.left",
+        "rightLabel": "footer.right",
+        "leftText": "Document Title",
+        "rightText": "Page {{page}}"
+      }
+    ],
+    "headerHeightMm": 12,
+    "footerHeightMm": 10,
+    "headerStartMm": 5,
+    "footerStartMm": 280,
+    "headerBypassMargins": true,
+    "footerBypassMargins": false
+  }
+}
+```
+
+Key: `headerHeightMm`/`footerHeightMm` reserves space so body text does not overlap. `{{page}}` resolves to current page number.
+
+## Colors
+
+All colors are `[R, G, B]` arrays, values 0-255. Example: `[255, 0, 128]` is pink, `[0, 0, 0]` is black.
+
 ## Rules
 
 1. Every `label` in the source must exist in the theme. If using an existing theme, read it first to know what labels are available.
@@ -131,6 +248,7 @@ Column widths: `"30%"` (percentage), `35` (fixed mm), or omitted (auto-divide). 
 4. Use `section` for logical grouping without forcing everything onto one page.
 5. Prefer text arrays over repeating the same operation for multiple paragraphs.
 6. Table `rows` must match `columns` length. Each cell is a string.
+7. When using shapes as bullet markers, the source JSON is identical to text markers. Only the theme label changes (`shape` instead of `marker`).
 
 ## Workflow
 
