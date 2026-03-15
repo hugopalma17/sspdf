@@ -792,7 +792,6 @@ function executeOperation(ctx) {
         captionStyle = Object.assign({}, dt, {
           fontStyle: "italic",
           fontSize: Math.max((Number(dt.fontSize) || 10) - 2, 7),
-          color: [120, 120, 120],
           align: "center",
           marginTopMm: 1.5,
         });
