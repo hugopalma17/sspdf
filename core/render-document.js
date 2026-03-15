@@ -843,6 +843,11 @@ function executeOperation(ctx) {
       allowPageBreak: false,
     });
 
+    // Reset jsPDF font state after addImage (jsPDF addImage corrupts the
+    // font state in the PDF content stream without updating its internal tracker,
+    // so subsequent setFont calls may be silently ignored)
+    core.applyDefaultRenderState();
+
     // Draw caption at the correct Y by setting cursor before drawText
     if (operation.caption && captionStyle && captionLines.length > 0) {
       core.cursorY = imgY + heightMm;
