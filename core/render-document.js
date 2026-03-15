@@ -745,13 +745,32 @@ function executeOperation(ctx) {
       throw new Error(`Operation ${index} (image) missing "src" field`);
     }
     const resolvedPath = path.isAbsolute(srcPath) ? srcPath : path.resolve(process.cwd(), srcPath);
-    const buf = fs.readFileSync(resolvedPath);
-    const imgInfo = getImageDimensions(buf);
+    let buf;
+    try {
+      buf = fs.readFileSync(resolvedPath);
+    } catch (err) {
+      throw new Error(`Operation ${index} (image) could not read file "${resolvedPath}": ${err.message}`);
+    }
+    if (!buf || buf.length === 0) {
+      throw new Error(`Operation ${index} (image) file is empty: "${resolvedPath}"`);
+    }
+    let imgInfo;
+    try {
+      imgInfo = getImageDimensions(buf);
+    } catch (err) {
+      throw new Error(`Operation ${index} (image) could not read dimensions from "${resolvedPath}": ${err.message}`);
+    }
+    if (!imgInfo || !imgInfo.width || !imgInfo.height) {
+      throw new Error(`Operation ${index} (image) invalid dimensions from "${resolvedPath}"`);
+    }
     const { widthMm, heightMm } = resolveImageSize(operation, imgInfo.width, imgInfo.height, contentWidthMm);
+    if (!widthMm || widthMm <= 0 || !heightMm || heightMm <= 0) {
+      throw new Error(`Operation ${index} (image) resolved to invalid size: ${widthMm}x${heightMm}mm`);
+    }
 
     // Resolve padding from label
     const style = operation.label
-      ? resolveLabelStyle(theme, operation.label, operation, index)
+      ? resolveLabelStyle(theme, operation.label, operation, index, "label", true) || {}
       : {};
     const padding = getTextPaddingMm(style);
     const marginTop = getStyleMarginsMm(style).top;
@@ -768,12 +787,14 @@ function executeOperation(ctx) {
         ? resolveLabelStyle(theme, capLabel, operation, index, "captionLabel", true)
         : null;
       if (!captionStyle) {
-        // Fall back to theme default text: same family, italic, smaller, centered
+        // Fall back to theme default text: same family, italic, smaller, gray, centered, with gap
         const dt = theme.page.defaultText || {};
         captionStyle = Object.assign({}, dt, {
           fontStyle: "italic",
           fontSize: Math.max((Number(dt.fontSize) || 10) - 2, 7),
+          color: [120, 120, 120],
           align: "center",
+          marginTopMm: 1.5,
         });
       }
       if (!captionStyle.align) {
