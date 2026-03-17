@@ -22,17 +22,12 @@
 !examples/themes/fonts/*.js
 !examples/sources/
 !examples/sources/*.json
-!examples/plugins/
-!examples/plugins/*.js
 !examples/output/
 !examples/output/*.pdf
 
 !tests/
 !tests/*.js
 
-!docs/
-!docs/specs/
-!docs/specs/*.md
 
 !.github/
 !.github/workflows/
