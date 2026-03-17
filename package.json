@@ -1,6 +1,6 @@
 {
   "name": "h17-sspdf",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Declarative PDF engine - define layout once, feed it JSON, get consistent PDFs",
   "main": "index.js",
   "author": "Hugo Palma",
@@ -38,7 +38,7 @@
     "type": "git",
     "url": "git+ssh://git@github.com/hugopalma17/sspdf.git"
   },
-  "homepage": "https://github.com/hugopalma17/sspdf#readme",
+  "homepage": "https://h17.ai/docs/sspdf",
   "bugs": {
     "url": "https://github.com/hugopalma17/sspdf/issues"
   },
