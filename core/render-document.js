@@ -335,6 +335,7 @@ function isOperationType(type) {
     || type === "bullet"
     || type === "divider"
     || type === "spacer"
+    || type === "pageBreak"
     || type === "hiddenText"
     || type === "table"
     || type === "image"
@@ -677,6 +678,11 @@ function executeOperation(ctx) {
       return;
     }
     throw new Error(`Spacer operation at index ${index} must provide mm, px, or label with spaceMm/spacePx`);
+  }
+
+  if (operation.type === "pageBreak") {
+    core.addPage();
+    return;
   }
 
   if (operation.type === "hiddenText") {
@@ -1024,6 +1030,10 @@ function estimateOperationHeight(ctx) {
       return estimateSpacerFromStyle(style, index);
     }
     throw new Error(`Spacer operation at index ${index} must provide mm, px, or label with spaceMm/spacePx`);
+  }
+
+  if (operation.type === "pageBreak") {
+    return 0;
   }
 
   if (operation.type === "hiddenText") {

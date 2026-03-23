@@ -1025,3 +1025,17 @@ test("custom page: pagination respects custom page height", () => {
   const { core } = renderDocument({ source, theme: presentationTheme });
   assert.strictEqual(core.doc.getNumberOfPages(), 2, "spacer 175mm + text exceeds 170mm content height");
 });
+
+// ─── pageBreak operation ────────────────────────────────────
+
+test("pageBreak: forces new page and resets cursor", () => {
+  const source = {
+    operations: [
+      { type: "text", label: "t.body", text: "Page one" },
+      { type: "pageBreak" },
+      { type: "text", label: "t.body", text: "Page two" },
+    ],
+  };
+  const { core } = renderDocument({ source, theme });
+  assert.strictEqual(core.doc.getNumberOfPages(), 2, "pageBreak creates page 2");
+});

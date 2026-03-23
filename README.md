@@ -263,6 +263,7 @@ labels: {
 | `divider` | Horizontal rule | `label`, `x1Mm`, `x2Mm` |
 | `image` | Embedded PNG/JPEG | `src`, `width` (percentage or mm), `caption` |
 | `spacer` | Vertical gap | `mm`, `px`, or `label` |
+| `pageBreak` | Force new page | (none) |
 | `hiddenText` | Invisible text | `label`, `text` |
 | `quote` | Blockquote with attribution | `label`, `text`, `attribution` |
 | `block` | Group children, optional background + border | `children`, `keepTogether` |

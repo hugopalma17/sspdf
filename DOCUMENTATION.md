@@ -557,6 +557,16 @@ Three forms (use exactly one):
 | `px` | number | Fixed space in CSS px |
 | `label` | string | Theme label with `spaceMm` or `spacePx` |
 
+#### `pageBreak`
+
+Forces a new page. The cursor resets to the top content area. Page templates (headers/footers) are applied to the new page automatically.
+
+```json
+{ "type": "pageBreak" }
+```
+
+No fields required. Useful for presentation-style layouts where each section should start on its own page.
+
 #### `hiddenText`
 
 Renders text in the background color so it's invisible but present in the PDF text layer (for ATS keyword injection).
