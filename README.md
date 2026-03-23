@@ -466,7 +466,7 @@ Claude Code skills for generating PDFs and themes are available in the `skills/`
 
 ## Constraints
 
-- A4 only
+- Page format defaults to A4; custom dimensions supported via `pageWidthMm`/`pageHeightMm` (e.g. 16:9 presentations)
 - Single-line `row` cells, no multi-line column pairs
 - `{{page}}` gives the current page number; `{{pages}}` (total page count) is not supported because keep-together rules make the final page count unpredictable until the last operation is laid out
 - Charts require the `canvas` npm package (native C++ addon) for server-side rendering; everything else is zero native dependencies

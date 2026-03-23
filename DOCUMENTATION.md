@@ -30,9 +30,11 @@ Controls page geometry, background, and baseline rendering state.
 ```js
 page: {
   // Page geometry
-  format: "a4",                   // only "a4" is supported
+  format: "a4",                   // named format: "a4", "letter", etc.
   orientation: "portrait",        // "portrait" or "landscape"
   unit: "mm",                     // only "mm" is supported
+  pageWidthMm: 338,               // custom width in mm (overrides format)
+  pageHeightMm: 190,              // custom height in mm (overrides format)
   compress: true,                 // PDF compression (default true)
 
   // Margins - individual margins override the shared `margin` value
@@ -76,7 +78,9 @@ page: {
 }
 ```
 
-The content area runs from `marginTop` to `pageHeight - marginBottom` vertically, and `marginLeft` to `pageWidth - marginRight` horizontally. On A4 portrait, the page is 210 × 297 mm.
+The content area runs from `marginTop` to `pageHeight - marginBottom` vertically, and `marginLeft` to `pageWidth - marginRight` horizontally. On A4 portrait, the page is 210 x 297 mm.
+
+When `pageWidthMm` and `pageHeightMm` are both set, they override the `format` field and create a page with those exact dimensions. This is useful for non-standard formats like 16:9 presentations (e.g. 338 x 190 mm). All layout math -- margins, content area, pagination -- adapts automatically.
 
 ### `labels` (required)
 
