@@ -30,9 +30,11 @@ Controls page geometry, background, and baseline rendering state.
 ```js
 page: {
   // Page geometry
-  format: "a4",                   // only "a4" is supported
+  format: "a4",                   // named format: "a4", "letter", etc.
   orientation: "portrait",        // "portrait" or "landscape"
   unit: "mm",                     // only "mm" is supported
+  pageWidthMm: 338,               // custom width in mm (overrides format)
+  pageHeightMm: 190,              // custom height in mm (overrides format)
   compress: true,                 // PDF compression (default true)
 
   // Margins - individual margins override the shared `margin` value
@@ -76,7 +78,9 @@ page: {
 }
 ```
 
-The content area runs from `marginTop` to `pageHeight - marginBottom` vertically, and `marginLeft` to `pageWidth - marginRight` horizontally. On A4 portrait, the page is 210 × 297 mm.
+The content area runs from `marginTop` to `pageHeight - marginBottom` vertically, and `marginLeft` to `pageWidth - marginRight` horizontally. On A4 portrait, the page is 210 x 297 mm.
+
+When `pageWidthMm` and `pageHeightMm` are both set, they override the `format` field and create a page with those exact dimensions. This is useful for non-standard formats like 16:9 presentations (e.g. 338 x 190 mm). All layout math -- margins, content area, pagination -- adapts automatically.
 
 ### `labels` (required)
 
@@ -235,6 +239,7 @@ Shared layout defaults read by operation handlers.
 ```js
 layout: {
   bulletIndentMm: 4.5,     // text indent after bullet marker (default: 4)
+  chartAlign: "center",    // chart horizontal alignment: "left" (default) or "center"
 }
 ```
 
@@ -552,6 +557,16 @@ Three forms (use exactly one):
 | `mm` | number | Fixed space in mm |
 | `px` | number | Fixed space in CSS px |
 | `label` | string | Theme label with `spaceMm` or `spacePx` |
+
+#### `pageBreak`
+
+Forces a new page. The cursor resets to the top content area. Page templates (headers/footers) are applied to the new page automatically.
+
+```json
+{ "type": "pageBreak" }
+```
+
+No fields required. Useful for presentation-style layouts where each section should start on its own page.
 
 #### `hiddenText`
 
@@ -1714,11 +1729,12 @@ main();
 | `chartType` | yes | string | Chart.js type: `"bar"`, `"line"`, `"doughnut"`, etc. |
 | `data` | yes | object | Chart.js `data` config (`labels` + `datasets`) |
 | `widthMm` | no | number | Width in the PDF in mm (default: content area width) |
-| `heightMm` | no | number | Height in the PDF in mm (default: 80) |
+| `heightMm` | no | number or `"fill"` | Height in mm (default: 80). `"fill"` uses remaining page space. |
 | `canvasWidth` | no | number | Canvas render width in pixels (default: 1600) |
 | `canvasHeight` | no | number | Canvas render height in pixels (default: 800) |
 | `options` | no | object | Chart.js `options` object. `responsive: false` and `animation: false` are injected automatically. |
 | `xMm` | no | number | Left edge in mm (default: content left margin) |
+| `align` | no | string | `"left"` (default) or `"center"`. Can also be set globally via `layout.chartAlign` in the theme. |
 
 ### Resolution
 

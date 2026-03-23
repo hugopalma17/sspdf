@@ -956,3 +956,88 @@ test("image-utils: resolveImageSize both dimensions (may distort)", () => {
   near(widthMm, 100, "explicit widthMm");
   near(heightMm, 100, "explicit heightMm (distorted)");
 });
+
+// ─── Custom page dimensions (16:9 presentation) ────────────────
+
+const presentationTheme = {
+  page: {
+    pageWidthMm: 338,
+    pageHeightMm: 190,
+    orientation: "landscape",
+    unit: "mm",
+    marginTopMm: 10,
+    marginBottomMm: 10,
+    marginLeftMm: 10,
+    marginRightMm: 10,
+    backgroundColor: [255, 255, 255],
+    defaultText: {
+      fontFamily: "helvetica",
+      fontStyle: "normal",
+      fontSize: 10,
+      color: [0, 0, 0],
+      lineHeight: 1.2,
+    },
+    defaultStroke: {
+      color: [0, 0, 0],
+      lineWidth: 0.2,
+      lineCap: "butt",
+      lineJoin: "miter",
+    },
+    defaultFillColor: [255, 255, 255],
+  },
+  labels: {
+    "t.body": {
+      fontFamily: "helvetica",
+      fontStyle: "normal",
+      fontSize: 10,
+      color: [0, 0, 0],
+      lineHeight: 1.2,
+      marginBottomPx: 4,
+    },
+  },
+};
+
+test("custom page: dimensions match pageWidthMm/pageHeightMm", () => {
+  const core = new PDFCore(presentationTheme);
+  near(core.pageWidth, 338, "pageWidth");
+  near(core.pageHeight, 190, "pageHeight");
+});
+
+test("custom page: content area uses custom dimensions", () => {
+  const core = new PDFCore(presentationTheme);
+  assert.strictEqual(core.contentTopY, 10);
+  near(core.contentBottomY, 190 - 10, "contentBottomY");
+});
+
+test("custom page: content width = pageWidth - margins", () => {
+  const core = new PDFCore(presentationTheme);
+  const contentWidth = core.pageWidth - core.marginLeftMm - core.marginRightMm;
+  near(contentWidth, 318, "content width 338 - 10 - 10");
+});
+
+test("custom page: pagination respects custom page height", () => {
+  const source = {
+    operations: [
+      { type: "spacer", mm: 175 },
+      { type: "text", label: "t.body", text: "Should land on page 2" },
+    ],
+  };
+  const { core } = renderDocument({ source, theme: presentationTheme });
+  assert.strictEqual(core.doc.getNumberOfPages(), 2, "spacer 175mm + text exceeds 170mm content height");
+});
+
+// ─── pageBreak operation ────────────────────────────────────
+
+test("pageBreak: forces new page and resets cursor", () => {
+  const source = {
+    operations: [
+      { type: "text", label: "t.body", text: "Page one" },
+      { type: "pageBreak" },
+      { type: "text", label: "t.body", text: "Page two" },
+    ],
+  };
+  const { core } = renderDocument({ source, theme });
+  assert.strictEqual(core.doc.getNumberOfPages(), 2, "pageBreak creates page 2");
+  const bodyDelta = lh(10, 1.2) + pxToMm(4);
+  near(core.cursorY, core.contentTopY + bodyDelta, "cursor on page 2 = contentTopY + one text block");
+});

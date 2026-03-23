@@ -77,6 +77,8 @@ class PDFCore {
    * @param {number} [theme.page.margin]
    * @param {string} [theme.page.format]
    * @param {string} [theme.page.orientation]
+   * @param {number} [theme.page.pageWidthMm]
+   * @param {number} [theme.page.pageHeightMm]
    * @param {string} [theme.page.unit]
    * @param {boolean} [theme.page.compress]
    * @param {number[]} [theme.page.backgroundColor]
@@ -102,11 +104,13 @@ class PDFCore {
     this.margin = this.marginLeftMm;
     this.headerHeightMm = Number(this.page.headerHeightMm) || 0;
     this.footerHeightMm = Number(this.page.footerHeightMm) || 0;
-    this.format = String(this.page.format || "a4").toLowerCase();
+    const customW = Number(this.page.pageWidthMm) || 0;
+    const customH = Number(this.page.pageHeightMm) || 0;
+    const hasCustomDimensions = customW > 0 && customH > 0;
 
-    if (this.format !== "a4") {
-      throw new Error(`Unsupported page format "${this.page.format}". Only A4 is supported.`);
-    }
+    this.format = hasCustomDimensions
+      ? [customW, customH]
+      : String(this.page.format || "a4").toLowerCase();
 
     this.doc = new jsPDF({
       orientation: this.page.orientation || "portrait",

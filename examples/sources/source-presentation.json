@@ -1,0 +1,634 @@
+{
+  "pageTemplates": {
+    "footer": [
+      {
+        "type": "divider",
+        "label": "slide.footer.rule",
+        "x1Mm": 24,
+        "x2Mm": 314
+      },
+      {
+        "type": "row",
+        "leftLabel": "slide.footer.left",
+        "rightLabel": "slide.footer.right",
+        "leftText": "h17.ai | sspdf",
+        "rightText": "{{page}}",
+        "xLeftMm": 24,
+        "xRightMm": 314
+      }
+    ],
+    "footerHeightMm": 8,
+    "footerStartMm": 178,
+    "footerBypassMargins": false
+  },
+  "sections": [
+    {
+      "type": "section",
+      "comment": "Title slide",
+      "content": [
+        {
+          "type": "image",
+          "src": "examples/sources/og-sspdf.png",
+          "width": "70%",
+          "label": "slide.image"
+        },
+        {
+          "type": "spacer",
+          "mm": 4
+        },
+        {
+          "type": "text",
+          "label": "slide.subtitle",
+          "text": "A math-first PDF engine. Send JSON, get a pixel-perfect document in under a second."
+        },
+        {
+          "type": "divider",
+          "label": "slide.divider.accent",
+          "widthMm": 60
+        },
+        {
+          "type": "text",
+          "label": "slide.author",
+          "text": "Hugo Palma  |  h17.ai  |  March 2026"
+        },
+        {
+          "type": "pageBreak"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "comment": "The problem",
+      "content": [
+        {
+          "type": "text",
+          "label": "slide.heading",
+          "text": "The problem"
+        },
+        {
+          "type": "divider",
+          "label": "slide.divider.accent",
+          "widthMm": 40
+        },
+        {
+          "type": "text",
+          "label": "slide.body",
+          "text": "Most PDF libraries force you to think in coordinates. You place text at (x, y), draw lines at absolute positions, and manually track where the cursor is. Change a font size and your entire layout breaks."
+        },
+        {
+          "type": "spacer",
+          "mm": 4
+        },
+        {
+          "type": "bullet",
+          "markerLabel": "slide.bullet.marker",
+          "label": "slide.bullet.text",
+          "text": "Layouts break when content length changes"
+        },
+        {
+          "type": "bullet",
+          "markerLabel": "slide.bullet.marker",
+          "label": "slide.bullet.text",
+          "text": "No automatic pagination or page-break logic"
+        },
+        {
+          "type": "bullet",
+          "markerLabel": "slide.bullet.marker",
+          "label": "slide.bullet.text",
+          "text": "Style changes require touching every draw call"
+        },
+        {
+          "type": "bullet",
+          "markerLabel": "slide.bullet.marker",
+          "label": "slide.bullet.text",
+          "text": "Themes, reuse, and consistency are an afterthought"
+        },
+        {
+          "type": "pageBreak"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "comment": "Architecture",
+      "content": [
+        {
+          "type": "text",
+          "label": "slide.heading",
+          "text": "How sspdf works"
+        },
+        {
+          "type": "divider",
+          "label": "slide.divider.accent",
+          "widthMm": 40
+        },
+        {
+          "type": "text",
+          "label": "slide.body",
+          "text": "Two inputs, one output. The theme defines every visual rule. The source defines content as a flat list of operations. The engine handles layout, pagination, and rendering."
+        },
+        {
+          "type": "spacer",
+          "mm": 4
+        },
+        {
+          "type": "table",
+          "label": "slide.table",
+          "headerLabel": "slide.table.header",
+          "columns": [
+            {
+              "header": "Layer",
+              "widthMm": 80
+            },
+            {
+              "header": "Responsibility",
+              "widthMm": 210
+            }
+          ],
+          "rows": [
+            [
+              "Theme (.js)",
+              "Page geometry, fonts, colors, margins, label styles"
+            ],
+            [
+              "Source (.json)",
+              "Content: text, bullets, tables, charts, images, spacers"
+            ],
+            [
+              "PDFCore",
+              "Cursor math, page breaks, style reset, drawing primitives"
+            ],
+            [
+              "render-document",
+              "Reads source ops, resolves labels from theme, calls PDFCore"
+            ],
+            [
+              "Plugins",
+              "Chart rendering (Chart.js), image embedding (PNG/JPEG)"
+            ]
+          ]
+        },
+        {
+          "type": "pageBreak"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "comment": "Operation types",
+      "content": [
+        {
+          "type": "text",
+          "label": "slide.heading",
+          "text": "Operation types"
+        },
+        {
+          "type": "divider",
+          "label": "slide.divider.accent",
+          "widthMm": 40
+        },
+        {
+          "type": "text",
+          "label": "slide.body",
+          "text": "Every document is built from these primitives. Each one is self-contained and flows automatically."
+        },
+        {
+          "type": "spacer",
+          "mm": 4
+        },
+        {
+          "type": "table",
+          "label": "slide.table",
+          "headerLabel": "slide.table.header",
+          "columns": [
+            {
+              "header": "Operation",
+              "widthMm": 65
+            },
+            {
+              "header": "What it does",
+              "widthMm": 225
+            }
+          ],
+          "rows": [
+            [
+              "text",
+              "Single or multi-line text block with word wrapping and alignment"
+            ],
+            [
+              "row",
+              "Left/right pair on the same line (dates, labels, key-value)"
+            ],
+            [
+              "bullet",
+              "Bulleted item with text or vector shape markers"
+            ],
+            [
+              "divider",
+              "Horizontal rule with configurable color, width, dash pattern"
+            ],
+            [
+              "table",
+              "Multi-column table with headers, alt-row shading, page-break header repeat"
+            ],
+            [
+              "chart",
+              "Bar, line, doughnut, pie via Chart.js (server-side canvas)"
+            ],
+            [
+              "image",
+              "Embedded PNG/JPEG with percentage or explicit sizing"
+            ],
+            [
+              "spacer",
+              "Vertical gap in millimeters"
+            ],
+            [
+              "section",
+              "Grouping wrapper, transparent to layout"
+            ],
+            [
+              "hiddenText",
+              "Invisible metadata for PDF search indexing"
+            ]
+          ]
+        },
+        {
+          "type": "pageBreak"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "comment": "Benchmark chart",
+      "content": [
+        {
+          "type": "text",
+          "label": "slide.heading",
+          "text": "Render performance"
+        },
+        {
+          "type": "divider",
+          "label": "slide.divider.accent",
+          "widthMm": 40
+        },
+        {
+          "type": "text",
+          "label": "slide.body",
+          "text": "All documents render in under a second. Complex multi-page layouts with tables and charts stay well below 500ms."
+        },
+        {
+          "type": "spacer",
+          "mm": 4
+        },
+        {
+          "type": "chart",
+          "chartType": "bar",
+          "widthMm": 260,
+          "heightMm": "fill",
+          "canvasWidth": 2600,
+          "canvasHeight": 800,
+
+          "data": {
+            "labels": [
+              "Invoice",
+              "Article",
+              "Financial Report",
+              "Board Brief",
+              "Event Program",
+              "Certificate"
+            ],
+            "datasets": [
+              {
+                "label": "Render time (ms)",
+                "data": [
+                  42,
+                  68,
+                  187,
+                  95,
+                  112,
+                  31
+                ],
+                "backgroundColor": "rgba(0, 229, 255, 0.7)",
+                "borderColor": "rgba(0, 229, 255, 1)",
+                "borderWidth": 1
+              }
+            ]
+          },
+          "options": {
+            "indexAxis": "y",
+            "scales": {
+              "x": {
+                "beginAtZero": true,
+                "ticks": {
+                  "color": "rgba(122, 122, 136, 1)",
+                  "font": {
+                    "size": 18
+                  }
+                },
+                "grid": {
+                  "color": "rgba(30, 30, 40, 1)"
+                },
+                "title": {
+                  "display": true,
+                  "text": "Milliseconds",
+                  "color": "rgba(122, 122, 136, 1)",
+                  "font": {
+                    "size": 18
+                  }
+                }
+              },
+              "y": {
+                "ticks": {
+                  "color": "rgba(200, 200, 210, 1)",
+                  "font": {
+                    "size": 18
+                  }
+                },
+                "grid": {
+                  "display": false
+                }
+              }
+            },
+            "plugins": {
+              "legend": {
+                "display": false
+              }
+            },
+            "layout": {
+              "padding": {
+                "bottom": 5
+              }
+            }
+          }
+        },
+        {
+          "type": "pageBreak"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "comment": "Theme system",
+      "content": [
+        {
+          "type": "text",
+          "label": "slide.heading",
+          "text": "Theme system"
+        },
+        {
+          "type": "divider",
+          "label": "slide.divider.accent",
+          "widthMm": 40
+        },
+        {
+          "type": "text",
+          "label": "slide.body",
+          "text": "Themes are plain JS objects. Every visual decision lives in labels. Swap the theme file and the same source JSON renders in a completely different style."
+        },
+        {
+          "type": "spacer",
+          "mm": 4
+        },
+        {
+          "type": "row",
+          "leftLabel": "slide.row.left",
+          "rightLabel": "slide.row.right",
+          "leftText": "Built-in fonts",
+          "rightText": "20 Google Fonts shipped as base64 TTF (Inter, Roboto, Lora, Fira Code...)",
+          "xLeftMm": 24,
+          "xRightMm": 314
+        },
+        {
+          "type": "row",
+          "leftLabel": "slide.row.left",
+          "rightLabel": "slide.row.right",
+          "leftText": "Vector bullets",
+          "rightText": "20 shape markers (arrows, checkmarks, diamonds) -- no Unicode issues",
+          "xLeftMm": 24,
+          "xRightMm": 314
+        },
+        {
+          "type": "row",
+          "leftLabel": "slide.row.left",
+          "rightLabel": "slide.row.right",
+          "leftText": "Label properties",
+          "rightText": "Font, color, margin, padding, background, border, border-radius, left accent",
+          "xLeftMm": 24,
+          "xRightMm": 314
+        },
+        {
+          "type": "row",
+          "leftLabel": "slide.row.left",
+          "rightLabel": "slide.row.right",
+          "leftText": "Page templates",
+          "rightText": "Repeating headers and footers with page number tokens",
+          "xLeftMm": 24,
+          "xRightMm": 314
+        },
+        {
+          "type": "spacer",
+          "mm": 6
+        },
+        {
+          "type": "text",
+          "label": "slide.callout",
+          "text": "This presentation is itself rendered by sspdf using a 338x190mm (16:9) custom page format with the h17.ai color palette."
+        },
+        {
+          "type": "pageBreak"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "comment": "Adoption chart",
+      "content": [
+        {
+          "type": "text",
+          "label": "slide.heading",
+          "text": "Test coverage and growth"
+        },
+        {
+          "type": "divider",
+          "label": "slide.divider.accent",
+          "widthMm": 40
+        },
+        {
+          "type": "spacer",
+          "mm": 2
+        },
+        {
+          "type": "chart",
+          "chartType": "line",
+          "widthMm": 260,
+          "heightMm": "fill",
+          "canvasWidth": 2600,
+          "canvasHeight": 800,
+
+          "data": {
+            "labels": [
+              "v0.1.0",
+              "v0.1.2",
+              "v0.1.4",
+              "v0.1.6",
+              "v0.1.8",
+              "v0.2.0",
+              "v0.3.0",
+              "v0.4.0"
+            ],
+            "datasets": [
+              {
+                "label": "Test count",
+                "data": [
+                  8,
+                  14,
+                  22,
+                  30,
+                  38,
+                  40,
+                  42,
+                  48
+                ],
+                "borderColor": "rgba(0, 229, 255, 1)",
+                "backgroundColor": "rgba(0, 229, 255, 0.1)",
+                "fill": true,
+                "tension": 0.3,
+                "pointRadius": 6,
+                "pointBackgroundColor": "rgba(0, 229, 255, 1)",
+                "borderWidth": 3
+              },
+              {
+                "label": "Operation types",
+                "data": [
+                  3,
+                  4,
+                  5,
+                  7,
+                  8,
+                  9,
+                  9,
+                  10
+                ],
+                "borderColor": "rgba(0, 165, 184, 1)",
+                "backgroundColor": "rgba(0, 165, 184, 0.05)",
+                "fill": true,
+                "tension": 0.3,
+                "pointRadius": 6,
+                "pointBackgroundColor": "rgba(0, 165, 184, 1)",
+                "borderWidth": 3
+              }
+            ]
+          },
+          "options": {
+            "scales": {
+              "x": {
+                "ticks": {
+                  "color": "rgba(122, 122, 136, 1)",
+                  "font": {
+                    "size": 18
+                  }
+                },
+                "grid": {
+                  "color": "rgba(30, 30, 40, 1)"
+                }
+              },
+              "y": {
+                "beginAtZero": true,
+                "ticks": {
+                  "color": "rgba(122, 122, 136, 1)",
+                  "font": {
+                    "size": 18
+                  }
+                },
+                "grid": {
+                  "color": "rgba(30, 30, 40, 1)"
+                }
+              }
+            },
+            "plugins": {
+              "legend": {
+                "position": "bottom",
+                "labels": {
+                  "color": "rgba(200, 200, 210, 1)",
+                  "font": {
+                    "size": 18
+                  },
+                  "padding": 20
+                }
+              }
+            },
+            "layout": {
+              "padding": {
+                "bottom": 5
+              }
+            }
+          }
+        },
+        {
+          "type": "pageBreak"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "comment": "Closing slide",
+      "content": [
+        {
+          "type": "spacer",
+          "mm": 24
+        },
+        {
+          "type": "text",
+          "label": "slide.kicker",
+          "text": "Get Started"
+        },
+        {
+          "type": "text",
+          "label": "slide.title",
+          "text": "npm install h17-sspdf"
+        },
+        {
+          "type": "spacer",
+          "mm": 8
+        },
+        {
+          "type": "divider",
+          "label": "slide.divider.accent",
+          "widthMm": 60
+        },
+        {
+          "type": "spacer",
+          "mm": 4
+        },
+        {
+          "type": "text",
+          "label": "slide.body",
+          "text": "Zero native dependencies. Works in Node.js. CLI and programmatic API included."
+        },
+        {
+          "type": "spacer",
+          "mm": 6
+        },
+        {
+          "type": "row",
+          "leftLabel": "slide.row.left",
+          "rightLabel": "slide.row.right",
+          "leftText": "GitHub",
+          "rightText": "github.com/hugopalma17/sspdf",
+          "xLeftMm": 24,
+          "xRightMm": 314
+        },
+        {
+          "type": "row",
+          "leftLabel": "slide.row.left",
+          "rightLabel": "slide.row.right",
+          "leftText": "Docs",
+          "rightText": "h17.ai/docs/sspdf",
+          "xLeftMm": 24,
+          "xRightMm": 314
+        }
+      ]
+    }
+  ]
+}

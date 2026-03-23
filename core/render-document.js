@@ -221,17 +221,21 @@ function executeOperations(ctx) {
       }
     }
 
-    core.withDocumentState(() => {
-      executeOperation({
-        core,
-        theme,
-        operation,
-        index,
-        templateMode,
-        templateBypassMargins,
-        insideContainer,
+    if (operation.type === "pageBreak") {
+      core.addPage();
+    } else {
+      core.withDocumentState(() => {
+        executeOperation({
+          core,
+          theme,
+          operation,
+          index,
+          templateMode,
+          templateBypassMargins,
+          insideContainer,
+        });
       });
-    });
+    }
   }
 }
 
@@ -335,6 +339,7 @@ function isOperationType(type) {
     || type === "bullet"
     || type === "divider"
     || type === "spacer"
+    || type === "pageBreak"
     || type === "hiddenText"
     || type === "table"
     || type === "image"
@@ -1024,6 +1029,10 @@ function estimateOperationHeight(ctx) {
       return estimateSpacerFromStyle(style, index);
     }
     throw new Error(`Spacer operation at index ${index} must provide mm, px, or label with spaceMm/spacePx`);
+  }
+
+  if (operation.type === "pageBreak") {
+    return 0;
   }
 
   if (operation.type === "hiddenText") {

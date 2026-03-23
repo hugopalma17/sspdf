@@ -263,6 +263,7 @@ labels: {
 | `divider` | Horizontal rule | `label`, `x1Mm`, `x2Mm` |
 | `image` | Embedded PNG/JPEG | `src`, `width` (percentage or mm), `caption` |
 | `spacer` | Vertical gap | `mm`, `px`, or `label` |
+| `pageBreak` | Force new page | (none) |
 | `hiddenText` | Invisible text | `label`, `text` |
 | `quote` | Blockquote with attribution | `label`, `text`, `attribution` |
 | `block` | Group children, optional background + border | `children`, `keepTogether` |
@@ -466,7 +467,7 @@ Claude Code skills for generating PDFs and themes are available in the `skills/`
 
 ## Constraints
 
-- A4 only
+- Page format defaults to A4; custom dimensions supported via `pageWidthMm`/`pageHeightMm` (e.g. 16:9 presentations)
 - Single-line `row` cells, no multi-line column pairs
 - `{{page}}` gives the current page number; `{{pages}}` (total page count) is not supported because keep-together rules make the final page count unpredictable until the last operation is laid out
 - Charts require the `canvas` npm package (native C++ addon) for server-side rendering; everything else is zero native dependencies

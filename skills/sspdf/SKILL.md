@@ -80,11 +80,13 @@ ls $SSPDF_DIR/examples/sources/
 - `bullet` - marker character or vector shape + wrapped text (supports arrays)
 - `divider` - horizontal line
 - `spacer` - vertical space
+- `pageBreak` - forces a new page (useful for presentation-style layouts)
 - `hiddenText` - invisible text for ATS keyword injection
 - `quote` - blockquote with optional attribution
 - `block` - groups children, optional container background/border, `keepTogether`
 - `section` - groups children, allows page breaks inside (keepTogether defaults false)
 - `table` - data table with header, per-column alignment, alternating rows, borders
+- `chart` - bar, line, doughnut, pie via Chart.js (requires `canvas` npm package)
 - `image` - embedded PNG/JPEG with optional centered caption
 
 Read DOCUMENTATION.md for field details on each type.
@@ -116,7 +118,7 @@ Embed images from file paths. Works in any source JSON, any layout.
 
 **Keep-together:** Image + caption never split across pages. If the block does not fit, it moves to the next page.
 
-**Resolution:** For crisp output at full A4 content width (170mm), images should be at least 1000px wide. 1200px+ is comfortable. Below 800px it starts looking soft.
+**Resolution:** For crisp output at full content width, images should be at least 1000px wide. 1200px+ is comfortable. Below 800px it starts looking soft.
 
 ## Built-in fonts
 
@@ -279,8 +281,10 @@ All colors are `[R, G, B]` arrays, values 0-255. Example: `[255, 0, 128]` is pin
 5. Prefer text arrays over repeating the same operation for multiple paragraphs.
 6. Table `rows` must match `columns` length. Each cell is a string.
 7. When using shapes as bullet markers, the source JSON is identical to text markers. Only the theme label changes (`shape` instead of `marker`).
-8. Image `src` must point to an existing PNG or JPEG file. For crisp full-width A4 output, source images should be at least 1000px wide.
+8. Image `src` must point to an existing PNG or JPEG file. For crisp full-width output, source images should be at least 1000px wide.
 9. Image + caption are always kept together. They never split across pages.
+10. Custom page sizes are supported via `pageWidthMm`/`pageHeightMm` in the theme (e.g. 338x190mm for 16:9 presentations). Default is A4.
+11. Charts support `heightMm: "fill"` to use all remaining vertical space on the page. Charts can be centered via `layout.chartAlign: "center"` in the theme or `align: "center"` per operation.
 
 ## Workflow
 
@@ -300,7 +304,7 @@ All colors are `[R, G, B]` arrays, values 0-255. Example: `[255, 0, 128]` is pin
 npx h17-sspdf -s my-source.json -t default -o output/my-doc.pdf
 ```
 
-Built-in themes: `default`, `editorial`, `newsprint`, `corporate`, `ceremony`, `program`, `financial`.
+Built-in themes: `default`, `editorial`, `newsprint`, `corporate`, `ceremony`, `program`, `financial`, `presentation`.
 
 Custom theme file:
 
