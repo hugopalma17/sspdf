@@ -78,9 +78,11 @@ module.exports = {
   name: "Theme Name",
 
   page: {
-    format: "a4",            // only a4
+    format: "a4",            // named format: "a4", "letter", etc.
     orientation: "portrait",  // or "landscape"
     unit: "mm",              // only mm
+    pageWidthMm: 338,        // custom width (overrides format)
+    pageHeightMm: 190,       // custom height (overrides format)
     compress: true,
 
     // margins
@@ -113,11 +115,18 @@ module.exports = {
     defaultFillColor: [255, 255, 255],
   },
 
+  layout: {
+    chartAlign: "center",     // optional: "left" (default) or "center"
+    bulletIndentMm: 4,        // optional: bullet text indent
+  },
+
   labels: {
     // every label the source JSON will reference
   },
 };
 ```
+
+When `pageWidthMm` and `pageHeightMm` are both set, they override the `format` field and create a page with those exact dimensions. All layout math adapts automatically. For 16:9 presentations, use 338x190mm. See `examples/themes/theme-presentation.js` for a complete example.
 
 ## Built-in fonts
 
@@ -176,7 +185,7 @@ The source JSON uses the same `bullet` operation with `markerLabel` pointing to 
 
 1. Every label is self-contained. No inheritance between labels. If a label needs `fontFamily`, write `fontFamily`.
 2. Colors are always `[R, G, B]` arrays, 0-255.
-3. Only `"a4"` format and `"mm"` units are supported. The engine throws on anything else.
+3. Default format is `"a4"`. Custom dimensions are supported via `pageWidthMm`/`pageHeightMm` (e.g. 338x190mm for 16:9 presentations). Only `"mm"` units are supported.
 4. The `page` section must include `defaultText`, `defaultStroke`, and `defaultFillColor`, all fully specified. These reset after every operation to prevent style leaks.
 5. Label names are arbitrary strings. Use a dot-namespace convention: `invoice.title`, `report.body`, `news.headline`.
 6. Built-in jsPDF font families: `helvetica`, `courier`, `times`. For better typography, use the 20 shipped Google Fonts listed in the Built-in fonts section above, or embed your own TTF via `customFonts`.
@@ -225,7 +234,7 @@ The source JSON uses the same `bullet` operation with `markerLabel` pointing to 
 Before finalizing a theme, verify:
 
 **Page section:**
-- `format: "a4"` and `unit: "mm"` (only supported values)
+- `format: "a4"` (default) or custom via `pageWidthMm`/`pageHeightMm`. `unit: "mm"` required.
 - `orientation`: "portrait" or "landscape"
 - All four margins set (`marginTopMm`, `marginBottomMm`, `marginLeftMm`, `marginRightMm`)
 - `defaultText` fully specified (`fontFamily`, `fontStyle`, `fontSize`, `color`, `lineHeight`)

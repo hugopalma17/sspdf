@@ -239,6 +239,7 @@ Shared layout defaults read by operation handlers.
 ```js
 layout: {
   bulletIndentMm: 4.5,     // text indent after bullet marker (default: 4)
+  chartAlign: "center",    // chart horizontal alignment: "left" (default) or "center"
 }
 ```
 
@@ -1728,11 +1729,12 @@ main();
 | `chartType` | yes | string | Chart.js type: `"bar"`, `"line"`, `"doughnut"`, etc. |
 | `data` | yes | object | Chart.js `data` config (`labels` + `datasets`) |
 | `widthMm` | no | number | Width in the PDF in mm (default: content area width) |
-| `heightMm` | no | number | Height in the PDF in mm (default: 80) |
+| `heightMm` | no | number or `"fill"` | Height in mm (default: 80). `"fill"` uses remaining page space. |
 | `canvasWidth` | no | number | Canvas render width in pixels (default: 1600) |
 | `canvasHeight` | no | number | Canvas render height in pixels (default: 800) |
 | `options` | no | object | Chart.js `options` object. `responsive: false` and `animation: false` are injected automatically. |
 | `xMm` | no | number | Left edge in mm (default: content left margin) |
+| `align` | no | string | `"left"` (default) or `"center"`. Can also be set globally via `layout.chartAlign` in the theme. |
 
 ### Resolution
 
