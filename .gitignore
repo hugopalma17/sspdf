@@ -23,6 +23,7 @@
 !examples/themes/fonts/*.js
 !examples/sources/
 !examples/sources/*.json
+!examples/sources/*.png
 !examples/output/
 !examples/output/*.pdf
 
