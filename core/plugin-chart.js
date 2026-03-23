@@ -135,7 +135,9 @@ module.exports = {
     const { theme } = ctx;
     const contentWidth = bounds.right - bounds.left;
     const widthMm  = operation.widthMm  || contentWidth;
-    const heightMm = operation.heightMm || 80;
+    const heightMm = operation.heightMm === "fill"
+      ? core.contentBottomY - core.getCursorY()
+      : (operation.heightMm || 80);
     const align = operation.align || (theme && theme.layout && theme.layout.chartAlign) || "left";
 
     let x;
@@ -151,6 +153,9 @@ module.exports = {
   },
 
   estimateHeight(ctx) {
+    if (ctx.operation.heightMm === "fill") {
+      return ctx.core.contentBottomY - ctx.core.getCursorY();
+    }
     return (ctx.operation.heightMm || 80) + 4;
   },
 

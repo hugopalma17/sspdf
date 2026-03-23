@@ -285,7 +285,7 @@
           "type": "chart",
           "chartType": "bar",
           "widthMm": 260,
-          "heightMm": 80,
+          "heightMm": "fill",
           "canvasWidth": 2600,
           "canvasHeight": 800,
 
@@ -462,7 +462,7 @@
           "type": "chart",
           "chartType": "line",
           "widthMm": 260,
-          "heightMm": 80,
+          "heightMm": "fill",
           "canvasWidth": 2600,
           "canvasHeight": 800,
 
