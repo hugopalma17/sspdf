@@ -132,9 +132,20 @@ module.exports = {
       );
     }
 
-    const widthMm  = operation.widthMm  || (bounds.right - bounds.left);
+    const { theme } = ctx;
+    const contentWidth = bounds.right - bounds.left;
+    const widthMm  = operation.widthMm  || contentWidth;
     const heightMm = operation.heightMm || 80;
-    const x        = operation.xMm !== undefined ? operation.xMm : bounds.left;
+    const align = operation.align || (theme && theme.layout && theme.layout.chartAlign) || "left";
+
+    let x;
+    if (operation.xMm !== undefined) {
+      x = operation.xMm;
+    } else if (align === "center") {
+      x = bounds.left + (contentWidth - widthMm) / 2;
+    } else {
+      x = bounds.left;
+    }
 
     core.drawImage({ data: operation._buf, format: 'PNG', x, widthMm, heightMm });
   },

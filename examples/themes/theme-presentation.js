@@ -40,6 +40,10 @@ module.exports = {
     defaultFillColor: [6, 6, 8],
   },
 
+  layout: {
+    chartAlign: "center",
+  },
+
   labels: {
     // ─── Slide footer ─────────────────────────────────────────
     "slide.footer.rule": {

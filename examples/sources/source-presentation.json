@@ -288,7 +288,7 @@
           "heightMm": 80,
           "canvasWidth": 2600,
           "canvasHeight": 800,
-          "xMm": 15,
+
           "data": {
             "labels": [
               "Invoice",
@@ -465,7 +465,7 @@
           "heightMm": 80,
           "canvasWidth": 2600,
           "canvasHeight": 800,
-          "xMm": 15,
+
           "data": {
             "labels": [
               "v0.1.0",
