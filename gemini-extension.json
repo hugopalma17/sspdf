@@ -1,6 +1,6 @@
 {
   "name": "sspdf",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Declarative PDF engine - define layout once, feed it JSON, get consistent PDFs",
   "contextFileName": "skills/sspdf/SKILL.md"
 }
