@@ -221,17 +221,21 @@ function executeOperations(ctx) {
       }
     }
 
-    core.withDocumentState(() => {
-      executeOperation({
-        core,
-        theme,
-        operation,
-        index,
-        templateMode,
-        templateBypassMargins,
-        insideContainer,
+    if (operation.type === "pageBreak") {
+      core.addPage();
+    } else {
+      core.withDocumentState(() => {
+        executeOperation({
+          core,
+          theme,
+          operation,
+          index,
+          templateMode,
+          templateBypassMargins,
+          insideContainer,
+        });
       });
-    });
+    }
   }
 }
 
@@ -678,11 +682,6 @@ function executeOperation(ctx) {
       return;
     }
     throw new Error(`Spacer operation at index ${index} must provide mm, px, or label with spaceMm/spacePx`);
-  }
-
-  if (operation.type === "pageBreak") {
-    core.addPage();
-    return;
   }
 
   if (operation.type === "hiddenText") {

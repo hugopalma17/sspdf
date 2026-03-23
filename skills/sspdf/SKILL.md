@@ -282,9 +282,9 @@ All colors are `[R, G, B]` arrays, values 0-255. Example: `[255, 0, 128]` is pin
 6. Table `rows` must match `columns` length. Each cell is a string.
 7. When using shapes as bullet markers, the source JSON is identical to text markers. Only the theme label changes (`shape` instead of `marker`).
 8. Image `src` must point to an existing PNG or JPEG file. For crisp full-width output, source images should be at least 1000px wide.
-9. Custom page sizes are supported via `pageWidthMm`/`pageHeightMm` in the theme (e.g. 338x190mm for 16:9 presentations). Default is A4.
-10. Charts support `heightMm: "fill"` to use all remaining vertical space on the page. Charts can be centered via `layout.chartAlign: "center"` in the theme or `align: "center"` per operation.
 9. Image + caption are always kept together. They never split across pages.
+10. Custom page sizes are supported via `pageWidthMm`/`pageHeightMm` in the theme (e.g. 338x190mm for 16:9 presentations). Default is A4.
+11. Charts support `heightMm: "fill"` to use all remaining vertical space on the page. Charts can be centered via `layout.chartAlign: "center"` in the theme or `align: "center"` per operation.
 
 ## Workflow
 

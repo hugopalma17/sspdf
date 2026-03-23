@@ -1038,4 +1038,6 @@ test("pageBreak: forces new page and resets cursor", () => {
   };
   const { core } = renderDocument({ source, theme });
   assert.strictEqual(core.doc.getNumberOfPages(), 2, "pageBreak creates page 2");
+  const bodyDelta = lh(10, 1.2) + pxToMm(4);
+  near(core.cursorY, core.contentTopY + bodyDelta, "cursor on page 2 = contentTopY + one text block");
 });
