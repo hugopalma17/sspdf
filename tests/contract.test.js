@@ -2,6 +2,7 @@ const { test, assert } = require("./test-utils");
 const { PDFCore, getStyleMarginsMm, getTextPaddingMm } = require("../core/pdf-core");
 const { renderDocument } = require("../core/render-document");
 const { resolveLineHeightMm, pxToMm, ptToMm } = require("../core/units");
+const INTER = require("../fonts/inter");
 
 // ─── Test theme with known values ───────────────────────────────
 
@@ -160,6 +161,57 @@ function makeCore() {
 
 function lh(fontSizePt, lineHeightMult) {
   return resolveLineHeightMm(fontSizePt, lineHeightMult);
+}
+
+function getPageContentStateDeltas(buffer) {
+  const pdf = buffer.toString("latin1");
+  const objects = new Map();
+  const objectRegex = /(\d+)\s+\d+\s+obj\b([\s\S]*?)endobj/g;
+  let match;
+
+  while ((match = objectRegex.exec(pdf))) {
+    objects.set(Number(match[1]), match[2]);
+  }
+
+  const deltas = [];
+  for (const [, body] of objects) {
+    if (!/\/Type\s*\/Page\b/.test(body)) {
+      continue;
+    }
+
+    const contentRefMatch = body.match(/\/Contents\s+(\d+)\s+\d+\s+R/);
+    if (!contentRefMatch) {
+      continue;
+    }
+
+    const contentObject = objects.get(Number(contentRefMatch[1]));
+    if (!contentObject) {
+      continue;
+    }
+
+    const streamStart = contentObject.indexOf("stream\n");
+    const streamEnd = contentObject.lastIndexOf("\nendstream");
+    if (streamStart === -1 || streamEnd === -1) {
+      continue;
+    }
+
+    const stream = contentObject.slice(streamStart + "stream\n".length, streamEnd);
+    const tokens = stream.match(/(?:^|\s)(q|Q)(?=\s|$)/g) || [];
+    let qCount = 0;
+    let QCount = 0;
+
+    tokens.forEach((token) => {
+      if (token.trim() === "q") {
+        qCount += 1;
+      } else {
+        QCount += 1;
+      }
+    });
+
+    deltas.push(qCount - QCount);
+  }
+
+  return deltas;
 }
 
 // ─── Page geometry ──────────────────────────────────────────────
@@ -670,6 +722,91 @@ test("renderDocument: page token {{page}} resolves", () => {
   const { core } = renderDocument({ source, theme });
   const expected = core.contentTopY + lh(10, 1.2) + pxToMm(4);
   near(core.cursorY, expected, "page token doesn't affect cursor math");
+});
+
+test("renderDocument: page breaks keep graphics-state pairs on the same page", () => {
+  const streamTheme = JSON.parse(JSON.stringify(theme));
+  streamTheme.page.compress = false;
+
+  const source = {
+    operations: [
+      { type: "spacer", mm: 254 },
+      { type: "text", label: "t.body", text: "This line should move to the next page." },
+    ],
+  };
+
+  const result = renderDocument({ source, theme: streamTheme });
+  assert.deepStrictEqual(getPageContentStateDeltas(result.buffer), [0, 0]);
+});
+
+test("renderDocument: custom default font does not warn before registration", () => {
+  const interTheme = {
+    page: {
+      format: "a4",
+      orientation: "portrait",
+      unit: "mm",
+      marginTopMm: 20,
+      marginBottomMm: 20,
+      marginLeftMm: 20,
+      marginRightMm: 20,
+      backgroundColor: [255, 255, 255],
+      defaultText: {
+        fontFamily: "Inter",
+        fontStyle: "normal",
+        fontSize: 10,
+        color: [0, 0, 0],
+        lineHeight: 1.2,
+      },
+      defaultStroke: {
+        color: [0, 0, 0],
+        lineWidth: 0.2,
+        lineCap: "butt",
+        lineJoin: "miter",
+      },
+      defaultFillColor: [255, 255, 255],
+    },
+    customFonts: [
+      {
+        family: "Inter",
+        faces: [
+          { style: "normal", fileName: "Inter-Regular.ttf", data: INTER.Regular },
+          { style: "bold", fileName: "Inter-Bold.ttf", data: INTER.Bold },
+        ],
+      },
+    ],
+    labels: {
+      body: {
+        fontFamily: "Inter",
+        fontStyle: "normal",
+        fontSize: 10,
+        color: [0, 0, 0],
+        lineHeight: 1.2,
+        marginBottomMm: 1,
+      },
+    },
+  };
+
+  const originalWarn = console.warn;
+  const warnings = [];
+  console.warn = (...args) => warnings.push(args.join(" "));
+
+  try {
+    renderDocument({
+      source: {
+        operations: [
+          { type: "text", label: "body", text: "Inter body text" },
+        ],
+      },
+      theme: interTheme,
+    });
+  } finally {
+    console.warn = originalWarn;
+  }
+
+  assert.ok(
+    !warnings.some((warning) => warning.includes("Unable to look up font label for font 'Inter', 'normal'")),
+    warnings.join("\n")
+  );
 });
 
 test("renderDocument: mixed operations complex sequence", () => {

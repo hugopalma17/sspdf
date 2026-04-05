@@ -47,6 +47,7 @@ function renderDocument(input) {
 
   const core = new PDFCore(runtimeTheme);
   registerThemeFonts(core, runtimeTheme);
+  core.applyDefaultRenderState();
 
   installPageTemplates(core, runtimeTheme, built.pageTemplates);
 

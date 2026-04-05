@@ -123,6 +123,8 @@ class PDFCore {
     this.pageHeight = this.doc.internal.pageSize.getHeight();
     this.backgroundColor = this._resolveColor(this.page.backgroundColor);
     this.lastDrawnBounds = null;
+    this.documentStateDepth = 0;
+    this.hasDeferredInitialRenderState = Array.isArray(theme.customFonts) && theme.customFonts.length > 0;
     this.defaultRenderState = this._buildDefaultRenderState(this.page);
     this.contentTopY = this.marginTopMm + this.headerHeightMm;
     this.contentBottomY = this.pageHeight - this.marginBottomMm - this.footerHeightMm;
@@ -138,7 +140,12 @@ class PDFCore {
     });
 
     this.paintBackground();
-    this.applyDefaultRenderState();
+    // Custom fonts are registered by renderDocument() after core construction.
+    // Deferring the first setFont() avoids jsPDF warnings when page.defaultText
+    // uses a custom family that is not yet in the font map.
+    if (!this.hasDeferredInitialRenderState) {
+      this.applyDefaultRenderState();
+    }
   }
 
   /**
@@ -178,9 +185,11 @@ class PDFCore {
    * Force a new page and reset cursor to top margin.
    */
   addPage() {
+    const reopenedStateDepth = this._closeDocumentStatesForPageBreak();
     this.doc.addPage();
     this.paintBackground();
     this.applyDefaultRenderState();
+    this._reopenDocumentStatesAfterPageBreak(reopenedStateDepth);
     this.cursorY = this.contentTopY;
   }
 
@@ -198,6 +207,7 @@ class PDFCore {
       && typeof this.doc.restoreGraphicsState === "function";
     if (canSaveGraphicsState) {
       this.doc.saveGraphicsState();
+      this.documentStateDepth += 1;
     }
 
     try {
@@ -205,6 +215,7 @@ class PDFCore {
     } finally {
       if (canSaveGraphicsState) {
         this.doc.restoreGraphicsState();
+        this.documentStateDepth = Math.max(0, this.documentStateDepth - 1);
       }
       this.applyDefaultRenderState();
     }
@@ -498,11 +509,21 @@ class PDFCore {
     const baseline = y + baselineOffsetMm;
 
     if (markerStyle.shape) {
-      // Vector shape marker: renders via core/shapes.js, no text encoding needed
+      // Vector shape marker: renders via core/shapes.js, no text encoding needed.
+      // Wrapped in saveGraphicsState/restoreGraphicsState to isolate draw state
+      // mutations (setLineCap, setFillColor, etc.) from the main content stream.
+      // Without this, accumulated state operators can cause print rendering issues
+      // where printer RIPs interpret the stacked state differently than screen viewers.
       const { renderShape, getShapeWidth } = require("./shapes");
       const shapeColor = markerStyle.shapeColor || markerStyle.color || [0, 0, 0];
       const shapeSize = markerStyle.shapeSize || 1;
+      if (typeof this.doc.saveGraphicsState === "function") {
+        this.doc.saveGraphicsState();
+      }
       renderShape(markerStyle.shape, this.doc, x, baseline, shapeColor, shapeSize, textFontSize);
+      if (typeof this.doc.restoreGraphicsState === "function") {
+        this.doc.restoreGraphicsState();
+      }
       this.applyDefaultRenderState();
     } else {
       // Text-based marker (existing behavior)
@@ -1069,6 +1090,29 @@ class PDFCore {
       },
       fillColor: this._resolveColor(page.defaultFillColor),
     };
+  }
+
+  _closeDocumentStatesForPageBreak() {
+    if (this.documentStateDepth <= 0) {
+      return 0;
+    }
+
+    for (let i = 0; i < this.documentStateDepth; i += 1) {
+      this.doc.restoreGraphicsState();
+    }
+
+    return this.documentStateDepth;
+  }
+
+  _reopenDocumentStatesAfterPageBreak(depth) {
+    const count = Number(depth) || 0;
+    if (count <= 0) {
+      return;
+    }
+
+    for (let i = 0; i < count; i += 1) {
+      this.doc.saveGraphicsState();
+    }
   }
 }
 
