@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { jsPDF } = require("../vendor/jspdf/jspdf.node");
+const { jsPDF } = require("../vendor/jspdf/jspdf.umd.js");
 const { pxToMm, ptToMm, resolveLineHeightMm } = require("./units");
 
 // Style math helpers, shared between core rendering and height estimation.

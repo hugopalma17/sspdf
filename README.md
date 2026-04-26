@@ -20,6 +20,8 @@ Source JSON  +  Theme  =  PDF
 npm install h17-sspdf
 ```
 
+Requires **Node.js 18 or newer**. The engine vendors a single self-contained UMD build of jsPDF (which bundles fflate, fast-png, iobuffer internally) plus Chart.js and chartjs-node-canvas. The only install-time dependency is [`canvas`](https://www.npmjs.com/package/canvas) (native C++ addon, used by the chart plugin) — no transitive dependency tree beyond that.
+
 ## The problem it solves
 
 Generating PDFs imperatively means tracking the cursor yourself. Every element you place shifts everything below it. Line wrapping, page breaks, font resets, all manual.
@@ -471,6 +473,7 @@ Claude Code skills for generating PDFs and themes are available in the `skills/`
 - Single-line `row` cells, no multi-line column pairs
 - `{{page}}` gives the current page number; `{{pages}}` (total page count) is not supported because keep-together rules make the final page count unpredictable until the last operation is laid out
 - Charts require the `canvas` npm package (native C++ addon) for server-side rendering; everything else is zero native dependencies
+- A `jspdf.umd.js` build is vendored for client-side/browser use. It bundles all dependencies internally but requires wiring up your own entry point — `pdf-core.js` uses the Node build by default
 
 ---
 
@@ -480,7 +483,7 @@ Hugo Palma, 2026
 
 This project vendors the following MIT-licensed libraries:
 
-- [jsPDF](https://github.com/parallax/jsPDF) - PDF generation. Copyright (c) 2010-2025 James Hall, yWorks GmbH.
+- [jsPDF](https://github.com/parallax/jsPDF) - PDF generation (UMD build, bundles fflate, fast-png, iobuffer internally). Copyright (c) 2010-2025 James Hall, yWorks GmbH.
 - [Chart.js](https://github.com/chartjs/Chart.js) - Chart rendering. Copyright (c) 2014-2024 Chart.js Contributors.
 - [chartjs-node-canvas](https://github.com/SeanSobey/ChartjsNodeCanvas) - Server-side Chart.js rendering. Copyright (c) 2018 Sean Sobey.
 

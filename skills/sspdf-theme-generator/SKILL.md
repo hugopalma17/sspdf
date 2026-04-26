@@ -241,6 +241,20 @@ Before finalizing a theme, verify:
 - `defaultStroke` fully specified (`color`, `lineWidth`, `lineCap`, `lineJoin`)
 - `defaultFillColor` set
 
+**Page-template margins (CRITICAL — common rendering bug):**
+Header and footer operations from `pageTemplates` do NOT inherit `page.marginLeftMm` / `page.marginRightMm`. They render edge-to-edge unless the labels they reference declare their own side margins. Symptom: header/footer text overlaps body content along the page edges (visible as overlapping characters at the margins, e.g. "// PYTHON: A STORY" colliding with body text starting at the left margin).
+
+Whenever the theme defines header/footer text labels, set side margins on each that match the page margins:
+
+```js
+"doc.header.left":  { ..., marginLeftMm: 22, marginBottomPx: 0 },   // == page.marginLeftMm
+"doc.header.right": { ..., marginRightMm: 22, marginBottomPx: 0 },
+"doc.footer.left":  { ..., marginLeftMm: 22 },
+"doc.footer.right": { ..., marginRightMm: 22 },
+```
+
+Also size the reserved band correctly via the source's `headerHeightMm` / `footerHeightMm`. The body cursor starts below `headerHeightMm` and stops above `pageHeightMm - footerHeightMm`. Undersize either and body text bleeds into the band. Rule of thumb: `headerHeightMm` = (header fontSize in mm * lineHeight) + 4mm padding; same for footer (add an extra 1-2mm if the footer carries a divider rule above the text).
+
 **Labels:**
 - Every label has `fontFamily` explicitly set (no inheritance)
 - Table labels have `cellPaddingMm`, `borderColor`, `altRowColor` if using alternating rows

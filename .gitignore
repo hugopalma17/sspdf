@@ -36,7 +36,7 @@
 
 !vendor/
 !vendor/jspdf/
-!vendor/jspdf/jspdf.node.js
+!vendor/jspdf/jspdf.umd.js
 !vendor/jspdf/LICENSE
 !vendor/chart.js/
 !vendor/chart.js/chart.umd.js
