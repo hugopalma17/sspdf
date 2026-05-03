@@ -877,11 +877,7 @@ function executeOperation(ctx) {
   if (operation.type === "columns") {
     const bounds = getHorizontalBounds(core, templateBypassMargins);
     const contentWidth = bounds.right - bounds.left;
-    const gutterMm = Number(
-      operation.gutterMm !== undefined
-        ? operation.gutterMm
-        : (Number((theme.layout || {}).columnGutterMm) || 0)
-    );
+    const gutterMm = resolveColumnsGutter(operation, theme, index);
     const colWidth = (contentWidth - gutterMm) / 2;
     const col1Left = bounds.left;
     const col1Right = bounds.left + colWidth;
@@ -1160,11 +1156,7 @@ function estimateOperationHeight(ctx) {
 
   if (operation.type === "columns") {
     const contentWidth = core.pageWidth - core.marginLeftMm - core.marginRightMm;
-    const gutterMm = Number(
-      operation.gutterMm !== undefined
-        ? operation.gutterMm
-        : (Number((theme.layout || {}).columnGutterMm) || 0)
-    );
+    const gutterMm = resolveColumnsGutter(operation, theme, index);
     const colWidth = (contentWidth - gutterMm) / 2;
 
     const savedMarginLeft = core.marginLeftMm;
@@ -1241,6 +1233,20 @@ function applyPageTokens(value, core) {
   }
   const page = core.doc.getNumberOfPages();
   return String(value).replace(/\{\{page\}\}/g, String(page));
+}
+
+function resolveColumnsGutter(operation, theme, index) {
+  if (operation.gutterMm !== undefined) {
+    return Number(operation.gutterMm);
+  }
+  const themeGutter = (theme.layout || {}).columnGutterMm;
+  if (themeGutter !== undefined) {
+    return Number(themeGutter);
+  }
+  throw new Error(
+    `columns operation at index ${index} has no gutterMm. ` +
+    `Set gutterMm on the operation or columnGutterMm in theme.layout.`
+  );
 }
 
 function getHorizontalBounds(core, bypassMargins) {

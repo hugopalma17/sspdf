@@ -227,6 +227,41 @@ test("columns: validation rejects missing column1", () => {
   assert(threw, "should have thrown for missing column1");
 });
 
+test("columns: throws when gutterMm not defined on op or in theme", () => {
+  let threw = false;
+  try {
+    renderDocument({
+      theme: baseTheme,
+      source: { operations: [{ type: "columns", column1: [], column2: [] }] },
+    });
+  } catch (e) {
+    threw = true;
+    assert(e.message.includes("gutterMm"), `expected 'gutterMm' in error, got: ${e.message}`);
+  }
+  assert(threw, "should have thrown for missing gutter");
+});
+
+test("columns: theme.layout.columnGutterMm is used when op omits gutterMm", () => {
+  const lineH = resolveLineHeightMm(10, 1.2);
+  const themeWithGutter = Object.assign({}, baseTheme, { layout: { columnGutterMm: 10 } });
+
+  const result = renderDocument({
+    theme: themeWithGutter,
+    source: {
+      operations: [{
+        type: "columns",
+        column1: [{ type: "text", label: "t.body", text: "A" }],
+        column2: [
+          { type: "text", label: "t.body", text: "B" },
+          { type: "text", label: "t.body", text: "C" },
+        ],
+      }],
+    },
+  });
+
+  near(result.core.cursorY, 10 + 2 * lineH, "theme gutter applied, cursor at taller column end");
+});
+
 test("columns: validation rejects missing column2", () => {
   let threw = false;
   try {
