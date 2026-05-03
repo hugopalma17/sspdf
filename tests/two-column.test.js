@@ -245,3 +245,38 @@ test("columns: validation rejects missing column2", () => {
   }
   assert(threw, "should have thrown for missing column2");
 });
+
+// ─── columns saves vertical space compared to stacking ────────────────────────
+//
+// Placing two blocks in columns costs max(col1H, col2H) vertical space.
+// Stacking them costs col1H + col2H.
+// The cursor after the columns op must be strictly less than the cursor
+// after the equivalent stacked layout (the shorter column's height is saved).
+
+const twoColTheme = baseTheme;
+
+// col1: 3 text lines. col2: 8 text lines. The shorter block's height is saved.
+test("columns: cursor savings = height of the shorter column", () => {
+  const lineH = resolveLineHeightMm(10, 1.2);
+  const col1Lines = 3;
+  const col2Lines = 8;
+
+  const makeLines = (n) =>
+    Array.from({ length: n }, (_, i) => ({
+      type: "text", label: "t.body", text: `Line ${i + 1}`,
+    }));
+
+  const withCols = renderDocument({
+    theme: twoColTheme,
+    source: { operations: [{ type: "columns", gutterMm: 10, column1: makeLines(col1Lines), column2: makeLines(col2Lines) }] },
+  });
+
+  const stacked = renderDocument({
+    theme: twoColTheme,
+    source: { operations: [...makeLines(col1Lines), ...makeLines(col2Lines)] },
+  });
+
+  const expectedSaved = col1Lines * lineH;
+  const actualSaved = stacked.core.cursorY - withCols.core.cursorY;
+  near(actualSaved, expectedSaved, "columns saves exactly the shorter column height");
+});
