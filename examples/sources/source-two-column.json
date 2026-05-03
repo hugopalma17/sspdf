@@ -1,0 +1,68 @@
+{
+  "operations": [
+    { "type": "text", "label": "demo.title", "text": "Service Plan Comparison" },
+    { "type": "text", "label": "demo.subtitle", "text": "Choose the plan that fits your team. Both plans include SLA, onboarding, and 24/7 support." },
+    { "type": "divider", "label": "demo.rule" },
+
+    {
+      "type": "columns",
+      "column1": [
+        { "type": "text", "label": "demo.col.heading", "text": "Starter" },
+        { "type": "text", "label": "demo.col.tagline", "text": "For small teams getting started with automation" },
+        { "type": "text", "label": "demo.col.price", "text": "$49 / mo" },
+        { "type": "text", "label": "demo.col.price.note", "text": "Per workspace, billed monthly" },
+        { "type": "divider", "label": "demo.rule.soft" },
+        {
+          "type": "table",
+          "label": "demo.table.cell",
+          "headerLabel": "demo.table.header",
+          "columns": [
+            { "header": "Feature", "width": "72%", "align": "left" },
+            { "header": "Included", "width": "28%", "align": "center" }
+          ],
+          "rows": [
+            ["Users",               "Up to 5"],
+            ["Projects",            "10"],
+            ["Storage",             "20 GB"],
+            ["API calls / day",     "5,000"],
+            ["Custom integrations", "—"],
+            ["SSO / SAML",          "—"],
+            ["Audit log",           "—"],
+            ["Priority support",    "—"],
+            ["SLA uptime",          "99.5%"]
+          ]
+        }
+      ],
+      "column2": [
+        { "type": "text", "label": "demo.col.heading", "text": "Professional" },
+        { "type": "text", "label": "demo.col.tagline", "text": "For growing teams that need scale and compliance" },
+        { "type": "text", "label": "demo.col.price", "text": "$149 / mo" },
+        { "type": "text", "label": "demo.col.price.note", "text": "Per workspace, billed monthly" },
+        { "type": "divider", "label": "demo.rule.soft" },
+        {
+          "type": "table",
+          "label": "demo.table.cell",
+          "headerLabel": "demo.table.header",
+          "columns": [
+            { "header": "Feature", "width": "72%", "align": "left" },
+            { "header": "Included", "width": "28%", "align": "center" }
+          ],
+          "rows": [
+            ["Users",               "Unlimited"],
+            ["Projects",            "Unlimited"],
+            ["Storage",             "500 GB"],
+            ["API calls / day",     "100,000"],
+            ["Custom integrations", "Yes"],
+            ["SSO / SAML",          "Yes"],
+            ["Audit log",           "90 days"],
+            ["Priority support",    "Yes"],
+            ["SLA uptime",          "99.9%"]
+          ]
+        }
+      ]
+    },
+
+    { "type": "text", "label": "demo.footer.note", "text": "Prices shown in USD. Annual billing saves 20%. All plans include a 14-day free trial with no credit card required." },
+    { "type": "text", "label": "demo.footer.cta", "text": "Contact sales@example.com to discuss enterprise pricing or volume discounts." }
+  ]
+}

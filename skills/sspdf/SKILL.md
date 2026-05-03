@@ -88,6 +88,7 @@ ls $SSPDF_DIR/examples/sources/
 - `table` - data table with header, per-column alignment, alternating rows, borders
 - `chart` - bar, line, doughnut, pie via Chart.js (requires `canvas` npm package)
 - `image` - embedded PNG/JPEG with optional centered caption
+- `columns` - two-column side-by-side layout; cursor lands below the taller column
 
 Read DOCUMENTATION.md for field details on each type.
 
@@ -195,6 +196,35 @@ Available: `arrow`, `circle`, `square`, `diamond`, `triangle`, `dash`, `chevron`
 ```
 
 The `{{page}}` token in any text value resolves to the current page number.
+
+## Two-column layout
+
+Place two independent blocks side by side with the `columns` operation. The cursor lands below the taller column; full-width operations after the block start from there.
+
+```json
+{
+  "type": "columns",
+  "gutterMm": 5,
+  "column1": [
+    { "type": "text", "label": "doc.heading", "text": "Remunerations" },
+    { "type": "table", "label": "doc.table.cell", "headerLabel": "doc.table.header",
+      "columns": [{ "header": "Item", "width": "70%", "align": "left" }, { "header": "Value", "width": "30%", "align": "right" }],
+      "rows": [["Salary", "R$ 2,344.95"], ["Overtime", "R$ 1,151.16"]] }
+  ],
+  "column2": [
+    { "type": "text", "label": "doc.heading", "text": "Deductions" },
+    { "type": "table", "label": "doc.table.cell", "headerLabel": "doc.table.header",
+      "columns": [{ "header": "Item", "width": "70%", "align": "left" }, { "header": "Value", "width": "30%", "align": "right" }],
+      "rows": [["INSS", "R$ 426.56"], ["Health", "R$ 89.00"]] }
+  ]
+}
+```
+
+**Gutter:** set `gutterMm` on the operation, or set `columnGutterMm` in `theme.layout` as a document-wide default. If neither is defined, the engine throws. The per-operation value takes precedence.
+
+**Column width:** `(contentWidth - gutterMm) / 2`. Both columns are always equal width.
+
+Any operation type works inside columns — tables, images, bullets, nested blocks.
 
 ## Table operations
 

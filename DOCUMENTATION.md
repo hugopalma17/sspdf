@@ -240,6 +240,7 @@ Shared layout defaults read by operation handlers.
 layout: {
   bulletIndentMm: 4.5,     // text indent after bullet marker (default: 4)
   chartAlign: "center",    // chart horizontal alignment: "left" (default) or "center"
+  columnGutterMm: 5,       // default gutter between columns (required if columns ops omit gutterMm)
 }
 ```
 
@@ -645,6 +646,39 @@ Identical to `block` but defaults to `keepTogether: false`. Use sections to grou
 
 Alias for `block`.
 
+#### `columns`
+
+Renders two independent operation lists side by side. Each column gets half the content width minus half the gutter. The cursor advances to the bottom of the taller column, so subsequent full-width operations continue from the correct position.
+
+```json
+{
+  "type": "columns",
+  "gutterMm": 5,
+  "column1": [
+    { "type": "text", "label": "doc.heading", "text": "Left Column" },
+    { "type": "text", "label": "doc.body", "text": "Content on the left." }
+  ],
+  "column2": [
+    { "type": "text", "label": "doc.heading", "text": "Right Column" },
+    { "type": "text", "label": "doc.body", "text": "Content on the right." }
+  ]
+}
+```
+
+| Field | Required | Type | Description |
+|---|---|---|---|
+| `column1` | yes | array | Operations for the left column |
+| `column2` | yes | array | Operations for the right column |
+| `gutterMm` | no* | number | Gap between columns in mm. *Required if `theme.layout.columnGutterMm` is not set |
+
+**Gutter resolution:** `gutterMm` on the operation takes precedence. If omitted, `theme.layout.columnGutterMm` is used. If neither is defined, the engine throws.
+
+**Column width:** `(contentWidth - gutterMm) / 2`. Both columns are always equal width.
+
+**Cursor after:** `max(col1EndY, col2EndY)` — the bottom of the taller column.
+
+Any operation type that works at the top level works inside columns. Tables, images, bullets, nested blocks — all work. Columns inside columns are supported (the margin stack is re-entrant).
+
 ### Inferred text operations
 
 If a node has `label` and `text` (or `value`) but no `type`, it's treated as text:
@@ -675,6 +709,7 @@ The engine positions content using a cursor that starts at `marginTopMm` and mov
 | `table` | marginTop + headerRowHeight + sum(dataRowHeights) + marginBottom |
 | `image` | marginTop + paddingTop + imageHeightMm + captionHeight + paddingBottom + marginBottom |
 | `block` | sum of children deltas (+ spaceAfter if defined) |
+| `columns` | max(col1Height, col2Height) |
 
 Where:
 - `lineHeightMm = (fontSize × 25.4/72) × lineHeight` (font points → mm × multiplier)
@@ -1350,6 +1385,7 @@ This applies to all color properties: `color`, `backgroundColor`, `borderColor`,
 | `section` | `content` | `label`, `keepTogether` |
 | `quote` | `label`, `text` | `attribution`, `attributionLabel` |
 | `hiddenText` | `label`, `text` | - |
+| `columns` | `column1`, `column2` | `gutterMm` (falls back to `theme.layout.columnGutterMm`) |
 
 Every operation also accepts `xMm` and `maxWidthMm` to override the theme margins for that operation only.
 

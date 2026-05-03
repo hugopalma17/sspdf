@@ -270,6 +270,7 @@ labels: {
 | `quote` | Blockquote with attribution | `label`, `text`, `attribution` |
 | `block` | Group children, optional background + border | `children`, `keepTogether` |
 | `section` | Logical group, allows breaks inside | `content` |
+| `columns` | Two-column side-by-side layout | `column1`, `column2`, `gutterMm` |
 
 ### Position overrides
 
