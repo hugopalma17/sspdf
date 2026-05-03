@@ -2,7 +2,7 @@ const { hasPlugin } = require("./plugin-registry");
 
 const OPERATION_TYPES = new Set([
   "text", "row", "bullet", "divider", "spacer", "hiddenText",
-  "block", "group", "section", "quote", "table", "image",
+  "block", "group", "section", "quote", "table", "image", "columns",
 ]);
 
 function validateSource(source) {
@@ -108,6 +108,18 @@ function validateOperation(op, path) {
     return;
   }
 
+  if (type === "columns") {
+    if (!Array.isArray(op.column1)) {
+      throw new Error(`${path}: columns requires column1 array`);
+    }
+    if (!Array.isArray(op.column2)) {
+      throw new Error(`${path}: columns requires column2 array`);
+    }
+    op.column1.forEach((child, i) => validateOperation(child, `${path}.column1[${i}]`));
+    op.column2.forEach((child, i) => validateOperation(child, `${path}.column2[${i}]`));
+    return;
+  }
+
   if (hasPlugin(type)) {
     return;
   }
@@ -147,6 +159,8 @@ function collectLabels(node, missing, themeLabels) {
   if (Array.isArray(ops)) {
     ops.forEach((n) => collectLabels(n, missing, themeLabels));
   }
+  if (Array.isArray(node.column1)) node.column1.forEach((n) => collectLabels(n, missing, themeLabels));
+  if (Array.isArray(node.column2)) node.column2.forEach((n) => collectLabels(n, missing, themeLabels));
 
   if (node.label && !themeLabels.has(node.label)) missing.push(node.label);
   if (node.leftLabel && !themeLabels.has(node.leftLabel)) missing.push(node.leftLabel);

@@ -284,6 +284,14 @@ function normalizeNode(node, path) {
     }];
   }
 
+  if (node.type === "columns") {
+    return [{
+      ...node,
+      column1: Array.isArray(node.column1) ? normalizeNodes(node.column1, `${path}.column1`) : [],
+      column2: Array.isArray(node.column2) ? normalizeNodes(node.column2, `${path}.column2`) : [],
+    }];
+  }
+
   if (isOperationType(node.type)) {
     return expandOperationNode(node, path);
   }
@@ -344,6 +352,7 @@ function isOperationType(type) {
     || type === "hiddenText"
     || type === "table"
     || type === "image"
+    || type === "columns"
     || hasPlugin(type);
 }
 
@@ -873,6 +882,39 @@ function executeOperation(ctx) {
     return;
   }
 
+  if (operation.type === "columns") {
+    const bounds = getHorizontalBounds(core, templateBypassMargins);
+    const contentWidth = bounds.right - bounds.left;
+    const gutterMm = resolveColumnsGutter(operation, theme, index);
+    const colWidth = (contentWidth - gutterMm) / 2;
+    const col1Left = bounds.left;
+    const col1Right = bounds.left + colWidth;
+    const col2Left = col1Right + gutterMm;
+    const col2Right = bounds.right;
+    const startY = core.getCursorY();
+
+    core._enterColumnBounds(col1Left, col1Right);
+    executeOperations({
+      core, theme,
+      operations: Array.isArray(operation.column1) ? operation.column1 : [],
+      indexPrefix: `${index}.col1.`,
+      templateMode, templateBypassMargins,
+    });
+    const col1EndY = core._exitColumnBounds(startY);
+
+    core._enterColumnBounds(col2Left, col2Right);
+    executeOperations({
+      core, theme,
+      operations: Array.isArray(operation.column2) ? operation.column2 : [],
+      indexPrefix: `${index}.col2.`,
+      templateMode, templateBypassMargins,
+    });
+    const col2EndY = core._exitColumnBounds(startY);
+
+    core.setCursorY(Math.max(col1EndY, col2EndY));
+    return;
+  }
+
   const plugin = getPlugin(operation.type);
   if (plugin) {
     const bounds = getHorizontalBounds(core, templateBypassMargins);
@@ -1120,6 +1162,35 @@ function estimateOperationHeight(ctx) {
     return margins.top + padding.top + imgHeightMm + captionHeight + padding.bottom + margins.bottom;
   }
 
+  if (operation.type === "columns") {
+    const contentWidth = core.pageWidth - core.marginLeftMm - core.marginRightMm;
+    const gutterMm = resolveColumnsGutter(operation, theme, index);
+    const colWidth = (contentWidth - gutterMm) / 2;
+
+    const savedMarginLeft = core.marginLeftMm;
+    const savedMarginRight = core.marginRightMm;
+
+    core.marginLeftMm = savedMarginLeft;
+    core.marginRightMm = core.pageWidth - (savedMarginLeft + colWidth);
+    const col1H = estimateOperationsHeight({
+      core, theme,
+      operations: Array.isArray(operation.column1) ? operation.column1 : [],
+      indexPrefix: `${index}.col1.`,
+    });
+
+    core.marginLeftMm = savedMarginLeft + colWidth + gutterMm;
+    core.marginRightMm = core.pageWidth - (savedMarginLeft + colWidth + gutterMm + colWidth);
+    const col2H = estimateOperationsHeight({
+      core, theme,
+      operations: Array.isArray(operation.column2) ? operation.column2 : [],
+      indexPrefix: `${index}.col2.`,
+    });
+
+    core.marginLeftMm = savedMarginLeft;
+    core.marginRightMm = savedMarginRight;
+    return Math.max(col1H, col2H);
+  }
+
   const plugin = getPlugin(operation.type);
   if (plugin) {
     if (typeof plugin.estimateHeight === "function") {
@@ -1170,6 +1241,20 @@ function applyPageTokens(value, core) {
   }
   const page = core.doc.getNumberOfPages();
   return String(value).replace(/\{\{page\}\}/g, String(page));
+}
+
+function resolveColumnsGutter(operation, theme, index) {
+  if (operation.gutterMm !== undefined) {
+    return Number(operation.gutterMm);
+  }
+  const themeGutter = (theme.layout || {}).columnGutterMm;
+  if (themeGutter !== undefined) {
+    return Number(themeGutter);
+  }
+  throw new Error(
+    `columns operation at index ${index} has no gutterMm. ` +
+    `Set gutterMm on the operation or columnGutterMm in theme.layout.`
+  );
 }
 
 function getHorizontalBounds(core, bypassMargins) {

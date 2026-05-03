@@ -279,6 +279,33 @@ class PDFCore {
   }
 
   /**
+   * Narrow the content area to a column band. Saves current margins and cursor.
+   * @param {number} left  Absolute left x in mm
+   * @param {number} right Absolute right x in mm
+   */
+  _enterColumnBounds(left, right) {
+    if (!this._colMarginStack) this._colMarginStack = [];
+    this._colMarginStack.push({ left: this.marginLeftMm, right: this.marginRightMm });
+    this.marginLeftMm = left;
+    this.marginRightMm = this.pageWidth - right;
+  }
+
+  /**
+   * Restore margins saved by _enterColumnBounds. Returns the cursor position
+   * reached at end of column so the caller can track the tallest column.
+   * @param {number} savedCursorY  The cursor to restore after saving column end Y
+   * @returns {number}  Cursor Y at end of column
+   */
+  _exitColumnBounds(savedCursorY) {
+    const endY = this.cursorY;
+    const saved = this._colMarginStack.pop();
+    this.marginLeftMm = saved.left;
+    this.marginRightMm = saved.right;
+    this.cursorY = savedCursorY;
+    return endY;
+  }
+
+  /**
    * Apply a text style to jsPDF.
    * @param {object} style
    * @param {string} [style.fontFamily]
