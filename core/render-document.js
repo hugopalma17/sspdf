@@ -284,6 +284,14 @@ function normalizeNode(node, path) {
     }];
   }
 
+  if (node.type === "columns") {
+    return [{
+      ...node,
+      column1: Array.isArray(node.column1) ? normalizeNodes(node.column1, `${path}.column1`) : [],
+      column2: Array.isArray(node.column2) ? normalizeNodes(node.column2, `${path}.column2`) : [],
+    }];
+  }
+
   if (isOperationType(node.type)) {
     return expandOperationNode(node, path);
   }

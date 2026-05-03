@@ -284,8 +284,8 @@ class PDFCore {
    * @param {number} right Absolute right x in mm
    */
   _enterColumnBounds(left, right) {
-    this._savedColMarginLeft = this.marginLeftMm;
-    this._savedColMarginRight = this.marginRightMm;
+    if (!this._colMarginStack) this._colMarginStack = [];
+    this._colMarginStack.push({ left: this.marginLeftMm, right: this.marginRightMm });
     this.marginLeftMm = left;
     this.marginRightMm = this.pageWidth - right;
   }
@@ -298,8 +298,9 @@ class PDFCore {
    */
   _exitColumnBounds(savedCursorY) {
     const endY = this.cursorY;
-    this.marginLeftMm = this._savedColMarginLeft;
-    this.marginRightMm = this._savedColMarginRight;
+    const saved = this._colMarginStack.pop();
+    this.marginLeftMm = saved.left;
+    this.marginRightMm = saved.right;
     this.cursorY = savedCursorY;
     return endY;
   }

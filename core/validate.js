@@ -159,6 +159,8 @@ function collectLabels(node, missing, themeLabels) {
   if (Array.isArray(ops)) {
     ops.forEach((n) => collectLabels(n, missing, themeLabels));
   }
+  if (Array.isArray(node.column1)) node.column1.forEach((n) => collectLabels(n, missing, themeLabels));
+  if (Array.isArray(node.column2)) node.column2.forEach((n) => collectLabels(n, missing, themeLabels));
 
   if (node.label && !themeLabels.has(node.label)) missing.push(node.label);
   if (node.leftLabel && !themeLabels.has(node.leftLabel)) missing.push(node.leftLabel);
