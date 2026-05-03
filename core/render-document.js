@@ -880,7 +880,7 @@ function executeOperation(ctx) {
     const gutterMm = Number(
       operation.gutterMm !== undefined
         ? operation.gutterMm
-        : ((theme.layout && theme.layout.columnGutterMm) || 5)
+        : (Number((theme.layout || {}).columnGutterMm) || 0)
     );
     const colWidth = (contentWidth - gutterMm) / 2;
     const col1Left = bounds.left;
@@ -1163,7 +1163,7 @@ function estimateOperationHeight(ctx) {
     const gutterMm = Number(
       operation.gutterMm !== undefined
         ? operation.gutterMm
-        : ((theme.layout && theme.layout.columnGutterMm) || 5)
+        : (Number((theme.layout || {}).columnGutterMm) || 0)
     );
     const colWidth = (contentWidth - gutterMm) / 2;
 
