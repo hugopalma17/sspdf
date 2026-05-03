@@ -2,7 +2,7 @@ const { hasPlugin } = require("./plugin-registry");
 
 const OPERATION_TYPES = new Set([
   "text", "row", "bullet", "divider", "spacer", "hiddenText",
-  "block", "group", "section", "quote", "table", "image",
+  "block", "group", "section", "quote", "table", "image", "columns",
 ]);
 
 function validateSource(source) {
@@ -105,6 +105,18 @@ function validateOperation(op, path) {
       throw new Error(`${path}: ${type} requires children array`);
     }
     children.forEach((child, i) => validateOperation(child, `${path}.children[${i}]`));
+    return;
+  }
+
+  if (type === "columns") {
+    if (!Array.isArray(op.column1)) {
+      throw new Error(`${path}: columns requires column1 array`);
+    }
+    if (!Array.isArray(op.column2)) {
+      throw new Error(`${path}: columns requires column2 array`);
+    }
+    op.column1.forEach((child, i) => validateOperation(child, `${path}.column1[${i}]`));
+    op.column2.forEach((child, i) => validateOperation(child, `${path}.column2[${i}]`));
     return;
   }
 
