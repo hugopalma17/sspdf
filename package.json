@@ -1,6 +1,6 @@
 {
   "name": "h17-sspdf",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Declarative PDF engine - define layout once, feed it JSON, get consistent PDFs",
   "main": "index.js",
   "author": "Hugo Palma",
@@ -25,6 +25,7 @@
     "vendor/chartjs-node-canvas",
     "examples/themes",
     "examples/sources",
+    "examples/output",
     "index.js",
     "cli.js",
     "DOCUMENTATION.md",
@@ -50,7 +51,12 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
+  "peerDependencies": {
     "canvas": "^3.1.0"
+  },
+  "peerDependenciesMeta": {
+    "canvas": {
+      "optional": true
+    }
   }
 }

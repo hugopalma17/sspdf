@@ -675,9 +675,9 @@ Renders two independent operation lists side by side. Each column gets half the 
 
 **Column width:** `(contentWidth - gutterMm) / 2`. Both columns are always equal width.
 
-**Cursor after:** `max(col1EndY, col2EndY)` — the bottom of the taller column.
+**Cursor after:** `max(col1EndY, col2EndY)` - the bottom of the taller column.
 
-Any operation type that works at the top level works inside columns. Tables, images, bullets, nested blocks — all work. Columns inside columns are supported (the margin stack is re-entrant).
+Any operation type that works at the top level works inside columns. Tables, images, bullets, nested blocks all work. Columns inside columns are supported (the margin stack is re-entrant).
 
 ### Inferred text operations
 

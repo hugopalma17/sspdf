@@ -5,7 +5,7 @@ user-invocable: true
 argument-hint: "brand colors, fonts, and document type (e.g. 'navy headers, Arial, financial tear sheet')"
 metadata:
   author: Hugo Palma
-  version: 1.0.0
+  version: 1.2.0
   tags: [pdf, theme, styling, design, sspdf]
   input_format: brand specs (plain text)
   output_format: theme.js file
@@ -23,12 +23,12 @@ https://github.com/hugopalma17/sspdf
 
 The npm package includes core, fonts, vendor, example themes, and example sources. The GitHub repo also contains test suites, skills, and development history.
 
-## Step 0: Verify installation
+## Step 0: Locate the engine
 
-Before anything else, verify h17-sspdf is installed:
+Start from the document the user wants, then build the theme. Only verify installation when rendering or resolving examples:
 
 ```bash
-npx h17-sspdf --help
+SSPDF_DIR=$(node -e "console.log(require('path').dirname(require.resolve('h17-sspdf')))")
 ```
 
 If this fails, install it:
@@ -53,15 +53,59 @@ If working inside the sspdf repo itself, use the current working directory inste
 
 A single `.js` file that exports a valid theme object. The file goes wherever the user specifies.
 
-## Required reading
+## Fast path
 
-Before generating a theme, always read:
+When asked for a theme, build immediately from the source label inventory:
+
+1. If a source JSON exists, scan labels first:
 
 ```bash
-cat $SSPDF_DIR/DOCUMENTATION.md
+node -e "const s=require('./source.json'); const labels=new Set(); const walk=o=>{ if(!o||typeof o!=='object') return; if(Array.isArray(o)) return o.forEach(walk); for(const k of ['label','leftLabel','rightLabel','markerLabel','headerLabel','captionLabel','spaceAfterLabel']) if(o[k]) labels.add(o[k]); for(const k of ['operations','sections','content','items','children','column1','column2']) walk(o[k]); if(o.pageTemplates){walk(o.pageTemplates.header); walk(o.pageTemplates.footer);} }; walk(s); console.log([...labels].sort().join('\\n'))"
 ```
 
-Read the full Theme section (page config, labels, customFonts, layout). This is your source of truth for every property name, type, and constraint.
+2. If no source exists, infer 6 to 12 labels from the document type:
+   `doc.title`, `doc.subtitle`, `doc.body`, `doc.rule`, `doc.row.left`, `doc.row.right`, `doc.bullet`, `doc.bullet.marker`, `doc.table.cell`, `doc.table.header`, `doc.footer.left`, `doc.footer.right`.
+3. Write the page section and every label explicitly. No inheritance between labels.
+4. Render once with the matching source if available.
+5. Add missing labels or tune spacing from the render result.
+
+Minimal theme:
+
+```js
+module.exports = {
+  name: "Quick Theme",
+  page: {
+    format: "a4",
+    orientation: "portrait",
+    unit: "mm",
+    marginTopMm: 18,
+    marginBottomMm: 18,
+    marginLeftMm: 18,
+    marginRightMm: 18,
+    backgroundColor: [255, 255, 255],
+    defaultText: { fontFamily: "helvetica", fontStyle: "normal", fontSize: 10, color: [35, 35, 35], lineHeight: 1.35 },
+    defaultStroke: { color: [35, 35, 35], lineWidth: 0.2, lineCap: "butt", lineJoin: "miter" },
+    defaultFillColor: [255, 255, 255],
+  },
+  layout: { bulletIndentMm: 4, columnGutterMm: 6, chartAlign: "center" },
+  labels: {
+    "doc.title": { fontFamily: "helvetica", fontStyle: "bold", fontSize: 22, color: [20, 28, 38], lineHeight: 1.1, marginBottomMm: 4 },
+    "doc.subtitle": { fontFamily: "helvetica", fontStyle: "normal", fontSize: 11, color: [91, 99, 112], lineHeight: 1.3, marginBottomMm: 5 },
+    "doc.body": { fontFamily: "helvetica", fontStyle: "normal", fontSize: 10, color: [45, 50, 58], lineHeight: 1.35, marginBottomMm: 3 },
+    "doc.rule": { color: [180, 185, 194], lineWidth: 0.25, marginTopMm: 1, marginBottomMm: 4 },
+  },
+};
+```
+
+## Read on demand
+
+Do not read the full docs before producing a normal theme. Read targeted sections only when needed:
+
+```bash
+rg -n "Theme structure|Label property quick reference|Table labels|Page templates|customFonts|columns" $SSPDF_DIR/DOCUMENTATION.md
+```
+
+Use `DOCUMENTATION.md` as the source of truth for exact property names, but do not let it delay the first draft.
 
 Also check existing themes for patterns:
 
@@ -221,12 +265,12 @@ The source JSON uses the same `bullet` operation with `markerLabel` pointing to 
 
 ## Workflow
 
-1. Read `DOCUMENTATION.md` for the full property reference.
-2. Read at least one existing theme in `examples/themes/` for conventions.
-3. Ask the user what document type they need (or infer from context).
-4. Identify every visual element the document will have. Each one needs a label.
-5. Generate the theme file with all labels fully specified.
-6. If the document uses tables, read `examples/themes/table.js` and use the shared constants pattern.
+1. Infer the document type and label inventory from the user request or source JSON.
+2. Generate the theme file immediately with a complete page section and explicit labels.
+3. Use built-in fonts or shipped Google Fonts. Avoid italic unless a matching TTF is registered.
+4. If the document uses tables, read `examples/themes/table.js` and use the shared constants pattern.
+5. If the document uses page templates, make sure the source JSON sets `headerBypassMargins: false` / `footerBypassMargins: false` for margin-aligned template text.
+6. Render with the matching source if available, then tune spacing.
 7. Write the file to the specified path.
 
 ## Theme validation checklist
@@ -241,17 +285,25 @@ Before finalizing a theme, verify:
 - `defaultStroke` fully specified (`color`, `lineWidth`, `lineCap`, `lineJoin`)
 - `defaultFillColor` set
 
-**Page-template margins (CRITICAL — common rendering bug):**
-Header and footer operations from `pageTemplates` do NOT inherit `page.marginLeftMm` / `page.marginRightMm`. They render edge-to-edge unless the labels they reference declare their own side margins. Symptom: header/footer text overlaps body content along the page edges (visible as overlapping characters at the margins, e.g. "// PYTHON: A STORY" colliding with body text starting at the left margin).
+**Page-template margins (CRITICAL: source JSON, not theme labels):**
+Header and footer operation bounds are controlled by the source JSON `pageTemplates` flags:
 
-Whenever the theme defines header/footer text labels, set side margins on each that match the page margins:
-
-```js
-"doc.header.left":  { ..., marginLeftMm: 22, marginBottomPx: 0 },   // == page.marginLeftMm
-"doc.header.right": { ..., marginRightMm: 22, marginBottomPx: 0 },
-"doc.footer.left":  { ..., marginLeftMm: 22 },
-"doc.footer.right": { ..., marginRightMm: 22 },
+```json
+{
+  "pageTemplates": {
+    "header": [{ "type": "row", "leftLabel": "doc.header.left", "rightLabel": "doc.header.right", "leftText": "Title", "rightText": "Page {{page}}" }],
+    "footer": [{ "type": "row", "leftLabel": "doc.footer.left", "rightLabel": "doc.footer.right", "leftText": "Document", "rightText": "Page {{page}}" }],
+    "headerHeightMm": 12,
+    "footerHeightMm": 10,
+    "headerBypassMargins": false,
+    "footerBypassMargins": false
+  }
+}
 ```
+
+Use `headerBypassMargins: false` / `footerBypassMargins: false` for text that should align to the normal page content area. Do not try to fix header/footer text by adding `marginLeftMm` or `marginRightMm` to theme labels; the renderer chooses template bounds before label styling.
+
+Leave a bypass flag true only for intentional full-bleed rules, backgrounds, or bands. If a design needs both edge-to-edge graphics and margin-aligned text, put that structure in the source JSON with separate operations/templates rather than pushing side margins into the theme.
 
 Also size the reserved band correctly via the source's `headerHeightMm` / `footerHeightMm`. The body cursor starts below `headerHeightMm` and stops above `pageHeightMm - footerHeightMm`. Undersize either and body text bleeds into the band. Rule of thumb: `headerHeightMm` = (header fontSize in mm * lineHeight) + 4mm padding; same for footer (add an extra 1-2mm if the footer carries a divider rule above the text).
 

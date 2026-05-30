@@ -5,7 +5,7 @@ user-invocable: true
 argument-hint: "what to generate (e.g. 'invoice for $7,250', 'Apple tear sheet', 'event program')"
 metadata:
   author: Hugo Palma
-  version: 1.0.0
+  version: 1.2.0
   tags: [pdf, document, generation, rendering, sspdf]
   input_format: task description (plain text)
   output_format: PDF file
@@ -23,43 +23,114 @@ https://github.com/hugopalma17/sspdf
 
 The npm package includes core, fonts, vendor, example themes, and example sources. The GitHub repo also contains test suites, skills, and development history.
 
-## Step 0: Verify installation
+## Step 0: Locate the engine
 
-Before anything else, verify h17-sspdf is installed:
+Start building first. Only run install checks when you need to render and the package cannot be resolved.
 
-```bash
-npx h17-sspdf --help
-```
-
-If this fails, install it:
-
-```bash
-npm install h17-sspdf
-```
-
-The `canvas` npm package (native C++ addon) is the only dependency. If canvas fails to build, the user needs build tools (`python3`, `make`, `g++`/`clang`) and Cairo headers. See the canvas npm page for platform-specific instructions.
-
-## Context
-
-The sspdf engine takes two inputs: a theme (styling) and a source (content as JSON). The source contains only content and structural intent, no colors, no sizes, no positions. The theme controls every visual decision via labels. The core does the math.
-
-Resolve the package location:
+If working inside the sspdf repo, use the current working directory. Otherwise resolve the installed package:
 
 ```bash
 SSPDF_DIR=$(node -e "console.log(require('path').dirname(require.resolve('h17-sspdf')))")
 ```
 
-If working inside the sspdf repo itself, use the current working directory instead.
-
-## Required reading
-
-Before generating any document, always read:
+If resolution fails:
 
 ```bash
-cat $SSPDF_DIR/DOCUMENTATION.md
+npm install h17-sspdf
 ```
 
-Read the full Source section for operation types, field requirements, and patterns. Read the Theme section if you need to create or modify a theme.
+The base package has no runtime dependency tree. The optional chart plugin needs the `canvas` peer dependency:
+
+```bash
+npm install canvas
+```
+
+## Context
+
+The sspdf engine takes two inputs: a theme (styling) and a source (content as JSON). The source contains only content and structural intent, no colors, no sizes, no positions. The theme controls every visual decision via labels. The core does the math.
+
+## Fast path
+
+When asked to create a PDF, do this immediately:
+
+1. Pick output paths, usually `source.json`, `theme.js`, and `output.pdf` unless the user specified names.
+2. Draft the source and theme together. Every source label must exist in `theme.labels`.
+3. Use 6 to 12 labels for a normal document: title, subtitle, body, meta row left/right, rule, bullet text, bullet marker, table cell/header, footer left/right.
+4. Render with the CLI.
+5. Inspect failures, add missing labels or adjust layout, render again.
+
+Minimal source:
+
+```json
+{
+  "pageTemplates": {
+    "footer": [
+      { "type": "divider", "label": "doc.footer.rule" },
+      {
+        "type": "row",
+        "leftLabel": "doc.footer.left",
+        "rightLabel": "doc.footer.right",
+        "leftText": "Document",
+        "rightText": "Page {{page}}"
+      }
+    ],
+    "footerHeightMm": 10,
+    "footerBypassMargins": false
+  },
+  "operations": [
+    { "type": "text", "label": "doc.title", "text": "Document Title" },
+    { "type": "text", "label": "doc.body", "text": ["First paragraph.", "Second paragraph."] }
+  ]
+}
+```
+
+Minimal theme:
+
+```js
+module.exports = {
+  name: "Quick Theme",
+  page: {
+    format: "a4",
+    orientation: "portrait",
+    unit: "mm",
+    marginTopMm: 18,
+    marginBottomMm: 18,
+    marginLeftMm: 18,
+    marginRightMm: 18,
+    backgroundColor: [255, 255, 255],
+    defaultText: { fontFamily: "helvetica", fontStyle: "normal", fontSize: 10, color: [35, 35, 35], lineHeight: 1.35 },
+    defaultStroke: { color: [35, 35, 35], lineWidth: 0.2, lineCap: "butt", lineJoin: "miter" },
+    defaultFillColor: [255, 255, 255],
+  },
+  layout: { bulletIndentMm: 4, columnGutterMm: 6 },
+  labels: {
+    "doc.title": { fontFamily: "helvetica", fontStyle: "bold", fontSize: 22, color: [20, 28, 38], lineHeight: 1.1, marginBottomMm: 4 },
+    "doc.body": { fontFamily: "helvetica", fontStyle: "normal", fontSize: 10, color: [45, 50, 58], lineHeight: 1.35, marginBottomMm: 3 },
+    "doc.footer.rule": { color: [180, 185, 194], lineWidth: 0.25, marginBottomMm: 2 },
+    "doc.footer.left": { fontFamily: "helvetica", fontStyle: "normal", fontSize: 8, color: [100, 108, 120], lineHeight: 1 },
+    "doc.footer.right": { fontFamily: "helvetica", fontStyle: "normal", fontSize: 8, color: [100, 108, 120], lineHeight: 1 },
+  },
+};
+```
+
+Render:
+
+```bash
+npx h17-sspdf -s source.json -t ./theme.js -o output.pdf
+```
+
+## Read on demand
+
+Do not read all docs before drafting a normal document. Read only what you need:
+
+```bash
+rg -n "#### `table`|#### `columns`|#### `image`|#### `chart`|Theme structure|Label property" $SSPDF_DIR/DOCUMENTATION.md
+```
+
+Read `DOCUMENTATION.md` sections when:
+- You hit a validation/rendering error.
+- You need a specialized operation (`chart`, `image`, `columns`, `table`, page templates).
+- You need exact label property names.
 
 Check available themes:
 
@@ -224,7 +295,7 @@ Place two independent blocks side by side with the `columns` operation. The curs
 
 **Column width:** `(contentWidth - gutterMm) / 2`. Both columns are always equal width.
 
-Any operation type works inside columns — tables, images, bullets, nested blocks.
+Any operation type works inside columns: tables, images, bullets, nested blocks.
 
 ## Table operations
 
@@ -290,13 +361,17 @@ Reserve space and control margins for repeating headers/footers:
     "footerHeightMm": 10,
     "headerStartMm": 5,
     "footerStartMm": 280,
-    "headerBypassMargins": true,
+    "headerBypassMargins": false,
     "footerBypassMargins": false
   }
 }
 ```
 
 Key: `headerHeightMm`/`footerHeightMm` reserves space so body text does not overlap. `{{page}}` resolves to current page number.
+
+Header/footer margins are controlled in the source JSON, not by trying to add side margins to theme labels. Set `headerBypassMargins: false` and `footerBypassMargins: false` when template content should align to the normal page content area. Leave a bypass flag true only for intentional full-bleed rules, backgrounds, or edge-to-edge bands.
+
+If a template needs both full-bleed graphics and margin-aligned text, split them: use one full-bleed divider/block operation with explicit `xMm`/width or a bypassing template, then keep the text template margin-aware with the bypass flag false. Do not rely on `marginLeftMm`/`marginRightMm` inside header/footer label styles to fix template bounds.
 
 ## Colors
 
@@ -318,13 +393,13 @@ All colors are `[R, G, B]` arrays, values 0-255. Example: `[255, 0, 128]` is pin
 
 ## Workflow
 
-1. Read `DOCUMENTATION.md` for the full operation reference.
-2. Determine what document the user needs.
-3. Check `examples/themes/` for an existing theme that fits. If none fits, generate one using the sspdf-theme-generator approach (read its skill or DOCUMENTATION.md Theme section).
-4. Build the source JSON with the correct operations and labels.
-5. Write the source JSON to `examples/sources/` (or wherever the user specifies).
-6. If using charts, register the chart plugin and pre-render before calling renderDocument. See DOCUMENTATION.md Chart plugin section.
-7. Render the PDF.
+1. Determine the document type and choose a simple structure.
+2. Create the source JSON and theme JS in parallel. Do not wait for a separate theme pass unless the user asked for only one file.
+3. Keep source JSON content-only. Put all font, color, spacing, and page geometry in the theme.
+4. Start with a minimal label set, render, then add labels for sections that fail or look wrong.
+5. Use examples only as pattern references. Do not copy a full example unless the user asked for that style.
+6. If using charts, install `canvas` if needed. The CLI auto-detects chart operations and pre-renders them.
+7. Render the PDF and leave the source/theme files next to it unless the user requested a different location.
 
 ## Rendering
 

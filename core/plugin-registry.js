@@ -3,6 +3,7 @@ const _plugins = new Map();
 const BUILT_IN_TYPES = new Set([
   "text", "row", "bullet", "divider", "spacer", "hiddenText",
   "block", "section", "group", "quote", "table", "image",
+  "columns", "pageBreak",
 ]);
 
 function registerPlugin(type, handler) {

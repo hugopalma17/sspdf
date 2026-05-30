@@ -20,7 +20,7 @@ Source JSON  +  Theme  =  PDF
 npm install h17-sspdf
 ```
 
-Requires **Node.js 18 or newer**. The engine vendors a single self-contained UMD build of jsPDF (which bundles fflate, fast-png, iobuffer internally) plus Chart.js and chartjs-node-canvas. The only install-time dependency is [`canvas`](https://www.npmjs.com/package/canvas) (native C++ addon, used by the chart plugin) — no transitive dependency tree beyond that.
+Requires **Node.js 18 or newer**. The engine vendors a single self-contained UMD build of jsPDF (which bundles fflate, fast-png, iobuffer internally) plus Chart.js and chartjs-node-canvas. The base install has no runtime dependencies. The optional chart plugin uses [`canvas`](https://www.npmjs.com/package/canvas) as an optional peer dependency.
 
 ## The problem it solves
 
@@ -199,7 +199,7 @@ A repeating pattern of `row` + `text` pairs. The row carries the label/value, th
   "type": "quote",
   "label": "news.pullquote",
   "text": "When the format becomes a system instead of a template, agencies stop re-solving the same layout problem every week.",
-  "attribution": "— Elena Ward, public records modernization lead",
+  "attribution": "- Elena Ward, public records modernization lead",
   "xMm": 22,
   "maxWidthMm": 166
 }
@@ -474,7 +474,7 @@ Claude Code skills for generating PDFs and themes are available in the `skills/`
 - Single-line `row` cells, no multi-line column pairs
 - `{{page}}` gives the current page number; `{{pages}}` (total page count) is not supported because keep-together rules make the final page count unpredictable until the last operation is laid out
 - Charts require the `canvas` npm package (native C++ addon) for server-side rendering; everything else is zero native dependencies
-- A `jspdf.umd.js` build is vendored for client-side/browser use. It bundles all dependencies internally but requires wiring up your own entry point — `pdf-core.js` uses the Node build by default
+- A `jspdf.umd.js` build is vendored for client-side/browser use. It bundles all dependencies internally but requires wiring up your own entry point; `pdf-core.js` uses the Node build by default
 
 ---
 

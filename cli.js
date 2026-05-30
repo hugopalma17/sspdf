@@ -155,7 +155,7 @@ function collectChartOps(obj) {
     obj.forEach((item) => charts.push(...collectChartOps(item)));
   } else {
     if (obj.type === "chart") charts.push(obj);
-    for (const key of ["operations", "sections", "content", "items", "children"]) {
+    for (const key of ["operations", "sections", "content", "items", "children", "column1", "column2"]) {
       if (Array.isArray(obj[key])) charts.push(...collectChartOps(obj[key]));
     }
     if (obj.pageTemplates) {

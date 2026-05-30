@@ -50,6 +50,10 @@
  */
 
 let _ChartJSNodeCanvas = null;
+const _rendererCache = new Map();
+const MAX_RENDERER_CACHE_SIZE = 8;
+const DEFAULT_CANVAS_WIDTH = 1600;
+const DEFAULT_CANVAS_HEIGHT = 800;
 
 function getCanvas() {
   if (!_ChartJSNodeCanvas) {
@@ -62,6 +66,46 @@ function getCanvas() {
     }
   }
   return _ChartJSNodeCanvas;
+}
+
+function getRenderer(width, height) {
+  const ChartJSNodeCanvas = getCanvas();
+  const key = `${width}x${height}`;
+  if (_rendererCache.has(key)) {
+    return _rendererCache.get(key);
+  }
+  if (_rendererCache.size >= MAX_RENDERER_CACHE_SIZE) {
+    const oldestKey = _rendererCache.keys().next().value;
+    _rendererCache.delete(oldestKey);
+  }
+  const renderer = new ChartJSNodeCanvas({
+    width,
+    height,
+    backgroundColour: 'transparent',
+  });
+  _rendererCache.set(key, renderer);
+  return renderer;
+}
+
+function resolvePositiveNumber(value, fallback, name) {
+  if (value === undefined || value === null || value === '') {
+    return fallback;
+  }
+  const numberValue = Number(value);
+  if (!Number.isFinite(numberValue) || numberValue <= 0) {
+    throw new Error(`chart plugin: ${name} must be a positive number`);
+  }
+  return numberValue;
+}
+
+function cloneChartValue(value) {
+  if (!value || typeof value !== 'object') return value;
+  if (Array.isArray(value)) return value.map(cloneChartValue);
+  const out = {};
+  for (const key of Object.keys(value)) {
+    out[key] = cloneChartValue(value[key]);
+  }
+  return out;
 }
 
 /**
@@ -77,35 +121,28 @@ function getCanvas() {
  *
  * Supported token: {{v}} - replaced with the callback's first argument (value).
  */
-function resolveCallbackTemplates(obj) {
-  if (!obj || typeof obj !== 'object') return obj;
-  if (Array.isArray(obj)) {
-    for (let i = 0; i < obj.length; i++) {
-      obj[i] = resolveCallbackTemplates(obj[i]);
-    }
-    return obj;
-  }
-  for (const key of Object.keys(obj)) {
-    if (key === 'callback' && typeof obj[key] === 'string' && obj[key].includes('{{v}}')) {
-      const template = obj[key];
-      obj[key] = function (value) { return template.replace(/\{\{v\}\}/g, String(value)); };
+function resolveCallbackTemplates(value) {
+  if (!value || typeof value !== 'object') return value;
+  if (Array.isArray(value)) return value.map(resolveCallbackTemplates);
+
+  const out = {};
+  for (const key of Object.keys(value)) {
+    if (key === 'callback' && typeof value[key] === 'string' && value[key].includes('{{v}}')) {
+      const template = value[key];
+      out[key] = function (callbackValue) {
+        return template.replace(/\{\{v\}\}/g, String(callbackValue));
+      };
     } else {
-      obj[key] = resolveCallbackTemplates(obj[key]);
+      out[key] = resolveCallbackTemplates(value[key]);
     }
   }
-  return obj;
+  return out;
 }
 
 async function preRender(operation) {
-  const ChartJSNodeCanvas = getCanvas();
-  const canvasW = operation.canvasWidth  || 1600;
-  const canvasH = operation.canvasHeight || 800;
-
-  const canvas = new ChartJSNodeCanvas({
-    width: canvasW,
-    height: canvasH,
-    backgroundColour: 'transparent',
-  });
+  const canvasW = resolvePositiveNumber(operation.canvasWidth, DEFAULT_CANVAS_WIDTH, 'canvasWidth');
+  const canvasH = resolvePositiveNumber(operation.canvasHeight, DEFAULT_CANVAS_HEIGHT, 'canvasHeight');
+  const canvas = getRenderer(canvasW, canvasH);
 
   const options = resolveCallbackTemplates({
     ...(operation.options || {}),
@@ -115,7 +152,7 @@ async function preRender(operation) {
 
   operation._buf = await canvas.renderToBuffer({
     type:    operation.chartType || 'bar',
-    data:    operation.data    || { labels: [], datasets: [] },
+    data:    cloneChartValue(operation.data || { labels: [], datasets: [] }),
     options,
   });
 }

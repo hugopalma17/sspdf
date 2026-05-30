@@ -37,7 +37,7 @@
         {
           "type": "text",
           "label": "news.deck",
-          "text": "A new open-source library separates content, style, and layout math into three components that never speak to each other — and produces consistent, paginated PDFs from plain JSON."
+          "text": "A new open-source library separates content, style, and layout math into three components that never speak to each other, and produces consistent, paginated PDFs from plain JSON."
         },
         {
           "type": "row",
@@ -56,9 +56,9 @@
           "type": "text",
           "label": "news.body",
           "text": [
-            "Generating PDFs in code has always meant tracking a cursor. Every text block, every rule, every section heading — the developer moves the pen, measures the result, adjusts for line wrapping, resets the font, and prays the next page break lands somewhere reasonable. The output works, but the code belongs to no one. It is a sequence of measurements masquerading as a document.",
+            "Generating PDFs in code has always meant tracking a cursor. Every text block, every rule, every section heading: the developer moves the pen, measures the result, adjusts for line wrapping, resets the font, and prays the next page break lands somewhere reasonable. The output works, but the code belongs to no one. It is a sequence of measurements masquerading as a document.",
             "SuperSimplePDF inverts that model. You describe what to render and how it should look. The cursor moves itself. Line wrapping, page breaks, font resets, and margin math happen automatically. The developer stops being a typographer and starts being a content author.",
-            "The library ships as h17-sspdf on npm. It is built on jsPDF, but jsPDF is an implementation detail — the surface you work with is JSON and a theme object, not a coordinate system."
+            "The library ships as h17-sspdf on npm. It is built on jsPDF, but jsPDF is an implementation detail; the surface you work with is JSON and a theme object, not a coordinate system."
           ]
         }
       ]
@@ -77,7 +77,7 @@
           "type": "text",
           "label": "news.body",
           "text": [
-            "The architecture is built around a deliberate ignorance. The source JSON carries the content — text, structure, order — but has no opinion about fonts, colors, or spacing. The theme carries the visual rules — typography, margins, borders — but has no idea what words it is styling. The core engine knows neither. It reads a label, looks it up in the theme, runs the layout math, advances the cursor, and moves on.",
+            "The architecture is built around a deliberate ignorance. The source JSON carries the content: text, structure, order, but has no opinion about fonts, colors, or spacing. The theme carries the visual rules: typography, margins, borders, but has no idea what words it is styling. The core engine knows neither. It reads a label, looks it up in the theme, runs the layout math, advances the cursor, and moves on.",
             "This separation means you can take the same source JSON and render it in a minimal theme for internal drafts and a polished editorial theme for publication. It means a developer can define the theme once and hand content authors a simple JSON contract. It means the engine can be tested against arbitrary inputs without ever caring whether the output is a newspaper, an invoice, or a certificate."
           ]
         },
@@ -85,7 +85,7 @@
           "type": "quote",
           "label": "news.pullquote",
           "text": "Source JSON + Theme = PDF. The core is blind to both and does all the math.",
-          "attribution": "— SuperSimplePDF design principle",
+          "attribution": "- SuperSimplePDF design principle",
           "xMm": 22,
           "maxWidthMm": 166
         }
@@ -106,10 +106,10 @@
           "markerLabel": "news.brief.marker",
           "bullets": [
             "Nine operation types: text, row, bullet, divider, spacer, quote, block, section, and hiddenText.",
-            "Page templates — declare a footer once and the engine stamps it on every page, with live page number substitution via {{page}}.",
+            "Page templates: declare a footer once and the engine stamps it on every page, with live page number substitution via {{page}}.",
             "keepWithNext and keepTogether controls to prevent orphaned headings and broken blocks.",
             "xMm and maxWidthMm overrides on any operation to position content independently of the theme margins.",
-            "Custom font registration via base64 TTF — embed any typeface directly in the theme.",
+            "Custom font registration via base64 TTF: embed any typeface directly in the theme.",
             "A chart plugin that renders any Chart.js configuration to PNG and embeds it in the PDF.",
             "A CLI: npx sspdf -s source.json -t theme.js -o output.pdf.",
             "Twenty bundled fonts ready to use without configuration."
@@ -133,7 +133,7 @@
           "label": "news.body",
           "text": [
             "The most complex example in the repository is a newspaper front page. It has a masthead, an edition line, a heavy rule, a headline hierarchy, a byline, multi-paragraph body copy, a pull quote, a stat scoreboard, and a footer that repeats on every page. Every element is positioned through labels and theme rules. The source JSON contains no font sizes, no colors, no line widths.",
-            "That document — including this one — is produced by the same engine, the same theme, and the same rendering loop. The newspaper is not a special case. It is what the system looks like when you give it enough content."
+            "That document, including this one, is produced by the same engine, the same theme, and the same rendering loop. The newspaper is not a special case. It is what the system looks like when you give it enough content."
           ]
         }
       ]
@@ -151,7 +151,7 @@
           "type": "text",
           "label": "news.body",
           "text": [
-            "The core engine runs in Node.js and in the browser. jsPDF ships a UMD build, and SuperSimplePDF inherits that compatibility — the same rendering logic works client-side. The one exception is the chart plugin, which depends on chartjs-node-canvas, a server-side renderer. Charts require Node.js. Everything else does not.",
+            "The core engine runs in Node.js and in the browser. jsPDF ships a UMD build, and SuperSimplePDF inherits that compatibility: the same rendering logic works client-side. The one exception is the chart plugin, which depends on chartjs-node-canvas, a server-side renderer. Charts require Node.js. Everything else does not.",
             "The library is Apache 2.0 licensed and lives at github.com/hugopalma17/sspdf. Full documentation, the label style property reference, example sources and themes, and the chart plugin guide are all in the README. The source JSON for this document is in the examples folder."
           ]
         }
@@ -176,7 +176,7 @@
         {
           "type": "text",
           "label": "news.stat.note",
-          "text": "text, row, bullet, divider, spacer, quote, block, section, hiddenText — and plugins extend the list."
+          "text": "text, row, bullet, divider, spacer, quote, block, section, hiddenText, and plugins extend the list."
         },
         {
           "type": "row",
@@ -188,7 +188,7 @@
         {
           "type": "text",
           "label": "news.stat.note",
-          "text": "Inter, Roboto, Lato, Merriweather, Playfair Display, Oswald, and fourteen more — all ready without configuration."
+          "text": "Inter, Roboto, Lato, Merriweather, Playfair Display, Oswald, and fourteen more, all ready without configuration."
         },
         {
           "type": "row",

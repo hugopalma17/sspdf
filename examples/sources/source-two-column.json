@@ -25,10 +25,10 @@
             ["Projects",            "10"],
             ["Storage",             "20 GB"],
             ["API calls / day",     "5,000"],
-            ["Custom integrations", "—"],
-            ["SSO / SAML",          "—"],
-            ["Audit log",           "—"],
-            ["Priority support",    "—"],
+            ["Custom integrations", "-"],
+            ["SSO / SAML",          "-"],
+            ["Audit log",           "-"],
+            ["Priority support",    "-"],
             ["SLA uptime",          "99.5%"]
           ]
         }

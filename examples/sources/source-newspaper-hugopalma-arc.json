@@ -157,7 +157,7 @@
           "type": "quote",
           "label": "news.pullquote",
           "text": "Two months of building before I applied to a single job. Zero web experience in December. By February I'd shipped a scraper, a scoring engine, a CMS, a PDF resume generator, and a browser automation framework.",
-          "attribution": "— Hugo Palma, journal entry of March 3, 2026"
+          "attribution": "- Hugo Palma, journal entry of March 3, 2026"
         },
         {
           "type": "text",
