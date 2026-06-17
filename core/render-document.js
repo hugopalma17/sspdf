@@ -759,7 +759,17 @@ function executeOperation(ctx) {
     if (!srcPath) {
       throw new Error(`Operation ${index} (image) missing "src" field`);
     }
-    const resolvedPath = path.isAbsolute(srcPath) ? srcPath : path.resolve(process.cwd(), srcPath);
+    // Containment: src must be a relative path under the working directory.
+    // Blocks absolute paths and ../ traversal so an untrusted source document
+    // cannot read arbitrary files (e.g. /etc/passwd, ../../app/.env) into the PDF.
+    if (path.isAbsolute(srcPath) || srcPath.includes("\0")) {
+      throw new Error(`Operation ${index} (image) "src" must be a relative path: "${srcPath}"`);
+    }
+    const imageBaseDir = path.resolve(process.cwd());
+    const resolvedPath = path.resolve(imageBaseDir, srcPath);
+    if (resolvedPath !== imageBaseDir && !resolvedPath.startsWith(imageBaseDir + path.sep)) {
+      throw new Error(`Operation ${index} (image) "src" escapes the working directory: "${srcPath}"`);
+    }
     let buf;
     try {
       buf = fs.readFileSync(resolvedPath);
@@ -1135,7 +1145,14 @@ function estimateOperationHeight(ctx) {
     let imgHeightMm = 80; // fallback
     if (operation.src) {
       try {
-        const resolvedPath = path.isAbsolute(operation.src) ? operation.src : path.resolve(process.cwd(), operation.src);
+        if (path.isAbsolute(operation.src) || operation.src.includes("\0")) {
+          throw new Error(`image "src" must be a relative path: "${operation.src}"`);
+        }
+        const imageBaseDir = path.resolve(process.cwd());
+        const resolvedPath = path.resolve(imageBaseDir, operation.src);
+        if (resolvedPath !== imageBaseDir && !resolvedPath.startsWith(imageBaseDir + path.sep)) {
+          throw new Error(`image "src" escapes the working directory: "${operation.src}"`);
+        }
         const buf = fs.readFileSync(resolvedPath);
         const imgInfo = getImageDimensions(buf);
         const resolved = resolveImageSize(operation, imgInfo.width, imgInfo.height, contentWidthMm - padding.left - padding.right);
