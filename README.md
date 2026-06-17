@@ -468,6 +468,18 @@ Claude Code skills for generating PDFs and themes are available in the `skills/`
 
 ---
 
+## Security model
+
+SuperSimplePDF turns data into a document. The split between data and code matters for how you treat each input.
+
+- Source JSON is data. You can generate it from untrusted input. The engine reads it as a description of what to render, never as code.
+- Theme files are code. A `.js` theme is loaded with `require`, so it runs with your process privileges. Treat a theme like any other module you import. Do not load theme files you do not trust. Built-in themes referenced by name are safe.
+- Image paths are contained. The `image` operation reads files from disk via `src`. To stop an untrusted source document from reading arbitrary files into a PDF, `src` must be a relative path that stays inside the working directory. Absolute paths, parent directory traversal with `..`, and null bytes are rejected.
+
+The engine has no network access and no runtime dependencies in the base install, so a source document cannot trigger an outbound request. The optional chart plugin adds the `canvas` native module, which renders locally and does not phone home.
+
+If you find a security issue, see SECURITY.md.
+
 ## Constraints
 
 - Page format defaults to A4; custom dimensions supported via `pageWidthMm`/`pageHeightMm` (e.g. 16:9 presentations)

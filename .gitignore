@@ -4,6 +4,7 @@
 !package.json
 !package-lock.json
 !README.md
+!SECURITY.md
 !gemini-extension.json
 !sspdf-story.pdf
 !index.js
