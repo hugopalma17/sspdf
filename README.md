@@ -293,7 +293,7 @@ Any operation accepts `xMm` and `maxWidthMm` to override the theme margins for t
   fontSize: 10,                  // pt
   color: [0, 0, 0],              // RGB
   lineHeight: 1.4,               // multiplier
-  textTransform: 'uppercase',    // 'uppercase' | 'lowercase' | undefined
+  textTransform: 'upper',        // 'upper' | 'lower' | undefined
 
   // Spacing
   marginTopMm: 0,
