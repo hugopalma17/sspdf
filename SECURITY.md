@@ -14,6 +14,14 @@ SuperSimplePDF renders a document from two inputs: a source JSON and a theme. Th
 
 The `image` operation reads a file from disk through its `src` field. To stop an untrusted source document from pulling arbitrary files into a PDF, `src` must be a relative path that resolves inside the current working directory. Absolute paths, parent directory traversal with `..`, and null bytes are rejected. This is enforced both when an image is rendered and when its height is measured during layout.
 
+### Image size is limited
+
+A source document cannot force the engine to read an unbounded image file. Image files are rejected if they exceed 50MB. This limits memory exhaustion from malicious or accidental huge inputs.
+
+### Colors are clamped
+
+RGB color arrays in themes and sources are clamped to the 0-255 range before being passed to jsPDF. Out-of-range values cannot corrupt the PDF content stream.
+
 ### No network access
 
 The base install has no runtime dependencies and makes no network calls, so a source document cannot trigger an outbound request. The optional chart plugin adds the `canvas` native module, which renders charts locally.
@@ -24,7 +32,7 @@ Because themes are real JavaScript modules, a malicious theme can do anything yo
 
 ## Supported versions
 
-Security fixes land on the latest published version. The image path containment was introduced in 1.3.1. If you run an older version and accept untrusted source documents with images, upgrade.
+Security fixes land on the latest published version. The image path containment, image size limit, and RGB clamping were introduced in 1.3.2. If you run an older version and accept untrusted source documents, upgrade.
 
 ```bash
 npm install h17-sspdf
