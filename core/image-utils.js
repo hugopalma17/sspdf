@@ -1,5 +1,10 @@
 "use strict";
 
+const fs = require("fs");
+const path = require("path");
+
+const MAX_IMAGE_SIZE_BYTES = 50 * 1024 * 1024;
+
 /**
  * Read native width/height from PNG or JPEG buffer.
  * Returns { width, height, format } or throws.
@@ -64,6 +69,62 @@ function getImageDimensions(buf) {
 }
 
 /**
+ * Resolve and validate an image `src` path.
+ * Only relative paths inside the current working directory are allowed.
+ * Returns the absolute resolved path.
+ *
+ * @param {string} src - Relative path from source JSON
+ * @param {string} [index] - Operation index for error messages
+ * @returns {string}
+ */
+function resolveImagePath(src, index) {
+  const prefix = index ? `Operation ${index} (image) ` : "image ";
+  if (!src || typeof src !== "string") {
+    throw new Error(`${prefix}missing "src" field`);
+  }
+  if (path.isAbsolute(src) || src.includes("\0")) {
+    throw new Error(`${prefix}"src" must be a relative path: "${src}"`);
+  }
+  const imageBaseDir = path.resolve(process.cwd());
+  const resolvedPath = path.resolve(imageBaseDir, src);
+  if (resolvedPath !== imageBaseDir && !resolvedPath.startsWith(imageBaseDir + path.sep)) {
+    throw new Error(`${prefix}"src" escapes the working directory: "${src}"`);
+  }
+  return resolvedPath;
+}
+
+/**
+ * Read an image file with size limits.
+ *
+ * @param {string} resolvedPath
+ * @param {string} [index]
+ * @param {number} [maxSizeBytes]
+ * @returns {Buffer}
+ */
+function readImageFile(resolvedPath, index, maxSizeBytes = MAX_IMAGE_SIZE_BYTES) {
+  const prefix = index ? `Operation ${index} (image) ` : "image ";
+  let stats;
+  try {
+    stats = fs.statSync(resolvedPath);
+  } catch (err) {
+    throw new Error(`${prefix}could not stat file "${resolvedPath}": ${err.message}`);
+  }
+  if (stats.size > maxSizeBytes) {
+    throw new Error(`${prefix}file exceeds ${maxSizeBytes} bytes: "${resolvedPath}"`);
+  }
+  let buf;
+  try {
+    buf = fs.readFileSync(resolvedPath);
+  } catch (err) {
+    throw new Error(`${prefix}could not read file "${resolvedPath}": ${err.message}`);
+  }
+  if (!buf || buf.length === 0) {
+    throw new Error(`${prefix}file is empty: "${resolvedPath}"`);
+  }
+  return buf;
+}
+
+/**
  * Resolve display dimensions from source operation and content bounds.
  *
  * @param {object} op - Operation with width/widthMm/heightMm
@@ -109,4 +170,10 @@ function resolveImageSize(op, nativeW, nativeH, contentWidthMm) {
   return { widthMm: contentWidthMm, heightMm: contentWidthMm * ratio };
 }
 
-module.exports = { getImageDimensions, resolveImageSize };
+module.exports = {
+  getImageDimensions,
+  resolveImageSize,
+  resolveImagePath,
+  readImageFile,
+  MAX_IMAGE_SIZE_BYTES,
+};

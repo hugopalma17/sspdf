@@ -2,6 +2,9 @@ const { test, assert } = require("./test-utils");
 const { PDFCore, getStyleMarginsMm, getTextPaddingMm } = require("../core/pdf-core");
 const { renderDocument } = require("../core/render-document");
 const { resolveLineHeightMm, pxToMm, ptToMm } = require("../core/units");
+const { resolveImagePath, readImageFile } = require("../core/image-utils");
+const fs = require("fs");
+const path = require("path");
 const INTER = require("../fonts/inter");
 
 // ─── Test theme with known values ───────────────────────────────
@@ -1177,4 +1180,136 @@ test("pageBreak: forces new page and resets cursor", () => {
   assert.strictEqual(core.doc.getNumberOfPages(), 2, "pageBreak creates page 2");
   const bodyDelta = lh(10, 1.2) + pxToMm(4);
   near(core.cursorY, core.contentTopY + bodyDelta, "cursor on page 2 = contentTopY + one text block");
+});
+
+// ─── Color validation ───────────────────────────────────────────
+
+test("resolveColor: clamps out-of-range RGB values", () => {
+  const core = makeCore();
+  assert.deepStrictEqual(core._resolveColor([300, -10, 128]), [255, 0, 128]);
+});
+
+test("resolveColor: rounds fractional values", () => {
+  const core = makeCore();
+  assert.deepStrictEqual(core._resolveColor([10.4, 10.5, 10.6]), [10, 11, 11]);
+});
+
+test("resolveColor: preserves valid values", () => {
+  const core = makeCore();
+  assert.deepStrictEqual(core._resolveColor([0, 128, 255]), [0, 128, 255]);
+});
+
+test("renderDocument: clamps out-of-range theme label colors", () => {
+  const badTheme = JSON.parse(JSON.stringify(theme));
+  badTheme.labels["t.body"].color = [300, -10, 128.7];
+  const source = {
+    operations: [{ type: "text", label: "t.body", text: "Clamped color" }],
+  };
+  const { core } = renderDocument({ source, theme: badTheme });
+  const expected = core.contentTopY + lh(10, 1.2) + pxToMm(4);
+  near(core.cursorY, expected, "cursor after text with out-of-range theme color");
+});
+
+// ─── Row edge cases ─────────────────────────────────────────────
+
+test("row: renders empty string and zero without skipping", () => {
+  const core = makeCore();
+  const startY = core.cursorY;
+
+  core.drawRow({
+    leftText: "",
+    rightText: 0,
+    leftStyle: theme.labels["t.row.left"],
+    rightStyle: theme.labels["t.row.right"],
+    xLeft: 20,
+    xRight: 190,
+  });
+
+  const expected = startY + lh(10, 1.2) + pxToMm(4);
+  near(core.cursorY, expected, "cursor after row with empty/zero text");
+});
+
+// ─── Image path containment ─────────────────────────────────────
+
+function makeTempPng() {
+  const zlib = require("zlib");
+  const dir = path.join(process.cwd(), "tests", "tmp");
+  fs.mkdirSync(dir, { recursive: true });
+  const filePath = path.join(dir, `test-${Date.now()}.png`);
+  function crc32(buf) {
+    let crc = 0xFFFFFFFF;
+    const table = new Int32Array(256);
+    for (let n = 0; n < 256; n++) {
+      let c = n;
+      for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+      table[n] = c;
+    }
+    for (let i = 0; i < buf.length; i++) crc = table[(crc ^ buf[i]) & 0xFF] ^ (crc >>> 8);
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+  }
+  function makeChunk(type, data) {
+    const len = Buffer.alloc(4); len.writeUInt32BE(data.length);
+    const typeB = Buffer.from(type);
+    const body = Buffer.concat([typeB, data]);
+    const c = Buffer.alloc(4); c.writeUInt32BE(crc32(body));
+    return Buffer.concat([len, body, c]);
+  }
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(120, 0); ihdr.writeUInt32BE(80, 4);
+  ihdr[8] = 8; ihdr[9] = 2;
+  const raw = Buffer.alloc(80 * (1 + 120 * 3));
+  const compressed = zlib.deflateSync(raw);
+  const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  const png = Buffer.concat([sig, makeChunk("IHDR", ihdr), makeChunk("IDAT", compressed), makeChunk("IEND", Buffer.alloc(0))]);
+  fs.writeFileSync(filePath, png);
+  return filePath;
+}
+
+test("image-utils: resolveImagePath rejects absolute path", () => {
+  let threw = false;
+  try {
+    resolveImagePath("/etc/passwd", "0");
+  } catch (e) {
+    threw = true;
+    assert(e.message.includes("relative path"), e.message);
+  }
+  assert(threw, "should reject absolute path");
+});
+
+test("image-utils: resolveImagePath rejects directory traversal", () => {
+  let threw = false;
+  try {
+    resolveImagePath("../package.json", "0");
+  } catch (e) {
+    threw = true;
+    assert(e.message.includes("escapes"), e.message);
+  }
+  assert(threw, "should reject traversal");
+});
+
+test("image-utils: resolveImagePath accepts relative path under cwd", () => {
+  const filePath = makeTempPng();
+  try {
+    const rel = path.relative(process.cwd(), filePath);
+    const resolved = resolveImagePath(rel, "0");
+    assert.strictEqual(resolved, filePath);
+  } finally {
+    fs.unlinkSync(filePath);
+  }
+});
+
+test("image-utils: readImageFile rejects oversized files", () => {
+  const filePath = makeTempPng();
+  try {
+    let threw = false;
+    try {
+      readImageFile(filePath, "0", 10);
+    } catch (e) {
+      threw = true;
+      assert(e.message.includes("exceeds"), e.message);
+    }
+    assert(threw, "should reject oversized file");
+  } finally {
+    fs.unlinkSync(filePath);
+  }
 });

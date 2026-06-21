@@ -461,12 +461,12 @@ class PDFCore {
     );
     const baseline = y + baselineOffsetMm;
 
-    if (payload.leftText) {
+    if (payload.leftText != null) {
       this.applyTextStyle(leftStyle);
       this.doc.text(applyTextTransform(String(payload.leftText), leftStyle.textTransform), xLeft, baseline);
     }
 
-    if (payload.rightText) {
+    if (payload.rightText != null) {
       this.applyTextStyle(rightStyle);
       this.doc.text(applyTextTransform(String(payload.rightText), rightStyle.textTransform), xRight, baseline, { align: "right" });
     }
@@ -967,7 +967,10 @@ class PDFCore {
 
   _resolveColor(color, fallback) {
     if (Array.isArray(color) && color.length === 3) {
-      return color;
+      return color.map((c) => {
+        const n = Number(c) || 0;
+        return Math.max(0, Math.min(255, Math.round(n)));
+      });
     }
     return fallback;
   }

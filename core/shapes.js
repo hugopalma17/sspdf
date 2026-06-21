@@ -15,7 +15,7 @@
 
 'use strict';
 
-const PT_TO_MM = 0.3528;
+const { PT_TO_MM } = require('./units');
 
 // Vertical center: when pt is given, use half the font height; otherwise fall back to 1*s
 function mid(y, s, pt) {

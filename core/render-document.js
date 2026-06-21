@@ -1,11 +1,9 @@
-const fs = require("fs");
-const path = require("path");
 const { PDFCore, getStyleMarginsMm, getTextPaddingMm, applyTextTransform } = require("./pdf-core");
 const { pxToMm, resolveLineHeightMm } = require("./units");
 const { registerThemeFonts } = require("./font-registry");
 const { getPlugin, hasPlugin } = require("./plugin-registry");
 const { validateSource, validateTheme, validateSourceAgainstTheme } = require("./validate");
-const { getImageDimensions, resolveImageSize } = require("./image-utils");
+const { getImageDimensions, resolveImageSize, resolveImagePath, readImageFile } = require("./image-utils");
 
 /**
  * Render a document by executing labeled operations.
@@ -754,31 +752,11 @@ function executeOperation(ctx) {
     const bounds = getHorizontalBounds(core, templateBypassMargins);
     const contentWidthMm = bounds.right - bounds.left;
 
-    // Read image file
-    const srcPath = operation.src;
-    if (!srcPath) {
-      throw new Error(`Operation ${index} (image) missing "src" field`);
-    }
-    // Containment: src must be a relative path under the working directory.
-    // Blocks absolute paths and ../ traversal so an untrusted source document
-    // cannot read arbitrary files (e.g. /etc/passwd, ../../app/.env) into the PDF.
-    if (path.isAbsolute(srcPath) || srcPath.includes("\0")) {
-      throw new Error(`Operation ${index} (image) "src" must be a relative path: "${srcPath}"`);
-    }
-    const imageBaseDir = path.resolve(process.cwd());
-    const resolvedPath = path.resolve(imageBaseDir, srcPath);
-    if (resolvedPath !== imageBaseDir && !resolvedPath.startsWith(imageBaseDir + path.sep)) {
-      throw new Error(`Operation ${index} (image) "src" escapes the working directory: "${srcPath}"`);
-    }
-    let buf;
-    try {
-      buf = fs.readFileSync(resolvedPath);
-    } catch (err) {
-      throw new Error(`Operation ${index} (image) could not read file "${resolvedPath}": ${err.message}`);
-    }
-    if (!buf || buf.length === 0) {
-      throw new Error(`Operation ${index} (image) file is empty: "${resolvedPath}"`);
-    }
+    // Read image file with containment and size limits.
+    // Containment blocks absolute paths and ../ traversal so an untrusted source
+    // document cannot read arbitrary files (e.g. /etc/passwd, ../../app/.env).
+    const resolvedPath = resolveImagePath(operation.src, index);
+    const buf = readImageFile(resolvedPath, index);
     let imgInfo;
     try {
       imgInfo = getImageDimensions(buf);
@@ -1145,15 +1123,8 @@ function estimateOperationHeight(ctx) {
     let imgHeightMm = 80; // fallback
     if (operation.src) {
       try {
-        if (path.isAbsolute(operation.src) || operation.src.includes("\0")) {
-          throw new Error(`image "src" must be a relative path: "${operation.src}"`);
-        }
-        const imageBaseDir = path.resolve(process.cwd());
-        const resolvedPath = path.resolve(imageBaseDir, operation.src);
-        if (resolvedPath !== imageBaseDir && !resolvedPath.startsWith(imageBaseDir + path.sep)) {
-          throw new Error(`image "src" escapes the working directory: "${operation.src}"`);
-        }
-        const buf = fs.readFileSync(resolvedPath);
+        const resolvedPath = resolveImagePath(operation.src, index);
+        const buf = readImageFile(resolvedPath, index);
         const imgInfo = getImageDimensions(buf);
         const resolved = resolveImageSize(operation, imgInfo.width, imgInfo.height, contentWidthMm - padding.left - padding.right);
         imgHeightMm = resolved.heightMm;
